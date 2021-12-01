@@ -3,19 +3,19 @@ package pl.edu.agh.csg;
 import org.cloudbus.cloudsim.core.CloudSim;
 
 public class SimSettings {
-    private int cloudletCnt = 10;
+    private int cloudletCnt = 100;
     private int cloudletLength =10_000;
-    private int cloudletPes = 2;
+    private int cloudletPes = 4;
     private long cloudletSize = 1024;
 
     private int hostCnt = 20;
-    private long hostRam = 2048;
-    private long hostBw = 10000;
+    private long hostRam = 65536;
+    private long hostBw = 50000;
     private long hostSize = 1000000;
-    private int hostPes = 8;
-    private long hostPeMips = 1000;
+    private int hostPes = 16;
+    private long hostPeMips = 10000;
 
-    private int vmCnt= 10;
+    private int vmCnt= 60;
     private long vmRam= 512;
     private long vmBw = 1000;
     private long vmSize = 10000;
