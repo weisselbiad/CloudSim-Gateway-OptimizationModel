@@ -1,8 +1,11 @@
 package pl.edu.agh.csg;
 
-import org.cloudbus.cloudsim.core.CloudSim;
+/**
+ * This Class is basically used to initiate all settings of the components
+ */
 
 public class SimSettings {
+
     private int cloudletCnt = 100;
     private int cloudletLength =10_000;
     private int cloudletPes = 4;
@@ -44,17 +47,26 @@ public class SimSettings {
     public String toString() {
         return "SimulationSettings{" +
 
-                "\n, hostPeMips=" + hostPeMips +
-                "\n, hostBw=" + hostBw +
-                "\n, hostRam=" + hostRam +
-                "\n, hostSize=" + hostSize +
-                "\n, hostPeCnt=" + hostPes +
-                "\n, defaultInitialVmCount=" + vmCnt +
-                "\n, datacenterHostsCnt=" + hostCnt +
-                "\n, cloudletsCnt=" + cloudletCnt +
-                "\n, basicVmRam=" + vmRam +
-                "\n, basicVmPeCount=" + vmPes +
-                "\n}";
+                "\n, cloudletsCnt"+ ":" + cloudletCnt +
+                "\n, cloudletLength"+ ":" + cloudletLength +
+                "\n, cloudletPes"+ ":"+ cloudletPes +
+                "\n, cloudletSize"+ ":"+ cloudletSize +
+
+                "\n, datacenterHostsCnt"+ ":" + hostCnt +
+                "\n, hostPeMips"+ ":" + hostPeMips +
+                "\n, hostBw"+ ":" + hostBw +
+                "\n, hostRam"+ ":" + hostRam +
+                "\n, hostSize"+ ":" + hostSize +
+                "\n, hostPeCnt"+ ":" + hostPes +
+
+                "\n, VmCount"+ ":" + vmCnt +
+                "\n, VmRam"+ ":" + vmRam +
+                "\n, VmPes"+ ":" + vmPes +
+                "\n} VmBw"+ ":" + vmBw +
+                "\n} VmSize"+ ":" + vmSize +""
+                ;
+
+
     }
 
     public int getCloudletCnt() {
