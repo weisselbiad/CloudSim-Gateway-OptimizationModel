@@ -12,11 +12,11 @@ public class SimSettings {
     private long cloudletSize = 1024;
 
     private int hostCnt = 20;
-    private long hostRam = 65536;
-    private long hostBw = 50000;
-    private long hostSize = 1000000;
-    private int hostPes = 16;
-    private long hostPeMips = 10000;
+    private long hostRam = 65536*3;
+    private long hostBw = 50000*3;
+    private long hostSize = 1000000*3;
+    private int hostPes = 16*3;
+    private long hostPeMips = 10000*3;
 
     private int vmCnt= 60;
     private long vmRam= 512;

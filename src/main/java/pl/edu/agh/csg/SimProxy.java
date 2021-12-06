@@ -16,13 +16,17 @@ import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
+import org.cloudbus.cloudsim.core.Identifiable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class SimProxy {
+public class  SimProxy extends Thread {
+    public static final String SMALL = "S";
+    public static final String MEDIUM = "M";
+    public static final String LARGE = "L";
 
     /**
      * Initialize the Logger
@@ -48,6 +52,7 @@ public class SimProxy {
      * Class declaration of the Cloud Components and Simulation
      */
 
+    private Object VmType ;
     private List<Vm> vmList ;
     private  List<Cloudlet> Cloudletlist;
     private Datacenter datacenter;
@@ -63,7 +68,7 @@ public class SimProxy {
     private long cloudletSize = settings.getCloudletSize();
     private int cloudletPes = settings.getCloudletPes();
 
-    private int hostCnt = settings.getHostCnt();
+    private Object hostCnt ;
     private long hostRam = settings.getHostRam();
     private long hostBw = settings.getHostBw();
     private long hostSize = settings.getHostSize();
@@ -78,17 +83,21 @@ public class SimProxy {
 
 
 
-    public SimProxy( String identifier
-    ) {
+    public SimProxy( String identifier,
+                     Object VmType,
+                     Object hostCnt){
 
         /**
          * Simulation identifier in case of instancing more than one simulation
          */
 
         this.identifier = identifier;
+        this.VmType = VmType;
+        this.hostCnt = hostCnt;
 
         /**
-         * Initializing the Simulation, as parameter a double should be passed which is the minimum time between events
+         * Initializing the Simulation, as parameter a double should be passed which is the minimum
+         * time between events
          */
 
         this.simulation = new CloudSim(0.1);
@@ -97,18 +106,18 @@ public class SimProxy {
          * Creating the Datacenter and calling the Broker
          */
 
-        this.datacenter =  createDatacenter();
+        this.datacenter =  createDatacenter((Integer) this.hostCnt);
         this.broker = new DatacenterBrokerSimple(this.simulation);
 
         /**
          * Creating a List of Virtual machines and Cloudlets
          */
-
-        this.vmList = createVmList();
+        System.out.println(VmType);
+        this.vmList = createVmList((String) this.VmType);
         this.Cloudletlist = createCloudList();
 
         /**
-         * Submition of the Lists to the Broker
+         *  Submition of the Lists to the Broker
          */
 
         this.broker.submitVmList(this.vmList);
@@ -123,7 +132,6 @@ public class SimProxy {
      */
 
     public void runSim(){
-
         this.simulation.start();
         final List<Cloudlet> finishedCloudlets = this.broker.getCloudletFinishedList();
         new CloudletsTableBuilder(finishedCloudlets).build();
@@ -135,9 +143,9 @@ public class SimProxy {
      *  @return Object Datacentersimple
      */
 
-    private DatacenterSimple createDatacenter() {
-        final List<Host> hostList = new ArrayList<>(hostCnt);
-        for(int i = 0; i < hostCnt; i++) {
+    private DatacenterSimple createDatacenter(Object hostCnt) {
+        final List<Host> hostList = new ArrayList<>((Integer)this.hostCnt);
+        for(int i = 0; i < (Integer) this.hostCnt; i++) {
             Host host = createHost();
             hostList.add(host);
         }
@@ -163,21 +171,37 @@ public class SimProxy {
      * @return List of Virtual machines
      */
 
-    private List<Vm> createVmList() {
-        final List<Vm> list = new ArrayList<>(vmCnt);
+    private List<Vm> createVmList(String type) {
+
+        int factor = getSizeFactor(type);
+
+       final List<Vm> list = new ArrayList<>(vmCnt);
 
         for (int i = 0; i < vmCnt; i++) {
 
-            long RandVmPes = rand.nextLong(vmPes)+1;
-            final Vm vm = new VmSimple(hostPeMips,RandVmPes);
-            long RandvmRam = rand.nextLong(vmRam)+32;
-            long RandvmBw = rand.nextLong(vmBw)+32;
-            System.out.println("Ram: "+RandvmRam+" Bw: "+RandvmBw);
-            vm.setRam(RandvmRam).setBw(RandvmBw).setSize(vmSize);
+            final Vm vm = new VmSimple(hostPeMips,vmPes*factor);
+            vm.setRam(vmRam*factor).setBw(vmBw*factor).setSize(vmSize*factor);
 
             list.add(vm);
         }
         return list;
+    }
+    private int getSizeFactor(String type){
+        int factor;
+
+        switch (type) {
+            case MEDIUM:
+                factor = 2;
+                break;
+            case LARGE:
+                factor = 4;
+                break;
+            case SMALL:
+            default:
+                factor = 1;
+        }
+        return factor;
+
     }
 
     /**
@@ -188,7 +212,6 @@ public class SimProxy {
 
     private List<Cloudlet> createCloudList() {
         final List<Cloudlet> list = new ArrayList<>(cloudletCnt);
-        //UtilizationModel defining the Cloudlets use only 50% of any resource all the time
         final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.5);
         for (int i = 0; i < cloudletCnt; i++) {
             final Cloudlet cloudlet = new CloudletSimple(cloudletLength,cloudletPes, utilizationModel);
@@ -197,6 +220,7 @@ public class SimProxy {
         }
         return list;
     }
+
 
     /**
      * Methode for Logger info
