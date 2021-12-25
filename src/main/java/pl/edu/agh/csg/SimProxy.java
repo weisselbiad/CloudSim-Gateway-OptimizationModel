@@ -10,10 +10,14 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
+import org.cloudbus.cloudsim.power.models.PowerModelHostSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
+import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
+import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
+import org.cloudbus.cloudsim.vms.VmCost;
 import org.cloudbus.cloudsim.vms.VmSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.cloudbus.cloudsim.core.Identifiable;
@@ -21,9 +25,13 @@ import org.cloudbus.cloudsim.core.Identifiable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.beans.IntrospectionException;
 import java.util.*;
 
-public class  SimProxy extends Thread {
+import static java.util.Comparator.comparingLong;
+
+public class  SimProxy {
+
     public static final String SMALL = "S";
     public static final String MEDIUM = "M";
     public static final String LARGE = "L";
@@ -38,7 +46,6 @@ public class  SimProxy extends Thread {
      * Instantiate and declare needed variables
      */
 
-    Random rand = new Random();
     private String identifier;
     private int created = 0;
 
@@ -69,31 +76,34 @@ public class  SimProxy extends Thread {
     private int cloudletPes = settings.getCloudletPes();
 
     private Object hostCnt ;
+    private Object hostType;
     private long hostRam = settings.getHostRam();
     private long hostBw = settings.getHostBw();
     private long hostSize = settings.getHostSize();
     private int hostPes = settings.getHostPes();
     private long hostPeMips = settings.getHostPeMips();
 
-    private int vmCnt = settings.getVmCnt();
+    private Object vmCnt ;
     private long vmRam= settings.getVmRam();
     private long vmBw = settings.getVmBw();
     private long vmSize = settings.getVmSize();
     private long vmPes = settings.getVmPes();
 
-
-
     public SimProxy( String identifier,
+                     Object vmCnt,
                      Object VmType,
-                     Object hostCnt){
+                     Object hostCnt,
+                     Object hostType){
 
         /**
          * Simulation identifier in case of instancing more than one simulation
          */
 
         this.identifier = identifier;
+        this.vmCnt = vmCnt;
         this.VmType = VmType;
         this.hostCnt = hostCnt;
+        this.hostType = hostType;
 
         /**
          * Initializing the Simulation, as parameter a double should be passed which is the minimum
@@ -106,24 +116,25 @@ public class  SimProxy extends Thread {
          * Creating the Datacenter and calling the Broker
          */
 
-        this.datacenter =  createDatacenter((Integer) this.hostCnt);
+        this.datacenter =  createDatacenter((Integer) this.hostCnt, (String) this.hostType);
         this.broker = new DatacenterBrokerSimple(this.simulation);
 
         /**
          * Creating a List of Virtual machines and Cloudlets
          */
         System.out.println(VmType);
-        this.vmList = createVmList((String) this.VmType);
+        this.vmList = createVmList((Integer) this.vmCnt,(String) this.VmType);
         this.Cloudletlist = createCloudList();
 
-        /**
-         *  Submition of the Lists to the Broker
-         */
+        /***
+         * Submition of the Lists to the Broker
+          */
 
         this.broker.submitVmList(this.vmList);
         this.broker.submitCloudletList(this.Cloudletlist);
 
        info("Creating simulation: " + identifier);
+
     }
 
     /**
@@ -133,6 +144,7 @@ public class  SimProxy extends Thread {
 
     public void runSim(){
         this.simulation.start();
+
         final List<Cloudlet> finishedCloudlets = this.broker.getCloudletFinishedList();
         new CloudletsTableBuilder(finishedCloudlets).build();
         }
@@ -143,13 +155,21 @@ public class  SimProxy extends Thread {
      *  @return Object Datacentersimple
      */
 
-    private DatacenterSimple createDatacenter(Object hostCnt) {
-        final List<Host> hostList = new ArrayList<>((Integer)this.hostCnt);
-        for(int i = 0; i < (Integer) this.hostCnt; i++) {
-            Host host = createHost();
+    private DatacenterSimple createDatacenter(int hostCnt, String hostType) {
+        final List<Host> hostList = new ArrayList<>(hostCnt);
+        for(int i = 0; i <hostCnt; i++) {
+            Host host = createHost(hostType);
             hostList.add(host);
         }
-        return new DatacenterSimple(this.simulation, hostList);
+        final var datacenter = new DatacenterSimple(simulation, hostList);
+        datacenter.setSchedulingInterval(10)
+   // Those are monetary values. Consider any currency you want (such as Dollar)
+                  .getCharacteristics()
+                  .setCostPerSecond(0.01)
+                  .setCostPerMem(0.02)
+                  .setCostPerStorage(0.001)
+                  .setCostPerBw(0.005);
+        return datacenter;
     }
 
     /**
@@ -158,12 +178,27 @@ public class  SimProxy extends Thread {
      * @return Object Hostsimple
      */
 
-    private Host createHost() {
-        final List<Pe> peList = new ArrayList<>(hostPes);
+    private Host createHost(String type) {
+
+        int factor = getSizeFactor(type);
+
+        final List<Pe> peList = new ArrayList<>(hostPes*factor);
         for (int i = 0; i < hostPes; i++) {
             peList.add(new PeSimple(hostPeMips));
         }
-        return new HostSimple(hostRam,hostBw,hostSize, peList);
+        final var vmScheduler = new VmSchedulerTimeShared();
+        final var host = new HostSimple(hostRam*factor, hostBw*factor, hostSize*factor, peList);
+
+        final var powerModel = new PowerModelHostSimple(50, 35);
+        powerModel.setStartupDelay(5)
+                .setShutDownDelay(3)
+                .setStartupPower(5)
+                .setShutDownPower(3);
+
+        host.setVmScheduler(vmScheduler).setPowerModel(powerModel);
+        host.enableUtilizationStats();
+
+        return host;
     }
 
     /**
@@ -171,7 +206,7 @@ public class  SimProxy extends Thread {
      * @return List of Virtual machines
      */
 
-    private List<Vm> createVmList(String type) {
+    private List<Vm> createVmList(int vmCnt, String type) {
 
         int factor = getSizeFactor(type);
 
@@ -180,12 +215,18 @@ public class  SimProxy extends Thread {
         for (int i = 0; i < vmCnt; i++) {
 
             final Vm vm = new VmSimple(hostPeMips,vmPes*factor);
-            vm.setRam(vmRam*factor).setBw(vmBw*factor).setSize(vmSize*factor);
+            vm.setRam(vmRam*factor).setBw(vmBw*factor).setSize(vmSize*factor).enableUtilizationStats();
 
             list.add(vm);
         }
         return list;
     }
+
+    /***
+     * define the factor (Multiplier)
+     * which identify the Size of the Vm
+     * @return factor
+     */
     private int getSizeFactor(String type){
         int factor;
 
@@ -212,9 +253,15 @@ public class  SimProxy extends Thread {
 
     private List<Cloudlet> createCloudList() {
         final List<Cloudlet> list = new ArrayList<>(cloudletCnt);
-        final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.5);
+        final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.2);
         for (int i = 0; i < cloudletCnt; i++) {
-            final Cloudlet cloudlet = new CloudletSimple(cloudletLength,cloudletPes, utilizationModel);
+            final Cloudlet cloudlet =
+                    new CloudletSimple(cloudletLength,cloudletPes)
+                            .setFileSize(1024)
+                            .setOutputSize(1024)
+                            .setUtilizationModelCpu(new UtilizationModelFull())
+                            .setUtilizationModelRam(utilizationModel)
+                            .setUtilizationModelBw(utilizationModel);
             cloudlet.setSizes(cloudletSize);
             list.add(cloudlet);
         }
@@ -229,6 +276,7 @@ public class  SimProxy extends Thread {
 
     private void info(String message) { logger.info(getIdentifier() + " " + message);    }
 
+
     /**
      * List of geters. will be called by need from other classes
      * @return value
@@ -239,6 +287,48 @@ public class  SimProxy extends Thread {
     public DatacenterBroker getBroker() { return this.broker; }
     public Datacenter getDatacenter() { return this.datacenter; }
     public List<Cloudlet> getCloudletlist() { return this.Cloudletlist; }
+    public List<Integer> getVmCost(){
+        final List<Integer> listcost = new ArrayList<Integer>();
+       int ProcessingCost=0,MemoryCost=0,StorageCost=0,BwCost=0;
+       int TotalCost=0,TotalExTime=0;
+
+        for (int i = 0; i < this.vmList.size(); i++) {
+            final VmCost cost = new VmCost(this.vmList.get(i));
+            ProcessingCost += cost.getProcessingCost();
+            MemoryCost += cost.getMemoryCost();
+            StorageCost += cost.getStorageCost();
+            BwCost += cost.getBwCost();
+            TotalCost += cost.getTotalCost();
+            int vmExtime= this.vmList.get(i).getTotalExecutionTime() > 0 ? 1 : 0;
+            TotalExTime+=vmExtime;
+         }
+        System.out.println("Processing Cost: "+ProcessingCost);
+        System.out.println("Memory Cost: "+MemoryCost);
+        System.out.println("Storage Cost: "+StorageCost);
+        System.out.println("Bw Cost: "+BwCost);
+
+        System.out.println("Total Cost: "+TotalCost);
+        listcost.add(TotalCost);
+        System.out.println("Total Execution Time: "+TotalExTime);
+        listcost.add(TotalExTime);
+
+        return listcost ;
+     }
+
+    public double getmakespan(){
+        double SD = this.datacenter.getShutdownTime();
+        double ST = this.datacenter.getStartTime();
+        System.out.println("ShutdownTime: "+ SD+ ", Start time:"+ ST);
+        double makespan =  SD - ST;
+
+        System.out.println("makespan: "+makespan);
+        return makespan; }
+
+    public double getPowerConsumption(){
+        double PC = this.datacenter.getPowerModel().getPowerMeasurement().getTotalPower();
+        System.out.println("Power Cosumption of DC: "+ PC +" Watts");
+        return PC;
+    }
 
     public CloudletsTableBuilder getTableBuilder(){
         final List<Cloudlet> finishedCloudlets = this.broker.getCloudletFinishedList();

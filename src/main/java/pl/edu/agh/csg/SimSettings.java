@@ -6,7 +6,7 @@ package pl.edu.agh.csg;
 
 public class SimSettings {
 
-    private int cloudletCnt = 100;
+    private int cloudletCnt = 200;
     private int cloudletLength =10_000;
     private int cloudletPes = 4;
     private long cloudletSize = 1024;
@@ -18,7 +18,7 @@ public class SimSettings {
     private int hostPes = 16*3;
     private long hostPeMips = 10000*3;
 
-    private int vmCnt= 60;
+    private int vmCnt= 3;
     private long vmRam= 512;
     private long vmBw = 1000;
     private long vmSize = 10000;

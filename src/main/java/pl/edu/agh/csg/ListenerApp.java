@@ -15,6 +15,8 @@ public class ListenerApp {
     List<Listener> listeners = new ArrayList<Listener>();
     public Object VmType;
     public Object hostCnt;
+    public Object VmCnt;
+    public Object hostType;
 
     SimProxy simulation;
 
@@ -44,7 +46,7 @@ public class ListenerApp {
         try{
             lock.lock();
             //check condition
-            while (VmType == null || hostCnt == null )
+            while (VmType == null || hostCnt == null || VmCnt == null || hostType == null)
             cond.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -52,24 +54,19 @@ public class ListenerApp {
             lock.unlock();
         }
         //after you change it
-        return simulation = new SimProxy("Sim1", VmType, hostCnt);
+        return simulation = new SimProxy("Sim1", VmCnt, VmType, hostCnt, hostType);
     }
 
    public Object notifyVmType(Listener listener) {
-       return VmType = listener.notifyVm(this);
+       return VmType = listener.notifyVmSize(this);
     }
    public Object notifyhostCnt(Listener listener){
         return hostCnt = listener.notifyHost(this);
    }
-
-    public Object getVmType(){
-       System.out.println("Here is the VmType from the the interface: "+VmType);
-       return VmType;
-    }
-    public Object getHostCnt(){
-        System.out.println("Here is the VmType from the the interface: "+hostCnt);
-        return hostCnt;
-    }
+   public Object notifyVmCnt (Listener listener){
+        return VmCnt = listener.notifyVmCnt(this);
+   }
+   public Object notifyhostType (Listener listener){return  hostType = listener.notifyhostType(this);}
     public SimProxy getSimulation(){
         return simulation;
     }

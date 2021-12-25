@@ -21,10 +21,7 @@ public class Main {
 
         listenerApp = new ListenerApp();
 
-
     }
-
-
 
     /**
      * returning simulation and ListenerApp so it is possible to call there
