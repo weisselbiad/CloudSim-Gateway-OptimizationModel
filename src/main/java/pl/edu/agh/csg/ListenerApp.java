@@ -1,73 +1,79 @@
 package pl.edu.agh.csg;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ListenerApp {
 
-
     /**
      * creating a List of interfaces to register listeners
      */
-    List<Listener> listeners = new ArrayList<Listener>();
-    public Object VmType;
-    public Object hostCnt;
-    public Object VmCnt;
-    public Object hostType;
+
+    public Object FilePath;
+    public Object vmTuple;
+    public Object hosTuple;
 
     SimProxy simulation;
 
-   /* public void registerListener(Listener listener) {
-
-        listeners.add(listener);
-    }*/
-
     /**
-     * notify all listeners and get objects from outside
+     * Init methode instantiate SimProxy, checking the Path value,
+     * reading the json file and spliting the vm parameters array
+     * from the host parameters array
+     * @return simulation
      */
-
-    /*public Object notifyAllListeners() {
-        for (Listener listener: listeners) {
-                Object VmType = listener.notify(this);
-                  System.out.println(""+VmType);
-        }return VmType ;
-
-    }
-    public String toString() {
-        return "<ListenerApplication> instance"+"";
-    }*/
     public SimProxy Init(){
         Lock lock=new ReentrantLock();
         Condition cond=lock.newCondition();
+        Gson gson = new Gson();
         //where you wait
         try{
             lock.lock();
             //check condition
-            while (VmType == null || hostCnt == null || VmCnt == null || hostType == null)
+            while (FilePath == null)
             cond.await();
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
             lock.unlock();
         }
+
+        try {
+            String file = (String) FilePath;
+            System.out.println("From Java Path : "+ file);
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            JsonObject obj = gson.fromJson(br, JsonObject.class);
+            setVmTuple(obj.get("Vm"));
+            setHostTuple(obj.get("Host"));
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         //after you change it
-        return simulation = new SimProxy("Sim1", VmCnt, VmType, hostCnt, hostType);
+        return simulation = new SimProxy("Sim1", vmTuple, hosTuple);
     }
 
-   public Object notifyVmType(Listener listener) {
-       return VmType = listener.notifyVmSize(this);
+    /**
+     * notify all listeners and get objects from outside
+     */
+
+    public Object notifyFilePath(Listener listener) {
+
+        return FilePath = listener.notifyFilePath(this);
     }
-   public Object notifyhostCnt(Listener listener){
-        return hostCnt = listener.notifyHost(this);
-   }
-   public Object notifyVmCnt (Listener listener){
-        return VmCnt = listener.notifyVmCnt(this);
-   }
-   public Object notifyhostType (Listener listener){return  hostType = listener.notifyhostType(this);}
+
+    /**
+     * set vm and host parameters array
+     */
+    public Object setVmTuple(Object obj){ return vmTuple = obj; }
+    public Object setHostTuple(Object obj){ return hosTuple = obj; }
+
     public SimProxy getSimulation(){
         return simulation;
     }
+
 }

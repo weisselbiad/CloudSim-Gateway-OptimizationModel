@@ -1,6 +1,6 @@
 package pl.edu.agh.csg;
 
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
+import com.google.gson.*;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
@@ -20,22 +20,18 @@ import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmCost;
 import org.cloudbus.cloudsim.vms.VmSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
-import org.cloudbus.cloudsim.core.Identifiable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.beans.IntrospectionException;
 import java.util.*;
-
-import static java.util.Comparator.comparingLong;
 
 public class  SimProxy {
 
-    public static final String SMALL = "S";
-    public static final String MEDIUM = "M";
-    public static final String LARGE = "L";
-
+    public static final int SMALL = 1;
+    public static final int MEDIUM = 2;
+    public static final int LARGE = 3;
+    Gson gson = new GsonBuilder().create();
     /**
      * Initialize the Logger
      */
@@ -70,13 +66,14 @@ public class  SimProxy {
      * Initializing variables from the Setting Class
      */
 
+    private Object hostTuple ;
+    private Object vmTuple;
+
     private int cloudletCnt = settings.getCloudletCnt();
     private int cloudletLength = settings.getCloudletLength();
     private long cloudletSize = settings.getCloudletSize();
     private int cloudletPes = settings.getCloudletPes();
 
-    private Object hostCnt ;
-    private Object hostType;
     private long hostRam = settings.getHostRam();
     private long hostBw = settings.getHostBw();
     private long hostSize = settings.getHostSize();
@@ -89,21 +86,17 @@ public class  SimProxy {
     private long vmSize = settings.getVmSize();
     private long vmPes = settings.getVmPes();
 
-    public SimProxy( String identifier,
-                     Object vmCnt,
-                     Object VmType,
-                     Object hostCnt,
-                     Object hostType){
+    public SimProxy(String identifier,
+                    Object vmTuple,
+                    Object hostTuple){
 
         /**
          * Simulation identifier in case of instancing more than one simulation
          */
 
         this.identifier = identifier;
-        this.vmCnt = vmCnt;
-        this.VmType = VmType;
-        this.hostCnt = hostCnt;
-        this.hostType = hostType;
+        this.vmTuple = vmTuple;
+        this.hostTuple = hostTuple;
 
         /**
          * Initializing the Simulation, as parameter a double should be passed which is the minimum
@@ -116,20 +109,19 @@ public class  SimProxy {
          * Creating the Datacenter and calling the Broker
          */
 
-        this.datacenter =  createDatacenter((Integer) this.hostCnt, (String) this.hostType);
+        this.datacenter =  createDatacenter (toArray( (JsonArray) this.hostTuple) ) ;
         this.broker = new DatacenterBrokerSimple(this.simulation);
 
         /**
          * Creating a List of Virtual machines and Cloudlets
          */
-        System.out.println(VmType);
-        this.vmList = createVmList((Integer) this.vmCnt,(String) this.VmType);
+        System.out.println("vm Tuple from Proxy: "+this.vmTuple);
+        this.vmList = createVmList( toArray( (JsonArray) this.vmTuple));
         this.Cloudletlist = createCloudList();
 
         /***
          * Submition of the Lists to the Broker
           */
-
         this.broker.submitVmList(this.vmList);
         this.broker.submitCloudletList(this.Cloudletlist);
 
@@ -143,24 +135,31 @@ public class  SimProxy {
      */
 
     public void runSim(){
+
         this.simulation.start();
 
         final List<Cloudlet> finishedCloudlets = this.broker.getCloudletFinishedList();
         new CloudletsTableBuilder(finishedCloudlets).build();
+
         }
 
     /**
      * Creation of the Datacenter using a List of Hosts, which will be passed as a parameter
      * Uses a VmAllocationPolicySimple by default to allocate VMs
      *  @return Object Datacentersimple
+     * @param hostTuple
      */
 
-    private DatacenterSimple createDatacenter(int hostCnt, String hostType) {
-        final List<Host> hostList = new ArrayList<>(hostCnt);
-        for(int i = 0; i <hostCnt; i++) {
-            Host host = createHost(hostType);
+    private DatacenterSimple createDatacenter(int[][] hostTuple) {
+        this.hostTuple = hostTuple;
+        final List<Host> hostList = new ArrayList<>();
+        System.out.println("Hlength: "+hostTuple.length);
+        for (int i = 0; i< hostTuple.length; i++ ){
+          for(int j = 0; j < hostTuple[i][1]; j++) {
+              System.out.println("print j : "+ j+ " and HostCnt: "+hostTuple[i][1]+ " and Host Size: "+hostTuple[i][0]);
+              Host host = createHost(hostTuple[i][0]);
             hostList.add(host);
-        }
+        }}
         final var datacenter = new DatacenterSimple(simulation, hostList);
         datacenter.setSchedulingInterval(10)
    // Those are monetary values. Consider any currency you want (such as Dollar)
@@ -178,7 +177,7 @@ public class  SimProxy {
      * @return Object Hostsimple
      */
 
-    private Host createHost(String type) {
+    private Host createHost(int type) {
 
         int factor = getSizeFactor(type);
 
@@ -204,21 +203,22 @@ public class  SimProxy {
     /**
      * Creating a List of virtual machines with a randomly passed hardware configuration
      * @return List of Virtual machines
+     * @param vmTuple
      */
 
-    private List<Vm> createVmList(int vmCnt, String type) {
+    private List<Vm> createVmList(int[][] vmTuple) {
+        this.vmTuple = vmTuple;
+        final List<Vm> list = new ArrayList<>();
+        for (int i = 0; i < vmTuple.length; i++) {
+            int factor = getSizeFactor(vmTuple[i][0]);
 
-        int factor = getSizeFactor(type);
-
-       final List<Vm> list = new ArrayList<>(vmCnt);
-
-        for (int i = 0; i < vmCnt; i++) {
+        for (int j = 0; j < vmTuple[i][1]; j++) {
 
             final Vm vm = new VmSimple(hostPeMips,vmPes*factor);
             vm.setRam(vmRam*factor).setBw(vmBw*factor).setSize(vmSize*factor).enableUtilizationStats();
 
             list.add(vm);
-        }
+        }}
         return list;
     }
 
@@ -227,7 +227,7 @@ public class  SimProxy {
      * which identify the Size of the Vm
      * @return factor
      */
-    private int getSizeFactor(String type){
+    private int getSizeFactor(int type){
         int factor;
 
         switch (type) {
@@ -242,7 +242,6 @@ public class  SimProxy {
                 factor = 1;
         }
         return factor;
-
     }
 
     /**
@@ -268,6 +267,10 @@ public class  SimProxy {
         return list;
     }
 
+    public int[][] toArray(JsonArray obj){
+        int[][] intArray = gson.fromJson(obj, int[][].class);
+        return intArray;
+    }
 
     /**
      * Methode for Logger info
@@ -275,7 +278,6 @@ public class  SimProxy {
      */
 
     private void info(String message) { logger.info(getIdentifier() + " " + message);    }
-
 
     /**
      * List of geters. will be called by need from other classes
