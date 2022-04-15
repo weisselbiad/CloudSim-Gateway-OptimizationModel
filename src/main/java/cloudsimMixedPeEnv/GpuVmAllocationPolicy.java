@@ -1,0 +1,178 @@
+package cloudsimMixedPeEnv;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.cloudbus.cloudsim.hosts.Host;
+import org.cloudbus.cloudsim.hosts.HostSimple;
+import org.cloudbus.cloudsim.hosts.HostSuitability;
+import org.cloudbus.cloudsim.vms.Vm;
+import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
+
+
+import static org.cloudbus.cloudsim.core.UniquelyIdentifiable.getUid;
+
+/**
+ * {@link GpuVmAllocationPolicy} extends {@link VmAllocationPolicy} to support
+ * GPU-enabled VM placement.
+ * 
+ * @author Ahmad Siavashi
+ *
+ */
+public abstract class GpuVmAllocationPolicy implements VmAllocationPolicy {
+
+	/**
+	 * The map between each VM and its allocated host. The map key is a VM UID and
+	 * the value is the allocated host for that VM.
+	 */
+	private Map<String, Host> vmTable;
+
+	/**
+	 * GPU-equipped hosts
+	 */
+	private List<GpuHost> gpuHostList;
+
+	/**
+	 * Holds which GpuHost a vGPU is allocated on
+	 */
+	private Map<Vgpu, GpuHost> vgpuHosts;
+
+	/**
+	 * @param list all data center hosts
+	 */
+	public GpuVmAllocationPolicy(List<? extends Host> list) {
+		//super(list);
+		setVmTable(new HashMap<String, Host>());
+		setGpuHostList(getHostList());
+		setVgpuHosts(new HashMap<Vgpu, GpuHost>());
+	}
+
+
+	public List<Map<String, Object>> optimizeAllocation(List<? extends Vm> vmList) {
+		return null;
+	}
+
+	@Override
+	public void deallocateHostForVm(Vm vm) {
+		getVmTable().remove(vm.getUid()).destroyVm(vm);
+	}
+
+	protected void deallocateGpuForVgpu(Vgpu vgpu) {
+		getVgpuHosts().remove(vgpu).vgpuDestroy(vgpu);
+	}
+
+	protected boolean allocateGpuForVgpu(Vgpu vgpu, GpuHost gpuHost) {
+		if (!getVgpuHosts().containsKey(vgpu)) {
+			boolean result = gpuHost.vgpuCreate(vgpu);
+			if (result) {
+				getVgpuHosts().put(vgpu, gpuHost);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected HostSuitability allocateGpuForVgpu(Vgpu vgpu, GpuHost gpuHost, Pgpu pgpu) {
+		if (!getVgpuHosts().containsKey(vgpu)) {
+			HostSuitability result = gpuHost.vgpuCreate(vgpu, pgpu);
+			if (result!=null) {
+				getVgpuHosts().put(vgpu, gpuHost);
+				return result;
+			}
+		}
+		return null;
+	}
+
+	protected HostSuitability allocateGpuHostForVgpu(Vgpu vgpu, GpuHost gpuHost, Pgpu pgpu) {
+		if (!getVgpuHosts().containsKey(vgpu)) {
+			HostSuitability result = gpuHost.vgpuCreate(vgpu, pgpu);
+			if (result!=null) {
+				getVgpuHosts().put(vgpu, gpuHost);
+				return result;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public HostSuitability allocateHostForVm(Vm vm, Host host) {
+		if (!getVmTable().containsKey(vm.getUid())) {
+			HostSuitability result = host.createVm(vm);
+			if (result!=null) {
+				getVmTable().put(vm.getUid(), host);
+				return result;
+			}
+		}
+		return null;
+	}
+
+	public boolean toBoolean(Object obj){
+		if (obj !=null){
+			return true;
+		}else return false;
+	}
+
+	/**
+	 * Allocates Hosts for a set of {@link GpuVm}s.
+	 *
+	 * @param *set of VMs
+	 * @return a list of vm-result pairs
+	 */
+	public Map<GpuVm, HostSuitability> allocateHostForVms(List<GpuVm> vms) {
+		Map<GpuVm, HostSuitability> results = new HashMap<GpuVm, HostSuitability>();
+		for (GpuVm vm : vms) {
+			HostSuitability result = allocateHostForVm(vm);
+			results.put(vm, result);
+		}
+		return results;
+	}
+
+
+	public Host getHost(Vm vm) {
+		return getVmTable().get(vm.getUid());
+	}
+
+
+	public Host getHost(int vmId, int userId) {
+		return getVmTable().get(getUid(userId, vmId));
+	}
+
+	/**
+	 * @return the vmTable
+	 */
+	protected Map<String, Host> getVmTable() {
+		return vmTable;
+	}
+
+	/**
+	 * @param vmTable the vmTable to set
+	 */
+	protected void setVmTable(Map<String, Host> vmTable) {
+		this.vmTable = vmTable;
+	}
+
+	protected List<GpuHost> getGpuHostList() {
+		return gpuHostList;
+	}
+
+	protected void setGpuHostList(List<GpuHost> gpuHostList) {
+		this.gpuHostList = new ArrayList<GpuHost>();
+		for (GpuHost host : gpuHostList) {
+			if (host.getVideoCardAllocationPolicy() != null
+					&& !host.getVideoCardAllocationPolicy().getVideoCards().isEmpty()) {
+				getGpuHostList().add(host);
+			}
+		}
+	}
+
+	public Map<Vgpu, GpuHost> getVgpuHosts() {
+		return vgpuHosts;
+	}
+
+	protected void setVgpuHosts(Map<Vgpu, GpuHost> vgpuHosts) {
+		this.vgpuHosts = vgpuHosts;
+	}
+
+}

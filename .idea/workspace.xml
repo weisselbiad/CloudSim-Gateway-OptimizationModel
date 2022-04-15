@@ -4,11 +4,128 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="" />
+    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="gpufirstcommit">
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/BusTags.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/CloudletsTableBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/Consts.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuCloudlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuCloudletScheduler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuCloudletSchedulerSpaceShared.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuCloudletSchedulerTimeShared.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuHost.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuHostTags.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuTask.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuTaskScheduler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuTaskSchedulerLeftover.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuVm.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuVmAllocationPolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuVmAllocationPolicySimple.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/Log.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/Pgpu.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/ResCloudlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/ResGpuCloudlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/ResGpuTask.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/UtilizationModelGaussian.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/Vgpu.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/VgpuScheduler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/VgpuSchedulerFairShare.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/VgpuSchedulerSpaceShared.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/VgpuSchedulerTimeShared.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/VgpuStateHistoryEntry.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/VideoCard.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/allocation/VideoCardAllocationPolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/allocation/VideoCardAllocationPolicyBestFit.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/allocation/VideoCardAllocationPolicyBreadthFirst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/allocation/VideoCardAllocationPolicyDepthFirst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/allocation/VideoCardAllocationPolicyLeastLoad.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/allocation/VideoCardAllocationPolicyNull.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/allocation/VideoCardAllocationPolicySimple.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/core/GpuCloudSimTag.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/core/GpuCloudSimTags.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyBestFit.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyBreadthFirst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyDepthFirst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyVird.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyViri.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridPerformanceVgpuSchedulerFairShare.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridVgpuSchedulerFairShare.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridVgpuTags.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridVideoCardTags.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/VideoCardPowerModelNvidiaGridK1.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/VideoCardPowerModelNvidiaGridK2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/interference/InterferenceGpuTaskSchedulerLeftover.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/interference/models/InterferenceModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/interference/models/InterferenceModelGpuMemory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/interference/models/InterferenceModelNull.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/lists/CloudletList.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/lists/HostList.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/lists/PeList.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/lists/VmList.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/performance/PerformanceGpuHost.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/performance/PerformanceScheduler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/performance/PerformanceVgpuSchedulerFairShare.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/performance/PerformanceVgpuSchedulerSpaceShared.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/performance/PerformanceVgpuSchedulerTimeShared.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/performance/models/PerformanceModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/performance/models/PerformanceModelGpuConstant.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/performance/models/PerformanceModelGpuNull.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/performance/models/PerformanceModelGpuPlacementConstant.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/power/PowerGpuHost.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/power/PowerVideoCard.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/power/models/GpuHostPowerModelNull.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/power/models/VideoCardPowerModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/power/models/VideoCardPowerModelLinear.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/power/models/VideoCardPowerModelNull.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/provisioners/GpuBwProvisioner.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/provisioners/GpuBwProvisionerShared.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/provisioners/GpuBwProvisionerSimple.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/provisioners/GpuGddramProvisioner.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/provisioners/GpuGddramProvisionerSimple.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/provisioners/VideoCardBwProvisioner.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/provisioners/VideoCardBwProvisionerShared.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/selection/PgpuSelectionPolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/selection/PgpuSelectionPolicyBestFit.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/selection/PgpuSelectionPolicyBreadthFirst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/selection/PgpuSelectionPolicyDepthFirst.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/selection/PgpuSelectionPolicyLeastLoad.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/selection/PgpuSelectionPolicyNull.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/selection/PgpuSelectionPolicySimple.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/BasicFirstExample.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/Example.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/Listener.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/Listener.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/ListenerApp.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/ListenerApp.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/SimProxy.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/SimProxy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/SimSettings.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/SimSettings.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/Listener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/Listener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
+  <component name="CodeStyleSettingsInfer">
+    <option name="done" value="true" />
   </component>
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
@@ -44,6 +161,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
+        <option value="Enum" />
+        <option value="JUnit5 Test Class" />
         <option value="Class" />
       </list>
     </option>
@@ -59,6 +178,12 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="2" />
+  </component>
   <component name="ProjectId" id="21StEhxKMvelQ3jRVwfDndvRVvP" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -69,12 +194,32 @@
     <property name="GitStage.ChangesTree.GroupingKeys" value="directory&#10;module&#10;repository" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit5" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
+    <property name="create.test.in.the.same.root" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.0" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv" />
+      <recent name="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/allocation" />
+      <recent name="$PROJECT_DIR$/src/main/java" />
+      <recent name="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg" />
+      <recent name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cloudsimplus/cloudsim-plus/7.1.2/9d8b5226f4a63df358851e8ec9d4b9ba5f231657/cloudsim-plus-7.1.2.jar!/org/cloudbus/cloudsim" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="cloudsimMixedPeEnv.core" />
+    </key>
   </component>
   <component name="RunAnythingCache">
     <option name="myCommands">
@@ -85,19 +230,6 @@
     </option>
   </component>
   <component name="RunManager" selected="Gradle.CloudSim-Gateway-OptimizationModel [run]">
-    <configuration name="ListenerApp" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="pl.edu.agh.csg.ListenerApp" />
-      <module name="CloudSim-Gateway-OptimizationModel.main" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="pl.edu.agh.csg.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
@@ -111,26 +243,31 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="CloudSim-Gateway-OptimizationModel [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="build" />
-          </list>
-        </option>
-        <option name="vmOptions" value="" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <method v="2" />
+    <configuration name="BasicFirstExample" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="pl.edu.agh.csg.BasicFirstExample" />
+      <module name="CloudSim-Gateway-OptimizationModel.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="pl.edu.agh.csg.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Example" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="pl.edu.agh.csg.Example" />
+      <module name="CloudSim-Gateway-OptimizationModel.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="pl.edu.agh.csg.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration name="CloudSim-Gateway-OptimizationModel [clean]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
@@ -200,8 +337,8 @@
         <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [run]" />
         <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [compileJava]" />
         <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [clean]" />
-        <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [build]" />
-        <item itemvalue="Application.ListenerApp" />
+        <item itemvalue="Application.Example" />
+        <item itemvalue="Application.BasicFirstExample" />
       </list>
     </recent_temporary>
   </component>
@@ -270,10 +407,31 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="gradle" />
-    <option name="LAST_COMMIT_MESSAGE" value="gradle" />
+    <MESSAGE value="gpufirstcommit" />
+    <option name="LAST_COMMIT_MESSAGE" value="gpufirstcommit" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cloudsimplus/cloudsim-plus/7.1.2/3c6d01bece7d9835501bd28439d948acc52e826b/cloudsim-plus-7.1.2-sources.jar!/org/cloudbus/cloudsim/core/CloudSim.java</url>
+          <line>287</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cloudsimplus/cloudsim-plus/7.1.2/3c6d01bece7d9835501bd28439d948acc52e826b/cloudsim-plus-7.1.2-sources.jar!/org/cloudbus/cloudsim/hosts/HostSimple.java</url>
+          <line>490</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/CloudSim_Gateway_OptimizationModel$BasicFirstExample.ic" NAME="BasicFirstExample Coverage Results" MODIFIED="1647604883970" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>pl.edu.agh.csg.*</FILTER>
+    </SUITE>
   </component>
 </project>

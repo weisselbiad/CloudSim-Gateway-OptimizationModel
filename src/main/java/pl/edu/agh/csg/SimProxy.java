@@ -21,6 +21,7 @@ import org.cloudbus.cloudsim.vms.VmCost;
 import org.cloudbus.cloudsim.vms.VmSimple;
 import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,7 +151,7 @@ public class  SimProxy {
      * @param hostTuple
      */
 
-    private DatacenterSimple createDatacenter(int[][] hostTuple) {
+    private Datacenter createDatacenter(int[][] hostTuple) {
         this.hostTuple = hostTuple;
         final List<Host> hostList = new ArrayList<>();
         System.out.println("Hlength: "+hostTuple.length);
