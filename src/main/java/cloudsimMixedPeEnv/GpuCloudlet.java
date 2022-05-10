@@ -5,6 +5,7 @@ import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.resources.Resource;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
+import org.cloudbus.cloudsim.vms.Vm;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -41,7 +42,7 @@ public class GpuCloudlet extends CloudletSimple implements Cloudlet{
 	private StringBuffer history;
 	private String newline;
 	private DecimalFormat num;
-
+	private GpuVm vm;
 
 
 
@@ -59,6 +60,7 @@ public class GpuCloudlet extends CloudletSimple implements Cloudlet{
 		setUtilizationModelCpu(CpuutilizationModel);
 		setUtilizationModelRam(RamutilizationModel);
 		setUtilizationModelBw(BwutilizationModel);
+		//setVm(vm);
 	}
 
 	/**
@@ -102,6 +104,11 @@ public class GpuCloudlet extends CloudletSimple implements Cloudlet{
 
 	public int getUserId() {
 		return userId;
+	}
+
+	public Cloudlet setVm(final GpuVm vm) {
+		this.vm = vm;
+		return this;
 	}
 
 	/**

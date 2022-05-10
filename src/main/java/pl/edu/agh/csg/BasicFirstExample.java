@@ -13,8 +13,10 @@ import cloudsimMixedPeEnv.provisioners.VideoCardBwProvisioner;
 import cloudsimMixedPeEnv.provisioners.VideoCardBwProvisionerShared;
 import cloudsimMixedPeEnv.selection.PgpuSelectionPolicy;
 import cloudsimMixedPeEnv.selection.PgpuSelectionPolicyNull;
+import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicyRoundRobin;
+import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
+import cloudsimMixedPeEnv.MixedDatacenterBroker;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import org.cloudbus.cloudsim.core.CloudSim;
@@ -33,7 +35,11 @@ import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
 import cloudsimMixedPeEnv.CloudletsTableBuilder;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+
+import static java.util.Comparator.comparingInt;
+import static java.util.Comparator.comparingLong;
 
 /**
  * A minimal but organized, structured and re-usable CloudSim Plus example
@@ -47,28 +53,37 @@ import java.util.List;
  * @since CloudSim Plus 1.0
  */
 public class BasicFirstExample {
-    private static final int HOSTS = 5;
+    private static final int HOSTS = 1;
     private static final int HOST_PES = 8;
-    private static final int GPUHOSTS = 1;
+    private static final int GPUHOSTS = 3;
 
 
-    private static final int VMS = 3;
-    private static final int GPUVMS =2;
+    private static final int VMS = 2;
+    private static final int GPUVMS = 5;
     private static final int VM_PES = 4;
 
-    private static final int CLOUDLETS = 6;
+    private static final int CLOUDLETS = 10;
     private static final int GPUCLOUDLETS =6;
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 10000;
 
     private final CloudSim simulation;
     private DatacenterBroker broker0;
+
     private List<Vm> vmList;
     private List<GpuVm> gpuvmList;
-    private List<Cloudlet> cloudletList;
+    private List<CloudletSimple> cloudletList;
     private List<GpuCloudlet> gpucloudletList;
     private Datacenter datacenter0;
 
+    public int getClassID (Cloudlet cl){
+        if(cl.getClass().toString() == "org.cloudbus.cloudsim.cloudlets.CloudletSimple"){
+            return 0;
+        }else if(cl.getClass().toString() == "cloudsimMixedPeEnv.GpuCloudlet"){
+            return 1;
+        }else
+        return -1;
+    }
     public static void main(String[] args) {
         new BasicFirstExample();
     }
@@ -82,25 +97,23 @@ public class BasicFirstExample {
         datacenter0 = createDatacenter();
 
         //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
-        broker0 = new DatacenterBrokerSimple(simulation);
-
-
+        broker0 = new MixedDatacenterBroker(simulation);
 
         vmList = createVms();
         gpuvmList = createGpuVms();
 
-        cloudletList = createCloudlets();
-        gpucloudletList = createGpuCloudlet(1,(int)broker0.getId());
+        cloudletList = createCloudlets(vmList);
+        gpucloudletList = createGpuCloudlet(1,(int)broker0.getId(), gpuvmList);
         vmList.addAll(gpuvmList);
         broker0.submitVmList(vmList);
         cloudletList.addAll(gpucloudletList);
         broker0.submitCloudletList(cloudletList);
 
-
         simulation.start();
 
         final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
         new CloudletsTableBuilder(finishedCloudlets).build();
+
     }
 
 
@@ -251,21 +264,23 @@ public class BasicFirstExample {
     /**
      * Creates a list of Cloudlets.
      */
-    private List<Cloudlet> createCloudlets() {
-        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
+    private List<CloudletSimple> createCloudlets(List<Vm> vmList){
+        final List<CloudletSimple> list = new ArrayList<>(CLOUDLETS);
 
         //UtilizationModel defining the Cloudlets use only 50% of any resource all the time
         final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.5);
 
-        for (int i = 0; i < CLOUDLETS; i++) {
-            final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
-            cloudlet.setSizes(1024);
-            list.add(cloudlet);
-        }
+            for (int i = 0; i < CLOUDLETS; i++) {
+                final CloudletSimple cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
+                cloudlet.setSizes(1024);
+
+                list.add(cloudlet);
+            }
+
 
         return list;
     }
-    private List<GpuCloudlet> createGpuCloudlet(int gpuTaskId, int brokerId) {
+    private List<GpuCloudlet> createGpuCloudlet(int gpuTaskId, int brokerId, List<GpuVm> gpuvmList) {
         final List<GpuCloudlet> list = new ArrayList<>(GPUCLOUDLETS);
 
         // Cloudlet properties
@@ -283,10 +298,12 @@ public class BasicFirstExample {
         long taskOutputSize = 128;
         long requestedGddramSize = 4 * 1024;
         int numberOfBlocks = 2;
+
         UtilizationModel gpuUtilizationModel = new UtilizationModelFull();
         UtilizationModel gddramUtilizationModel = new UtilizationModelFull();
         UtilizationModel gddramBwUtilizationModel = new UtilizationModelFull();
-        for (int i = 0; i < GPUCLOUDLETS; i++) {
+
+            for (int j = 0; j < GPUCLOUDLETS; j++) {
 
             GpuTask gpuTask = new GpuTask(simulation, gpuTaskId, taskLength, numberOfBlocks, taskInputSize, taskOutputSize,
                     requestedGddramSize, 0, gpuUtilizationModel, gddramUtilizationModel, gddramBwUtilizationModel);
@@ -295,8 +312,23 @@ public class BasicFirstExample {
 
             gpuCloudlet.setUserId(brokerId);
             list.add(gpuCloudlet);
-        }
+            }
+
         return list;
     }
+
+
+
+  /*  private void createAndSubmitCloudlets(Vm vm, double submissionDelay) {
+        int cloudletId = cloudletList.size();
+        List<Cloudlet> list = new ArrayList<>(NUMBER_OF_CLOUDLETS);
+        for(int i = 0; i < NUMBER_OF_CLOUDLETS; i++){
+            Cloudlet cloudlet = createCloudlet(cloudletId++, vm, broker);
+            list.add(cloudlet);
+        }
+
+        broker.submitCloudletList(list, submissionDelay);
+        cloudletList.addAll(list);
+    }*/
 
 }

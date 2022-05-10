@@ -4,7 +4,7 @@ import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.core.CloudSim;
 
 public interface GpuCloudletScheduler {
-  //  double cloudletSubmit(CloudSim cloudsim, Cloudlet cloudlet, double fileTransferTime);
+    double cloudletSubmit(CloudSim cloudsim, Cloudlet cloudlet, double fileTransferTime);
 
     void cloudletFinish(Object rcl);
 

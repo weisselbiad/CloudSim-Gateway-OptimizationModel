@@ -73,7 +73,17 @@ public class CloudletsTableBuilder extends TableBuilderAbstract<Cloudlet> {
         super(list, table);
     }
 
+    public Object getClassID (Class<?> cl){
+        if(cl.toString() == "org.cloudbus.cloudsim.cloudlets.CloudletSimple"){
+            return "CloudletSimple";
+        }else if(cl.toString() == "cloudsimMixedPeEnv.GpuCloudlet"){
+            return "GPUCloudlet";
+        }else
+            return "Class not defined";
+    }
+
     @Override
+
     protected void createTableColumns() {
         final String ID = "ID";
         addColumnDataFunction(getTable().addColumn("Cloudlet", ID), Identifiable::getId);

@@ -5,7 +5,8 @@ import java.util.List;
 
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletExecution;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared;
+import cloudsimMixedPeEnv.CloudletSchedulerTimeShared;
+import org.cloudbus.cloudsim.core.CloudSim;
 
 
 /**
@@ -27,9 +28,9 @@ public class GpuCloudletSchedulerTimeShared extends CloudletSchedulerTimeShared 
 		super();
 		setGpuTaskList(new ArrayList<GpuTask>());
 	}
-
-	/*public double cloudletSubmit(Cloudlet cloudlet, double fileTransferTime) {
-		ResGpuCloudlet rcl = new ResGpuCloudlet((GpuCloudlet) cloudlet);
+/*
+	public double cloudletSubmit(Cloudlet cloudlet, double fileTransferTime) {
+		ResGpuCloudlet rcl = new ResGpuCloudlet((GpuCloudlet)cloudlet));
 		rcl.setStatus(Cloudlet.Status.INEXEC);
 		for (int i = 0; i < cloudlet.getNumberOfPes(); i++) {
 			rcl.setJobId(i);
@@ -44,7 +45,15 @@ public class GpuCloudletSchedulerTimeShared extends CloudletSchedulerTimeShared 
 		cloudlet.setLength(length);
 
 		return cloudlet.getLength() / getAvailableMipsByPe();
-	}*/
+	}
+
+
+*/
+
+	@Override
+	public double cloudletSubmit(CloudSim cloudsim, Cloudlet cloudlet, double fileTransferTime) {
+		return 0;
+	}
 
 	@Override
 	public void cloudletFinish(Object rcl) {
