@@ -9,6 +9,7 @@ import cloudsimMixedPeEnv.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.core.CloudSim;
 
 
+
 /**
  * {@link GpuCloudletSchedulerTimeShared} extends
  * {@link CloudletSchedulerTimeShared} to schedule {@link GpuCloudlet}s.
@@ -55,6 +56,24 @@ public class GpuCloudletSchedulerTimeShared extends CloudletSchedulerTimeShared 
 		return 0;
 	}
 
+/*	public double cloudletSubmit(Cloudlet cloudlet, double fileTransferTime) {
+		ResGpuCloudlet rcl = new ResGpuCloudlet((GpuCloudlet) cloudlet);
+		rcl.setStatus(Cloudlet.Status.INEXEC);
+		for (int i = 0; i < cloudlet.getNumberOfPes(); i++) {
+			rcl.setsetMachineAndPeId(0, i);
+		}
+
+		getCloudletExecList().add(rcl);
+
+		// use the current capacity to estimate the extra amount of
+		// time to file transferring. It must be added to the cloudlet length
+		double extraSize = getCapacity(getCurrentMipsShare()) * fileTransferTime;
+		long length = (long) (cloudlet.getLength() + extraSize);
+		cloudlet.setLength(length);
+
+		return cloudlet.getLength() / getCapacity(getCurrentMipsShare());
+	}*/
+
 	@Override
 	public void cloudletFinish(Object rcl) {
 		ResGpuCloudlet rgcl = (ResGpuCloudlet) rcl;
@@ -68,7 +87,7 @@ public class GpuCloudletSchedulerTimeShared extends CloudletSchedulerTimeShared 
 				getCloudletPausedList().add(rgcl);
 			} catch (Exception e) {
 				e.printStackTrace();
-			//	CloudSim.abruptallyTerminate();
+				//CloudSim.abruptallyTerminate();
 			}
 		}
 	}

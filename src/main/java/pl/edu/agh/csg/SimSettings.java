@@ -1,5 +1,7 @@
 package pl.edu.agh.csg;
 
+import cloudsimMixedPeEnv.GpuHostTags;
+
 /**
  * This Class is basically used to initiate all settings of the components
  */
@@ -7,21 +9,33 @@ package pl.edu.agh.csg;
 public class SimSettings {
 
     private int cloudletCnt = 200;
+    private int gpucloudletCnt = 100;
     private int cloudletLength =10_000;
     private int cloudletPes = 4;
     private long cloudletSize = 1024;
 
     private int hostCnt = 20;
+
+    private int gpuhostCnt = 10;
     private long hostRam = 65536*3;
     private long hostBw = 50000*3;
     private long hostSize = 1000000*3;
     private int hostPes = 16*3;
     private long hostPeMips = 10000*3;
 
+    private long gpumips = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS;
+
     private int vmCnt= 3;
-    private long vmRam= 512;
-    private long vmBw = 1000;
+    private int gpuvmCnt = 2;
+    private long vmRam= 1024;
+
+    private long gpuvmram = 512;
+    private long vmBw = 100;
+
+    private long gpuvmbw = 100;
     private long vmSize = 10000;
+
+    private int gpuvmsize = 100;
     private long vmPes= 4;
 
 
@@ -72,11 +86,14 @@ public class SimSettings {
     public int getCloudletCnt() {
         return this.cloudletCnt;
     }
+
+    public int getGpucloudletCnt(){return this.gpucloudletCnt;}
     public int getCloudletLength(){return this.cloudletLength;}
     public long getCloudletSize(){return this.cloudletSize;}
     public int getCloudletPes(){return this.cloudletPes;}
 
     public int getHostCnt() {return this.hostCnt;}
+    public int getGpuhostCnt() {return this.gpuhostCnt;}
     public long getHostRam() {return this.hostRam;}
     public long getHostBw() {
         return this.hostBw;
@@ -88,15 +105,20 @@ public class SimSettings {
     public long getHostPeMips() {
         return this.hostPeMips;
     }
+    public long getGpumips(){return this.gpumips;}
 
     public int getVmCnt() {return this.vmCnt;}
+    public int getGpuvmCnt() {return this.gpuvmCnt;}
     public long getVmRam() {return this.vmRam;}
+    public long getGpuvmram(){return this.gpuvmram;}
     public long getVmBw() {
         return this.vmBw;
     }
+    public long getGpuvmbw(){return this.gpuvmbw;}
     public long getVmSize() {
         return this.vmSize;
     }
+    public int getGpuvmsize(){return this.gpuvmsize;}
     public long getVmPes() {
         return this.vmPes;
     }
@@ -104,9 +126,5 @@ public class SimSettings {
     public  long getDatacenterCores() {
         return getHostCnt() * hostPes;
     }
-
-
-
-
 
 }

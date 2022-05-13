@@ -112,6 +112,7 @@ public class MixedDatacenterBroker extends BrokerAbstract {
             for (Vm vm: cutVmList){
                 if (vm instanceof GpuVm ) {
                     col.add(vm);
+                    System.out.println("Gpu vm  ::::: "+vm);
                 } else if (vm instanceof VmSimple) {
                     continue;
                 }}

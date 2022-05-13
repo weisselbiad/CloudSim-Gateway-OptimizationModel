@@ -5,10 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="gpufirstcommit">
-      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/BrokerAbstract.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/CloudletSchedulerAbstract.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/CloudletSchedulerTimeShared.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/MixedDatacenterBroker.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.bin" afterDir="false" />
@@ -16,15 +12,22 @@
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/CloudletsTableBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/CloudletsTableBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/GpuHostTags.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/GpuHostTags.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/MixedDatacenterBroker.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/MixedDatacenterBroker.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/BasicFirstExample.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/BasicFirstExample.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/Listener.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/Listener.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/ListenerApp.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/ListenerApp.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/SimProxy.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/SimProxy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/SimSettings.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/SimSettings.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/CloudletsTableBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/CloudletsTableBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuCloudlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuCloudlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuCloudletScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuCloudletScheduler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuCloudletSchedulerSpaceShared.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuCloudletSchedulerTimeShared.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuCloudletSchedulerTimeShared.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/BasicFirstExample.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/BasicFirstExample.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/MixedDatacenterBroker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/MixedDatacenterBroker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/Listener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/Listener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/ListenerApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/ListenerApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimSettings.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,7 +138,7 @@
       <command value="gradle run" />
     </option>
   </component>
-  <component name="RunManager" selected="Application.BasicFirstExample">
+  <component name="RunManager" selected="Gradle.CloudSim-Gateway-OptimizationModel [run]">
     <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
@@ -287,6 +290,12 @@
       <workItem from="1651948269021" duration="927000" />
       <workItem from="1652018232099" duration="15528000" />
       <workItem from="1652099503346" duration="12995000" />
+      <workItem from="1652185926832" duration="11396000" />
+      <workItem from="1652269643855" duration="14076000" />
+      <workItem from="1652437876392" duration="150000" />
+      <workItem from="1652438116903" duration="307000" />
+      <workItem from="1652438842943" duration="2218000" />
+      <workItem from="1652443476355" duration="4388000" />
     </task>
     <task id="LOCAL-00001" summary="gradle">
       <created>1637948985872</created>
@@ -354,9 +363,14 @@
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/MixedDatacenterBroker.java</url>
-          <line>107</line>
-          <option name="timeStamp" value="16" />
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java</url>
+          <line>155</line>
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java</url>
+          <line>321</line>
+          <option name="timeStamp" value="25" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cloudsimplus/cloudsim-plus/7.1.2/3c6d01bece7d9835501bd28439d948acc52e826b/cloudsim-plus-7.1.2-sources.jar!/org/cloudbus/cloudsim/cloudlets/network/NetworkCloudlet.java</url>
