@@ -27,6 +27,7 @@ import org.cloudbus.cloudsim.power.models.PowerModelHostSimple;
 import org.cloudbus.cloudsim.power.models.PowerModelHostSpec;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
+import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerCompletelyFair;
 import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
@@ -297,11 +298,11 @@ public class  SimProxy {
 
         // Create Host with its id and list of PEs and add them to the list of machines
         // host memory (MB)
-        long ram = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_RAM;
+        long ram = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_RAM * 3;
         // host storage
         long storage = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_STORAGE;
         // host BW
-        long bw = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_BW;
+        long bw = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_BW * 3;
         // Set VM Scheduler
         VmScheduler vmScheduler = new VmSchedulerTimeShared();
 
@@ -340,10 +341,10 @@ public class  SimProxy {
         for (int j = 0; j < gpuvmTuple[i][1] ; j++) {
 
             String vmm = "vSphere";
-            GpuCloudletSchedulerTimeShared GCSTS = new GpuCloudletSchedulerTimeShared();
+            //GpuCloudletSchedulerTimeShared GCSTS = new GpuCloudletSchedulerTimeShared();
 
             // Create a VM
-            GpuVm vm = new GpuVm((long) j, gpuMips, vmPes*factor, GCSTS);
+            GpuVm vm = new GpuVm((long) j, gpuMips, vmPes*factor, new CloudletSchedulerCompletelyFair());
             vm.setRam(gpuvmRam*factor);
             vm.setBw(gpuvmBw*factor);
             vm.setSize(gpuvmSize*factor);
