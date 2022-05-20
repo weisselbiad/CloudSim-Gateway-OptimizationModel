@@ -8,8 +8,8 @@ import cloudsimMixedPeEnv.GpuHostTags;
 
 public class SimSettings {
 
-    private int cloudletCnt = 200;
-    private int gpucloudletCnt = 100;
+    private int cloudletCnt = 10;
+    private int gpucloudletCnt = 5;
     private int cloudletLength =10_000;
     private int cloudletPes = 4;
     private long cloudletSize = 1024;
@@ -17,26 +17,26 @@ public class SimSettings {
     private int hostCnt = 20;
 
     private int gpuhostCnt = 10;
-    private long hostRam = 65536*3;
+    private long hostRam = 64 * 1024;
     private long hostBw = 50000*3;
     private long hostSize = 1000000*3;
-    private int hostPes = 16*3;
-    private long hostPeMips = 10000*3;
+    private int hostPes = 12;
+    private long hostPeMips = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS;;
 
     private long gpumips = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS;
 
     private int vmCnt= 3;
     private int gpuvmCnt = 2;
-    private long vmRam= 1024;
+    private long vmRam= 2048;
 
-    private long gpuvmram = 512;
+    private long gpuvmram = 2048;
     private long vmBw = 100;
 
     private long gpuvmbw = 100;
-    private long vmSize = 10000;
+    private long vmSize = 1000;
 
-    private int gpuvmsize = 100;
-    private long vmPes= 4;
+    private int gpuvmsize = 10;
+    private long vmPes= 1;
 
 
   /*  public SimSettings() {

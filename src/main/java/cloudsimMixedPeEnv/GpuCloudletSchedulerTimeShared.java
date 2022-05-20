@@ -13,9 +13,9 @@ import org.cloudbus.cloudsim.core.CloudSim;
 /**
  * {@link GpuCloudletSchedulerTimeShared} extends
  * {@link CloudletSchedulerTimeShared} to schedule {@link GpuCloudlet}s.
- * 
+ *
  * @author Ahmad Siavashi
- * 
+ *
  */
 public class GpuCloudletSchedulerTimeShared extends CloudletSchedulerTimeShared implements GpuCloudletScheduler {
 
@@ -29,27 +29,7 @@ public class GpuCloudletSchedulerTimeShared extends CloudletSchedulerTimeShared 
 		super();
 		setGpuTaskList(new ArrayList<GpuTask>());
 	}
-/*
-	public double cloudletSubmit(Cloudlet cloudlet, double fileTransferTime) {
-		ResGpuCloudlet rcl = new ResGpuCloudlet((GpuCloudlet)cloudlet));
-		rcl.setStatus(Cloudlet.Status.INEXEC);
-		for (int i = 0; i < cloudlet.getNumberOfPes(); i++) {
-			rcl.setJobId(i);
-		}
 
-		getCloudletExecList().add(rcl);
-
-		// use the current capacity to estimate the extra amount of
-		// time to file transferring. It must be added to the cloudlet length
-		double extraSize = getAvailableMipsByPe() * fileTransferTime;
-		long length = (long) (cloudlet.getLength() + extraSize);
-		cloudlet.setLength(length);
-
-		return cloudlet.getLength() / getAvailableMipsByPe();
-	}
-
-
-*/
 
 	@Override
 	public double cloudletSubmit(CloudSim cloudsim, Cloudlet cloudlet, double fileTransferTime) {
@@ -62,15 +42,12 @@ public class GpuCloudletSchedulerTimeShared extends CloudletSchedulerTimeShared 
 		for (int i = 0; i < cloudlet.getNumberOfPes(); i++) {
 			rcl.setsetMachineAndPeId(0, i);
 		}
-
 		getCloudletExecList().add(rcl);
-
 		// use the current capacity to estimate the extra amount of
 		// time to file transferring. It must be added to the cloudlet length
 		double extraSize = getCapacity(getCurrentMipsShare()) * fileTransferTime;
 		long length = (long) (cloudlet.getLength() + extraSize);
 		cloudlet.setLength(length);
-
 		return cloudlet.getLength() / getCapacity(getCurrentMipsShare());
 	}*/
 

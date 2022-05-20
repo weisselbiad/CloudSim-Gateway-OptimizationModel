@@ -1,7 +1,7 @@
 package pl.edu.agh.csg;
 
 import cloudsimMixedPeEnv.*;
-import cloudsimMixedPeEnv.MixedDatacenterBroker;
+import cloudsimMixedPeEnv.VmAllocationPolicyGpuAware;
 import cloudsimMixedPeEnv.allocation.VideoCardAllocationPolicy;
 import cloudsimMixedPeEnv.allocation.VideoCardAllocationPolicyNull;
 import cloudsimMixedPeEnv.hardware_assisted.GridVgpuSchedulerFairShare;
@@ -13,9 +13,10 @@ import cloudsimMixedPeEnv.provisioners.VideoCardBwProvisioner;
 import cloudsimMixedPeEnv.provisioners.VideoCardBwProvisionerShared;
 import cloudsimMixedPeEnv.selection.PgpuSelectionPolicy;
 import cloudsimMixedPeEnv.selection.PgpuSelectionPolicyNull;
-import com.google.gson.*;
-//import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import org.cloudbus.cloudsim.core.CloudSim;
@@ -23,12 +24,13 @@ import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.power.models.PowerModelHostSimple;
 import org.cloudbus.cloudsim.power.models.PowerModelHostSpec;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerCompletelyFair;
+import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
+import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerSpaceShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
@@ -36,12 +38,12 @@ import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmCost;
 import org.cloudbus.cloudsim.vms.VmSimple;
-import cloudsimMixedPeEnv.CloudletsTableBuilder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class  SimProxy {
 
@@ -93,7 +95,7 @@ public class  SimProxy {
     private Object GpuvmTuple;
 
     private int cloudletCnt = settings.getCloudletCnt();
-    private  int gpuclouletCnt = settings.getCloudletCnt();
+    private  int gpuclouletCnt = settings.getGpucloudletCnt();
     private int cloudletLength = settings.getCloudletLength();
     private long cloudletSize = settings.getCloudletSize();
     private int cloudletPes = settings.getCloudletPes();
@@ -118,6 +120,8 @@ public class  SimProxy {
 
     private int gpuvmSize = settings.getGpuvmsize();
     private long vmPes = settings.getVmPes();
+
+    List<Double> power = new ArrayList<>(Arrays.asList(93.7, 97.0, 101.0, 105.0, 110.0, 116.0, 121.0, 125.0, 129.0, 133.0, 135.0));
 
     public SimProxy(String identifier,
                     Object vmTuple,
@@ -158,12 +162,13 @@ public class  SimProxy {
         this.gpuvmList = createGpuVmList( toArray( (JsonArray) this.GpuvmTuple));
 
         this.Cloudletlist = createCloudList();
-        this.gpucloudletList = createGpuCloudletList(1,(int)this.broker.getId(), gpuvmList);
+        this.gpucloudletList = createGpuCloudletList(1,(int)this.broker.getId());
         /***
          * Submition of the Lists to the Broker
           */
         this.vmList.addAll(this.gpuvmList);
         this.broker.submitVmList(this.vmList);
+
         this.Cloudletlist.addAll(this.gpucloudletList);
         this.broker.submitCloudletList(this.Cloudletlist);
 
@@ -200,15 +205,17 @@ public class  SimProxy {
           for(int j = 0; j < hostTuple[i][1]; j++) {
               System.out.println("print j : "+ j+ " and HostCnt: "+hostTuple[i][1]+ " and Host Size: "+hostTuple[i][0]);
               Host host = createHost(hostTuple[i][0]);
-            hostList.add(host);
+              System.out.println(host.getClass()+" "+ host);
+              hostList.add(host);
         }}
         for (int i = 0; i< gpuhostTuple.length; i++ ){
             for(int j = 0; j < gpuhostTuple[i][1]; j++) {
                 System.out.println("print j : " + j + " and GpuHostCnt: " + hostTuple[i][1] + " and GpuHost Size: " + hostTuple[i][0]);
-                Host host = createGpuHost(gpuhostTuple[i][0]);
-                hostList.add(host);
+                Host gpuhost = createGpuHost(gpuhostTuple[i][0]);
+                System.out.println(gpuhost.getClass()+" "+gpuhost);
+                hostList.add(gpuhost);
             }}
-        final var datacenter = new DatacenterSimple(simulation, hostList);
+        final var datacenter = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyGpuAware());
         datacenter.setSchedulingInterval(10)
    // Those are monetary values. Consider any currency you want (such as Dollar)
                   .getCharacteristics()
@@ -236,7 +243,8 @@ public class  SimProxy {
         final var vmScheduler = new VmSchedulerTimeShared();
         final var host = new HostSimple(hostRam*factor, hostBw*factor, hostSize*factor, peList);
 
-        final var powerModel = new PowerModelHostSimple(50, 35);
+
+        final var powerModel = new PowerModelHostSpec(power);
         powerModel.setStartupDelay(5)
                 .setShutDownDelay(3)
                 .setStartupPower(5)
@@ -298,13 +306,13 @@ public class  SimProxy {
 
         // Create Host with its id and list of PEs and add them to the list of machines
         // host memory (MB)
-        long ram = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_RAM * 3;
+        long ram = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_RAM ;
         // host storage
         long storage = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_STORAGE;
         // host BW
-        long bw = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_BW * 3;
+        long bw = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_BW ;
         // Set VM Scheduler
-        VmScheduler vmScheduler = new VmSchedulerTimeShared();
+        VmScheduler vmScheduler = new VmSchedulerSpaceShared();
 
         // Video Card Selection Policy
         VideoCardAllocationPolicy videoCardAllocationPolicy = new VideoCardAllocationPolicyNull(videoCards);
@@ -344,7 +352,7 @@ public class  SimProxy {
             //GpuCloudletSchedulerTimeShared GCSTS = new GpuCloudletSchedulerTimeShared();
 
             // Create a VM
-            GpuVm vm = new GpuVm((long) j, gpuMips, vmPes*factor, new CloudletSchedulerCompletelyFair());
+            GpuVm vm = new GpuVm((long) j, gpuMips, vmPes*factor, new CloudletSchedulerSpaceShared());
             vm.setRam(gpuvmRam*factor);
             vm.setBw(gpuvmBw*factor);
             vm.setSize(gpuvmSize*factor);
@@ -404,7 +412,7 @@ public class  SimProxy {
         return list;
     }
 
-    private List<GpuCloudlet> createGpuCloudletList(int gpuTaskId, int brokerId, List<GpuVm> gpuvmList) {
+    private List<GpuCloudlet> createGpuCloudletList(int gpuTaskId, int brokerId) {
         final List<GpuCloudlet> list = new ArrayList<>(gpuclouletCnt);
 
         // Cloudlet properties
@@ -494,7 +502,7 @@ public class  SimProxy {
     public double getmakespan(){
         double SD = this.datacenter.getShutdownTime();
         double ST = this.datacenter.getStartTime();
-        System.out.println("ShutdownTime: "+ SD+ ", Start time:"+ ST);
+        System.out.println("ShutdownTime: "+ SD+ ", Start time: "+ ST);
         double makespan =  SD - ST;
 
         System.out.println("makespan: "+makespan);
@@ -502,7 +510,7 @@ public class  SimProxy {
 
     public double getPowerConsumption(){
         double PC = this.datacenter.getPowerModel().getPowerMeasurement().getTotalPower();
-        System.out.println("Power Cosumption of DC: "+ PC +" Watts");
+        System.out.println("Power Cosumption of DC: "+ (int)PC +" Watts");
         return PC;
     }
 

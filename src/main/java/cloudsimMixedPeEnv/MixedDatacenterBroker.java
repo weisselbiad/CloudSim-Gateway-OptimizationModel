@@ -112,15 +112,11 @@ public class MixedDatacenterBroker extends BrokerAbstract {
             for (Vm vm: cutVmList){
                 if (vm instanceof GpuVm ) {
                     col.add(vm);
-                    System.out.println("Gpu vm  ::::: "+vm);
                 } else if (vm instanceof VmSimple) {
                     continue;
                 }}
 
-            System.out.println("col Size ::::: "+col.size());
-
-
-            Vm Gpuvm = col.get(1);
+            Vm Gpuvm = col.get(0);
             col.clear();
             cutVmList.clear();
 
@@ -128,7 +124,6 @@ public class MixedDatacenterBroker extends BrokerAbstract {
 
         }else{
             lastSelectedVmIndex = ++lastSelectedVmIndex % getVmExecList().size();
-            getVmCreatedList().forEach(System.out::println);
             return getVmFromCreatedList(lastSelectedVmIndex);
 
         }}

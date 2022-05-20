@@ -87,7 +87,7 @@ public class CloudletsTableBuilder extends TableBuilderAbstract<Cloudlet> {
     protected void createTableColumns() {
         final String ID = "ID";
         addColumnDataFunction(getTable().addColumn("Cloudlet", ID), Identifiable::getId);
-        addColumnDataFunction(getTable().addColumn("Cloudlet Type", "Class                            name"), Identifiable::getClass);
+        addColumnDataFunction(getTable().addColumn("Cloudlet Type", "Class                                           name"), Identifiable::getClass);
 
         addColumnDataFunction(getTable().addColumn("Status "), cloudlet -> cloudlet.getStatus().name());
         addColumnDataFunction(getTable().addColumn("DC", ID), cloudlet -> cloudlet.getVm().getHost().getDatacenter().getId());

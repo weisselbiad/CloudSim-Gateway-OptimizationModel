@@ -119,13 +119,14 @@ public class BasicFirstExample {
 
     private Datacenter createDatacenter() {
         final List<HostSimple> hostList = new ArrayList<>(HOSTS);
-        for(int i = 0; i < HOSTS; i++) {
-            HostSimple host = (HostSimple) createHost();
-            hostList.add(host);
-        }
+
        for (int j = 0; j < GPUHOSTS; j++){
             GpuHost gpuhost = createGpuHost();
             hostList.add(gpuhost);
+        }
+        for(int i = 0; i < HOSTS; i++) {
+            HostSimple host = (HostSimple) createHost();
+            hostList.add(host);
         }
 
         //Uses a VmAllocationPolicySimple by default to allocate VMs
