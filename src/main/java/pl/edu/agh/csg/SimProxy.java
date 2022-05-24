@@ -51,6 +51,7 @@ public class  SimProxy {
     public static final int MEDIUM = 2;
     public static final int LARGE = 3;
     Gson gson = new GsonBuilder().create();
+
     /**
      * Initialize the Logger
      */
@@ -67,6 +68,8 @@ public class  SimProxy {
     /**
      * Instantiate the Setting Class which contain settings variables
      */
+    private int lastVmIndex;
+    private int lastHostIndex;
 
     public SimSettings settings = new SimSettings();
 
@@ -158,6 +161,7 @@ public class  SimProxy {
          */
 
         System.out.println("vm Tuple from Proxy: "+this.vmTuple+ " GpuVm Tuple from Proxy: "+this.GpuvmTuple);
+
         this.vmList = createVmList( toArray( (JsonArray) this.vmTuple));
         this.gpuvmList = createGpuVmList( toArray( (JsonArray) this.GpuvmTuple));
 
@@ -252,9 +256,10 @@ public class  SimProxy {
 
         host.setVmScheduler(vmScheduler).setPowerModel(powerModel);
         host.enableUtilizationStats();
-
+        host.setId(lastHostIndex);
+        lastHostIndex = ++lastHostIndex ;
         return host;
-    }
+    }//Different from the FirstFit policy, it always increments the host index.
 
     private GpuHost createGpuHost (int type){
 
@@ -316,7 +321,10 @@ public class  SimProxy {
 
         // Video Card Selection Policy
         VideoCardAllocationPolicy videoCardAllocationPolicy = new VideoCardAllocationPolicyNull(videoCards);
-        return new GpuHost(ram*factor,bw*factor, storage*factor, peList,vmScheduler, videoCardAllocationPolicy);
+        GpuHost gpuhost =new GpuHost(ram*factor,bw*factor, storage*factor, peList,vmScheduler, videoCardAllocationPolicy);
+        gpuhost.setId(lastHostIndex);
+        lastHostIndex = ++lastHostIndex ;
+        return gpuhost;
     }
 
     /**
@@ -335,6 +343,8 @@ public class  SimProxy {
 
             final Vm vm = new VmSimple(hostPeMips,vmPes*factor);
             vm.setRam(vmRam*factor).setBw(vmBw*factor).setSize(vmSize*factor).enableUtilizationStats();
+            vm.setId(lastVmIndex);
+            lastVmIndex = ++lastVmIndex ;
 
             list.add(vm);
         }}
@@ -361,7 +371,8 @@ public class  SimProxy {
             // Create a Vgpu
             Vgpu vgpu = GridVgpuTags.getK180Q(simulation,j, gpuTaskScheduler);
             vm.setVgpu(vgpu);
-            vm.setId(j);
+            vm.setId(lastVmIndex);
+            lastVmIndex = ++lastVmIndex ;
             gpuvmlist.add(vm);
 
         }}

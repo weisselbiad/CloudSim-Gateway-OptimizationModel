@@ -15,9 +15,9 @@ import java.util.function.Function;
 
 import static java.util.Comparator.comparing;
 
-public class VmAllocationPolicyGpuAware extends VmAllocationPolicyAbstract implements VmAllocationPolicy {
+public class VmAllocationPolicyGpuAware extends VmAllocationPolicyAbstractGpuAware implements VmAllocationPolicy {
     private int lastHostIndex;
-    private int lastGpuHostIndex;
+     private int lastGpuHostIndex;
 
     /**
      * Instantiates a VmAllocationPolicySimple.
@@ -43,45 +43,34 @@ public class VmAllocationPolicyGpuAware extends VmAllocationPolicyAbstract imple
      * @return an {@link Optional} containing a suitable Host to place the VM or an empty {@link Optional} if not found
      */
     @Override
-    protected Optional<Host> defaultFindHostForVm(final Vm vm) {
+        protected Optional<Host> defaultFindHostForVm(final Vm vm) {
+        final Comparator<Host> comparator = comparing(Host::isActive).thenComparingLong(Host::getFreePesNumber);
+        final var simplehostStream = isParallelHostSearchEnabled() ? getSimpleHostList().stream().parallel() : getSimpleHostList().stream();
 
 
-        final var hostList = getHostList();
-        final ArrayList SimpleList = new ArrayList<>();
-        final ArrayList GpuList = new ArrayList<>();
-        final int maxTries = hostList.size();
-        for (Host host : hostList) {
-            if (host instanceof HostSimple ) {
-                SimpleList.add(host);
-            } else if (host instanceof GpuHost) {
-                GpuList.add(host);
-            }
-        }
-
-        for (int i = 0; i < maxTries; i++) {
-            final Host gpuhost = (Host) GpuList.get(lastGpuHostIndex);
-            final Host simplehost = (Host) SimpleList.get(lastHostIndex);
-
-            lastHostIndex = ++lastHostIndex % SimpleList.size();
-            lastGpuHostIndex = ++lastGpuHostIndex % GpuList.size();
-            //Different from the FirstFit policy, it always increments the host index.
-            if (vm instanceof GpuVm) {
-
-                if (gpuhost.isSuitableForVm(vm)) {
-
-                    return Optional.of(gpuhost);
-                }
-            } else if (vm instanceof VmSimple) {
+        //   for (int i = 0; i < maxTries; i++) {
+        //Different from the FirstFit policy, it always increments the host index.
 
 
-                if (simplehost.isSuitableForVm(vm)) {
+            // final Host gpuhost = getGpuHostList().get(lastGpuHostIndex);
+            // if (gpuhost.isSuitableForVm(vm)) {
+            //   lastGpuHostIndex = ++lastGpuHostIndex % getGpuHostList().size();
+            //Optional.of(gpuhost);
 
-                    return Optional.of(simplehost);
-                }
+            //  final Host simplehost = getSimpleHostList().get(lastHostIndex);
+            // if (simplehost.isSuitableForVm(vm)) {
+            //  lastHostIndex = ++lastHostIndex % getSimpleHostList().size();
+            return simplehostStream.filter(host -> host.isSuitableForVm(vm)).max(comparator);// Optional.of(simplehost);
 
-            }
-
-        }return Optional.empty();
     }
-}
+    protected Optional<Host> GpuFindHostForVm(final Vm vm) {
+        final Comparator<Host> comparator = comparing(Host::isActive).thenComparingLong(Host::getFreePesNumber);
+        final var gpuhostStream = isParallelHostSearchEnabled() ? getGpuHostList().stream().parallel() : getGpuHostList().stream();
+        return gpuhostStream.filter(host -> host.isSuitableForVm(vm)).max(comparator);
+
+    }
+
+
+    }
+
 
