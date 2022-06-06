@@ -182,4 +182,10 @@ public class GpuHost extends HostSimple {
 
 		return true;
 	}
-}
+	@Override
+	public boolean isSuitableForVm(final Vm vm) {
+		return getSuitabilityFor(vm).fully();
+	}
+
+
+	}

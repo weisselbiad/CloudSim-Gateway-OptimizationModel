@@ -153,7 +153,7 @@ public abstract class GpuVmAllocationPolicy implements VmAllocationPolicy {
 		this.vmTable = vmTable;
 	}
 
-	protected List<GpuHost> getGpuHostList() {
+	public List<GpuHost> getGpuHostList() {
 		return gpuHostList;
 	}
 

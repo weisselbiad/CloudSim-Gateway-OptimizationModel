@@ -77,6 +77,11 @@ public class GpuVmAllocationPolicySimple extends GpuVmAllocationPolicy {
 	}
 
 	@Override
+	public <T extends Host> List<T> getSimpleHostList() {
+		return null;
+	}
+
+	@Override
 	public Map<Vm, Host> getOptimizedAllocationMap(List<? extends Vm> vmList) {
 		return null;
 	}

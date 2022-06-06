@@ -87,6 +87,10 @@ public interface Datacenter extends SimEntity, PowerAware<PowerModelDatacenter>,
      * @return the host list
      */
     <T extends Host> List<T> getHostList();
+    <T extends Host> List<T> getSimpleHostList();
+    <T extends Host> List<T> getGpuHostList();
+
+
 
     /**
      * Gets a {@link Stream} containing the active Hosts inside the Datacenter.

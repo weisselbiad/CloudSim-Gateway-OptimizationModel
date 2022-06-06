@@ -84,4 +84,9 @@ public class VmAllocationPolicyRandom extends VmAllocationPolicyAbstract impleme
 
         return Optional.empty();
     }
+
+    @Override
+    protected Optional<Host> GpuFindHostForVm(Vm vm) {
+        return Optional.empty();
+    }
 }

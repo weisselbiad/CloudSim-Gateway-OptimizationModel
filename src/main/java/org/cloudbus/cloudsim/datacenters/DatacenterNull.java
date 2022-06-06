@@ -57,6 +57,17 @@ final class DatacenterNull implements Datacenter, SimEntityNullBase {
     }
     @Override public void requestVmMigration(Vm sourceVm, Host targetHost) {/**/}
     @Override public void requestVmMigration(Vm sourceVm) {/**/}
+
+    @Override
+    public <T extends Host> List<T> getSimpleHostList() {
+        return null;
+    }
+
+    @Override
+    public <T extends Host> List<T> getGpuHostList() {
+        return null;
+    }
+
     @Override public Stream<? extends Host> getActiveHostStream() { return Stream.empty(); }
     @Override public Host getHost(final int index) { return Host.NULL; }
     @Override public long getActiveHostsNumber() { return 0; }

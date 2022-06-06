@@ -7,8 +7,12 @@
  */
 package org.cloudbus.cloudsim.allocationpolicies;
 
+import cloudsimMixedPeEnv.GpuHost;
+import cloudsimMixedPeEnv.GpuVm;
+import cloudsimMixedPeEnv.lists.HostList;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.hosts.Host;
+import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.hosts.HostSuitability;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.Processor;
@@ -16,6 +20,7 @@ import org.cloudbus.cloudsim.schedulers.MipsShare;
 import org.cloudbus.cloudsim.util.Conversion;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmGroup;
+import org.cloudbus.cloudsim.vms.VmSimple;
 import org.cloudsimplus.autoscaling.VerticalVmScaling;
 
 import java.util.*;
@@ -76,6 +81,15 @@ public abstract class VmAllocationPolicyAbstract implements VmAllocationPolicy {
     public final <T extends Host> List<T> getHostList() {
         return datacenter.getHostList();
     }
+
+    public final <T extends Host> List<T>getSimpleHostList(){
+        return datacenter.getSimpleHostList();
+    }
+    public final <T extends Host> List<T>getGpuHostList(){
+        return datacenter.getGpuHostList();
+    }
+
+
 
     @Override
     public Datacenter getDatacenter() {
@@ -239,7 +253,16 @@ public abstract class VmAllocationPolicyAbstract implements VmAllocationPolicy {
 
         final var optionalHost = findHostForVm(vm);
         if (optionalHost.filter(Host::isActive).isPresent()) {
-            return allocateHostForVm(vm, optionalHost.get());
+            Host selectedhost = optionalHost.get();
+            if (vm.getClass().equals(GpuVm.class) && selectedhost.getClass().equals(GpuHost.class)) {
+            return allocateHostForVm(vm, selectedhost);}
+            else if(vm.getClass().equals(VmSimple.class) && selectedhost.getClass().equals(HostSimple.class)) {
+                return allocateHostForVm(vm, selectedhost);
+            } else
+                LOGGER.error(
+                        "{}: {}: {} could not be allocated because there isn't any Host Type for Datacenter {}",
+                        vm.getSimulation().clockStr(), getClass().getSimpleName(), vm, getDatacenter().getId());
+            return new HostSuitability("Datacenter has no Suitable host Type.");
         }
 
         LOGGER.warn("{}: {}: No suitable host found for {} in {}", vm.getSimulation().clockStr(), getClass().getSimpleName(), vm, datacenter);
@@ -312,9 +335,16 @@ public abstract class VmAllocationPolicyAbstract implements VmAllocationPolicy {
 
     @Override
     public final Optional<Host> findHostForVm(final Vm vm) {
+        if (vm.getClass().equals(VmSimple.class) ){
         final var optionalHost = findHostForVmFunction == null ? defaultFindHostForVm(vm) : findHostForVmFunction.apply(this, vm);
         //If the selected Host is not active, activate it (if it's already active, setActive has no effect)
-        return optionalHost.map(host -> host.setActive(true));
+        return optionalHost.map(host -> host.setActive(true));}
+        else if (vm.getClass().equals(GpuVm.class) ){
+            final var optionalHost = findHostForVmFunction == null ? GpuFindHostForVm(vm) : findHostForVmFunction.apply(this, vm);
+            //If the selected Host is not active, activate it (if it's already active, setActive has no effect)
+            return optionalHost.map(host -> host.setActive(true));
+        }
+        return Optional.empty();
     }
 
     /**
@@ -326,6 +356,7 @@ public abstract class VmAllocationPolicyAbstract implements VmAllocationPolicy {
      * @see #setFindHostForVmFunction(BiFunction)
      */
     protected abstract Optional<Host> defaultFindHostForVm(Vm vm);
+    protected abstract Optional<Host> GpuFindHostForVm(Vm vm);
 
     @Override
     public Map<Vm, Host> getOptimizedAllocationMap(final List<? extends Vm> vmList) {

@@ -45,6 +45,8 @@ public final class HostSuitability {
     private boolean forBw;
     private boolean forPes;
 
+    private boolean forGpuHost;
+
     /**
      * The reason the Host is not suitable for a VM.
      */
@@ -75,6 +77,7 @@ public final class HostSuitability {
         forRam = forRam && other.forRam;
         forBw = forBw && other.forBw;
         forStorage = forStorage && other.forStorage;
+        forGpuHost = forGpuHost && other.forGpuHost;
     }
 
     /** Checks if the Host has storage suitability for the size of the VM.
@@ -150,6 +153,13 @@ public final class HostSuitability {
      * */
     HostSuitability setForPes(final boolean forPes) {
         this.forPes = forPes;
+        return this;
+    }
+
+    public boolean forGpuHost(){return forGpuHost;}
+
+    HostSuitability setForGpuHost(final boolean forGpuHost) {
+        this.forGpuHost = forGpuHost;
         return this;
     }
 

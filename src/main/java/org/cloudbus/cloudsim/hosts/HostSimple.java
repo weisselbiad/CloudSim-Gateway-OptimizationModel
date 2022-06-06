@@ -99,7 +99,7 @@ public class HostSimple implements Host {
 
     /** @see #getBwProvisioner() */
     private ResourceProvisioner bwProvisioner;
-
+    private ResourceProvisioner gpuProvisioner;
     /** @see #getVmScheduler() */
     private VmScheduler vmScheduler;
 
@@ -212,6 +212,7 @@ public class HostSimple implements Host {
         final ResourceProvisioner ramProvisioner,
         final ResourceProvisioner bwProvisioner,
         final long storage,
+
         final List<Pe> peList)
     {
         this(ramProvisioner.getCapacity(), bwProvisioner.getCapacity(), storage, peList);
@@ -527,6 +528,8 @@ public class HostSimple implements Host {
             if(lazySuitabilityEvaluation)
                 return suitability;
         }
+
+
 
         return suitability.setForPes(vmScheduler.isSuitableForVm(vm));
     }

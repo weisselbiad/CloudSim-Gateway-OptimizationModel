@@ -1,5 +1,6 @@
 package org.cloudbus.cloudsim.provisioners;
 
+import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.resources.Resource;
 import org.cloudbus.cloudsim.resources.ResourceManageable;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -30,6 +31,9 @@ class ResourceProvisionerNull implements ResourceProvisioner {
         return false;
     }
     @Override public boolean isSuitableForVm(Vm vm, Resource resource) { return false; }
+
+
+
     @Override public ResourceManageable getPmResource() {
         return ResourceManageable.NULL;
     }

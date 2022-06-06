@@ -46,21 +46,20 @@ public class VmAllocationPolicyGpuAware extends VmAllocationPolicyAbstractGpuAwa
         protected Optional<Host> defaultFindHostForVm(final Vm vm) {
         final Comparator<Host> comparator = comparing(Host::isActive).thenComparingLong(Host::getFreePesNumber);
         final var simplehostStream = isParallelHostSearchEnabled() ? getSimpleHostList().stream().parallel() : getSimpleHostList().stream();
-
+        return simplehostStream.filter(host -> host.isSuitableForVm(vm)).max(comparator);
 
         //   for (int i = 0; i < maxTries; i++) {
         //Different from the FirstFit policy, it always increments the host index.
 
-
             // final Host gpuhost = getGpuHostList().get(lastGpuHostIndex);
             // if (gpuhost.isSuitableForVm(vm)) {
             //   lastGpuHostIndex = ++lastGpuHostIndex % getGpuHostList().size();
-            //Optional.of(gpuhost);
+            //   Optional.of(gpuhost);
 
-            //  final Host simplehost = getSimpleHostList().get(lastHostIndex);
+            // final Host simplehost = getSimpleHostList().get(lastHostIndex);
             // if (simplehost.isSuitableForVm(vm)) {
             //  lastHostIndex = ++lastHostIndex % getSimpleHostList().size();
-            return simplehostStream.filter(host -> host.isSuitableForVm(vm)).max(comparator);// Optional.of(simplehost);
+            //  Optional.of(simplehost);
 
     }
     protected Optional<Host> GpuFindHostForVm(final Vm vm) {

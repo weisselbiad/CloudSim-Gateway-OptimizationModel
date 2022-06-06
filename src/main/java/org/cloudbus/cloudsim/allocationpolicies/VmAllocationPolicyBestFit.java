@@ -67,4 +67,9 @@ public class VmAllocationPolicyBestFit extends VmAllocationPolicyAbstract {
                 .min(comparator);
     }
 
+    @Override
+    protected Optional<Host> GpuFindHostForVm(Vm vm) {
+        return Optional.empty();
+    }
+
 }

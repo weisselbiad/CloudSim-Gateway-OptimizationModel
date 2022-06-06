@@ -75,6 +75,8 @@ public abstract class ResourceProvisionerAbstract implements ResourceProvisioner
         return pmResource.getCapacity();
     }
 
+
+
     @Override
     public long getTotalAllocatedResource() {
         return pmResource.getAllocatedResource();

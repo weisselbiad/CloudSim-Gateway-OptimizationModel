@@ -116,4 +116,8 @@ public class VmAllocationPolicyMigrationStaticThreshold extends VmAllocationPoli
         return overUtilizationThreshold;
     }
 
+    @Override
+    protected Optional<Host> GpuFindHostForVm(Vm vm) {
+        return Optional.empty();
+    }
 }

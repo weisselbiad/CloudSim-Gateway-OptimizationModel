@@ -126,6 +126,24 @@ public class  SimProxy {
 
     List<Double> power = new ArrayList<>(Arrays.asList(93.7, 97.0, 101.0, 105.0, 110.0, 116.0, 121.0, 125.0, 129.0, 133.0, 135.0));
 
+    private List<Double> getPower(int factor){
+        List<Double> power;
+
+        switch (factor) {
+            case MEDIUM:
+                power = new ArrayList<>(Arrays.asList(93.7*2, 97.0*2, 101.0*2, 105.0*2, 110.0*2, 116.0*2, 121.0*2, 125.0*2, 129.0*2, 133.0*2, 135.0*2));
+                break;
+            case LARGE:
+                power = new ArrayList<>(Arrays.asList(93.7*3, 97.0*3, 101.0*3, 105.0*3, 110.0*3, 116.0*3, 121.0*3, 125.0*3, 129.0*3, 133.0*3, 135.0*3));
+                break;
+            case SMALL:
+            default:
+                power = new ArrayList<>(Arrays.asList(93.7, 97.0, 101.0, 105.0, 110.0, 116.0, 121.0, 125.0, 129.0, 133.0, 135.0));
+        }
+        return power;
+
+    }
+
     public SimProxy(String identifier,
                     Object vmTuple,
                     Object GpuvmTuple,
@@ -219,7 +237,7 @@ public class  SimProxy {
                 System.out.println(gpuhost.getClass()+" "+gpuhost);
                 hostList.add(gpuhost);
             }}
-        final var datacenter = new DatacenterSimple(simulation, hostList, new VmAllocationPolicyGpuAware());
+        final var datacenter = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
         datacenter.setSchedulingInterval(10)
    // Those are monetary values. Consider any currency you want (such as Dollar)
                   .getCharacteristics()
@@ -248,7 +266,7 @@ public class  SimProxy {
         final var host = new HostSimple(hostRam*factor, hostBw*factor, hostSize*factor, peList);
 
 
-        final var powerModel = new PowerModelHostSpec(power);
+        final var powerModel = new PowerModelHostSpec(getPower(type));
         powerModel.setStartupDelay(5)
                 .setShutDownDelay(3)
                 .setStartupPower(5)
@@ -525,10 +543,10 @@ public class  SimProxy {
         return PC;
     }
 
-    public CloudletsTableBuilder getTableBuilder(){
-        final List<Cloudlet> finishedCloudlets = this.broker.getCloudletFinishedList();
-        CloudletsTableBuilder table = new CloudletsTableBuilder(finishedCloudlets);
-        return table;
-    }
+        public CloudletsTableBuilder getTableBuilder(){
+            final List<Cloudlet> finishedCloudlets = this.broker.getCloudletFinishedList();
+            CloudletsTableBuilder table = new CloudletsTableBuilder(finishedCloudlets);
+            return table;
+        }
 
 }

@@ -6,6 +6,7 @@
  */
 package org.cloudbus.cloudsim.datacenters;
 
+import cloudsimMixedPeEnv.GpuHost;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigration;
@@ -878,6 +879,26 @@ public class DatacenterSimple extends CloudSimEntity implements Datacenter {
     @Override
     public <T extends Host> List<T> getHostList() {
         return (List<T>)Collections.unmodifiableList(hostList);
+    }
+
+    public final List<HostSimple> getSimpleHostList() {
+        ArrayList<HostSimple> SimpleHostList = new ArrayList<>();
+        for (Host host : hostList) {
+            if (host.getClass().equals(HostSimple.class)) {
+                SimpleHostList.add((HostSimple) host);
+            }
+
+        }return  SimpleHostList;
+    }
+
+    public final  List<GpuHost> getGpuHostList() {
+        ArrayList<GpuHost> GpuHostList = new ArrayList<>();
+        for (Host host : hostList) {
+            if (host.getClass().equals(GpuHost.class)) {
+                GpuHostList.add((GpuHost) host);
+            }
+
+        }return  GpuHostList;
     }
 
     @Override

@@ -150,4 +150,5 @@ public interface ResourceProvisioner {
      * @return the amount of free available physical resource
      */
     long getAvailableResource();
+
 }

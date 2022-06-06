@@ -37,6 +37,17 @@ final class VmAllocationPolicyMigrationNull implements VmAllocationPolicyMigrati
     @Override public <T extends Host> List<T> getHostList() {
         return Collections.emptyList();
     }
+
+    @Override
+    public <T extends Host> List<T> getSimpleHostList() {
+        return null;
+    }
+
+    @Override
+    public <T extends Host> List<T> getGpuHostList() {
+        return null;
+    }
+
     @Override public Map<Vm, Host> getOptimizedAllocationMap(List<? extends Vm> vmList) { return Collections.emptyMap(); }
     @Override public void setFindHostForVmFunction(BiFunction<VmAllocationPolicy, Vm, Optional<Host>> findHostForVmFunction) {/**/}
     @Override public boolean isHostOverloaded(Host host) { return false; }

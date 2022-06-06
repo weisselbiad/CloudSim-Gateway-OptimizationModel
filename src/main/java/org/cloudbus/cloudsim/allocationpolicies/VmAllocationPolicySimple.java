@@ -63,7 +63,14 @@ public class VmAllocationPolicySimple extends VmAllocationPolicyAbstract {
     protected Optional<Host> defaultFindHostForVm(final Vm vm) {
         final Comparator<Host> comparator = comparing(Host::isActive).thenComparingLong(Host::getFreePesNumber);
 
-        final var hostStream = isParallelHostSearchEnabled() ? getHostList().stream().parallel() : getHostList().stream();
+        final var hostStream = isParallelHostSearchEnabled() ? getSimpleHostList().stream().parallel() : getSimpleHostList().stream();
+        return hostStream.filter(host -> host.isSuitableForVm(vm)).max(comparator);
+    }
+
+    protected Optional<Host> GpuFindHostForVm(final Vm vm) {
+        final Comparator<Host> comparator = comparing(Host::isActive).thenComparingLong(Host::getFreePesNumber);
+
+        final var hostStream = isParallelHostSearchEnabled() ? getGpuHostList().stream().parallel() : getGpuHostList().stream();
         return hostStream.filter(host -> host.isSuitableForVm(vm)).max(comparator);
     }
 

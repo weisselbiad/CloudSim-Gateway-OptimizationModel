@@ -74,4 +74,9 @@ public class VmAllocationPolicyRoundRobin extends VmAllocationPolicyAbstract imp
 
         return Optional.empty();
     }
+
+    @Override
+    protected Optional<Host> GpuFindHostForVm(Vm vm) {
+        return Optional.empty();
+    }
 }

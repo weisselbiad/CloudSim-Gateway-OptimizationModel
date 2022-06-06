@@ -8,11 +8,15 @@
 
 package org.cloudbus.cloudsim.provisioners;
 
+import cloudsimMixedPeEnv.GpuHost;
+import cloudsimMixedPeEnv.GpuVm;
 import org.cloudbus.cloudsim.hosts.Host;
+import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.Resource;
 import org.cloudbus.cloudsim.resources.ResourceManageable;
 import org.cloudbus.cloudsim.vms.Vm;
+import org.cloudbus.cloudsim.vms.VmSimple;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -115,4 +119,14 @@ public class ResourceProvisionerSimple extends ResourceProvisionerAbstract {
     public boolean isSuitableForVm(final Vm vm, final Resource resource) {
         return isSuitableForVm(vm, resource.getCapacity());
     }
+    public boolean isSuitableForVm(final Vm vm, final Host host) {
+        if (vm instanceof GpuVm && host instanceof GpuHost){
+            return true;
+        }else if ((vm instanceof VmSimple && host instanceof HostSimple)){
+            return true;
+        }else return false;
+
+
+    }
+
 }

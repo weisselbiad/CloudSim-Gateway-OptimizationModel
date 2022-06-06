@@ -77,6 +77,11 @@ public class VmAllocationPolicyFirstFit extends VmAllocationPolicyAbstract imple
         return Optional.empty();
     }
 
+    @Override
+    protected Optional<Host> GpuFindHostForVm(Vm vm) {
+        return Optional.empty();
+    }
+
     /**
      * Gets the index of the last host where a VM was placed.
      */

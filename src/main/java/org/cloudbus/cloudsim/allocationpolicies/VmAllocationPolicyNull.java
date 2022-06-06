@@ -62,4 +62,14 @@ final class VmAllocationPolicyNull implements VmAllocationPolicy {
     @Override public int getHostCountForParallelSearch() { return 0; }
     @Override public void setHostCountForParallelSearch(int hostCountForParallelSearch) {/**/}
     @Override public void setFindHostForVmFunction(BiFunction<VmAllocationPolicy, Vm, Optional<Host>> findHostForVmFunction) {/**/}
+
+    @Override
+    public <T extends Host> List<T> getSimpleHostList() {
+        return null;
+    }
+
+    @Override
+    public <T extends Host> List<T> getGpuHostList() {
+        return null;
+    }
 }
