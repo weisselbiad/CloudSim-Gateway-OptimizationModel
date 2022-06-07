@@ -10,7 +10,7 @@ public class SimSettings {
 
     private int cloudletCnt = 10;
     private int gpucloudletCnt = 5;
-    private int cloudletLength =10_000;
+    private int cloudletLength =10000;
     private int cloudletPes = 4;
     private long cloudletSize = 1024;
 

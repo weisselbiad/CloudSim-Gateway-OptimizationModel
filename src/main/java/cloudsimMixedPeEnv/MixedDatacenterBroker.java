@@ -101,7 +101,7 @@ public class MixedDatacenterBroker extends BrokerAbstract {
         }
 
 
-        if(cloudlet instanceof GpuCloudlet) {
+        if(cloudlet.getClass().equals(GpuCloudlet.class)) {
 
             lastSelectedVmIndex = ++lastSelectedVmIndex % getVmExecList().size();
             //cutVmList.addAll((vmcreatedlist));
@@ -110,9 +110,9 @@ public class MixedDatacenterBroker extends BrokerAbstract {
             cutVmList.addAll((vmcreatedlist));
            // col = (ArrayList<Vm>) cutVmList.subList(vmcreatedlist.size() - lastSelectedVmIndex, vmcreatedlist.size()).stream().filter(vm -> vm instanceof GpuVm).toList();
             for (Vm vm: cutVmList){
-                if (vm instanceof GpuVm ) {
+                if (vm.getClass().equals(GpuVm.class) ) {
                     col.add(vm);
-                } else if (vm instanceof VmSimple) {
+                } else if (vm.getClass().equals(VmSimple.class)) {
                     continue;
                 }}
 

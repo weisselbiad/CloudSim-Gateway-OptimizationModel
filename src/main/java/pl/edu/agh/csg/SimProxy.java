@@ -1,6 +1,7 @@
 package pl.edu.agh.csg;
 
 import cloudsimMixedPeEnv.*;
+import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import cloudsimMixedPeEnv.VmAllocationPolicyGpuAware;
 import cloudsimMixedPeEnv.allocation.VideoCardAllocationPolicy;
 import cloudsimMixedPeEnv.allocation.VideoCardAllocationPolicyNull;
@@ -208,7 +209,7 @@ public class  SimProxy {
         this.simulation.start();
 
         final List<Cloudlet> finishedCloudlets = this.broker.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        new org.cloudsimplus.builders.tables.CloudletsTableBuilder(finishedCloudlets).build();
 
         }
 
@@ -545,7 +546,7 @@ public class  SimProxy {
 
         public CloudletsTableBuilder getTableBuilder(){
             final List<Cloudlet> finishedCloudlets = this.broker.getCloudletFinishedList();
-            CloudletsTableBuilder table = new CloudletsTableBuilder(finishedCloudlets);
+            org.cloudsimplus.builders.tables.CloudletsTableBuilder table = new org.cloudsimplus.builders.tables.CloudletsTableBuilder(finishedCloudlets);
             return table;
         }
 
