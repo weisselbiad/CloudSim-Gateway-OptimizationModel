@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="06.06">
+    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="07.06">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/MixedDatacenterBroker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/MixedDatacenterBroker.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java" afterDir="false" />
@@ -291,7 +291,7 @@
       <workItem from="1654162284336" duration="20065000" />
       <workItem from="1654333274507" duration="10104000" />
       <workItem from="1654532321386" duration="595000" />
-      <workItem from="1654615734053" duration="4876000" />
+      <workItem from="1654615734053" duration="5178000" />
     </task>
     <task id="LOCAL-00001" summary="gradle">
       <created>1637948985872</created>
@@ -356,7 +356,14 @@
       <option name="project" value="LOCAL" />
       <updated>1654532887846</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="07.06">
+      <created>1654624824486</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1654624824486</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -380,7 +387,8 @@
     <MESSAGE value="24.05" />
     <MESSAGE value="27.05" />
     <MESSAGE value="06.06" />
-    <option name="LAST_COMMIT_MESSAGE" value="06.06" />
+    <MESSAGE value="07.06" />
+    <option name="LAST_COMMIT_MESSAGE" value="07.06" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
