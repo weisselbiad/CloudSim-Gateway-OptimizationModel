@@ -1,12 +1,14 @@
 package cloudsimMixedPeEnv.hardware_assisted;
 
-import java.util.List;
-import java.util.Map.Entry;
-
 import cloudsimMixedPeEnv.Pgpu;
 import cloudsimMixedPeEnv.Vgpu;
+import cloudsimMixedPeEnv.VgpuScheduler;
 import cloudsimMixedPeEnv.VgpuSchedulerFairShare;
+import cloudsimMixedPeEnv.performance.models.PerformanceModel;
 import cloudsimMixedPeEnv.selection.PgpuSelectionPolicy;
+
+import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * This is a Time-Shared vgpu scheduler, which allows over-subscription. In
@@ -18,7 +20,7 @@ import cloudsimMixedPeEnv.selection.PgpuSelectionPolicy;
  * @author Ahmad Siavashi
  */
 public class GridVgpuSchedulerFairShare extends VgpuSchedulerFairShare {
-
+	private PerformanceModel<VgpuScheduler, Vgpu> performanceModel;
 	/**
 	 * Instantiates a new fair-share vgpu scheduler.
 	 * 
@@ -27,6 +29,7 @@ public class GridVgpuSchedulerFairShare extends VgpuSchedulerFairShare {
 	 */
 	public GridVgpuSchedulerFairShare(String videoCardType, List<Pgpu> pgpuList, PgpuSelectionPolicy pgpuSelectionPolicy) {
 		super(videoCardType, pgpuList, pgpuSelectionPolicy);
+
 	}
 
 	/**

@@ -1,13 +1,13 @@
 package pl.edu.agh.csg;
 
 import cloudsimMixedPeEnv.*;
-import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
-import cloudsimMixedPeEnv.VmAllocationPolicyGpuAware;
 import cloudsimMixedPeEnv.allocation.VideoCardAllocationPolicy;
-import cloudsimMixedPeEnv.allocation.VideoCardAllocationPolicyNull;
-import cloudsimMixedPeEnv.hardware_assisted.GridVgpuSchedulerFairShare;
-import cloudsimMixedPeEnv.hardware_assisted.GridVgpuTags;
-import cloudsimMixedPeEnv.hardware_assisted.GridVideoCardTags;
+import cloudsimMixedPeEnv.allocation.VideoCardAllocationPolicyBreadthFirst;
+import cloudsimMixedPeEnv.hardware_assisted.*;
+import cloudsimMixedPeEnv.performance.models.PerformanceModel;
+import cloudsimMixedPeEnv.performance.models.PerformanceModelGpuConstant;
+import cloudsimMixedPeEnv.power.PowerVideoCard;
+import cloudsimMixedPeEnv.power.models.VideoCardPowerModel;
 import cloudsimMixedPeEnv.provisioners.GpuBwProvisionerShared;
 import cloudsimMixedPeEnv.provisioners.GpuGddramProvisionerSimple;
 import cloudsimMixedPeEnv.provisioners.VideoCardBwProvisioner;
@@ -28,7 +28,6 @@ import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.power.models.PowerModelHostSpec;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
-import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerCompletelyFair;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerSpaceShared;
@@ -39,6 +38,7 @@ import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmCost;
 import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudsimplus.builders.tables.CloudletsTableBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -303,14 +303,18 @@ public class  SimProxy {
             }
             // Pgpu selection policy
             PgpuSelectionPolicy pgpuSelectionPolicy = new PgpuSelectionPolicyNull();
+            double performanceLoss = 0.1;
+            PerformanceModel<VgpuScheduler, Vgpu> performanceModel = new PerformanceModelGpuConstant(performanceLoss);
             // Vgpu Scheduler
-            VgpuScheduler vgpuScheduler = new GridVgpuSchedulerFairShare(GridVideoCardTags.NVIDIA_K1_CARD, pgpus,
-                    pgpuSelectionPolicy);
+            GridPerformanceVgpuSchedulerFairShare vgpuScheduler = new GridPerformanceVgpuSchedulerFairShare(
+                    GridVideoCardTags.NVIDIA_K1_CARD, pgpus, pgpuSelectionPolicy, performanceModel);
             // PCI Express Bus Bw Provisioner
             VideoCardBwProvisioner videoCardBwProvisioner = new VideoCardBwProvisionerShared(BusTags.PCI_E_3_X16_BW);
+            // Video Card Power Model
+            VideoCardPowerModel videoCardPowerModel = new VideoCardPowerModelNvidiaGridK1(false);
             // Create a video card
-            VideoCard videoCard = new VideoCard(videoCardId, GridVideoCardTags.NVIDIA_K1_CARD, vgpuScheduler,
-                    videoCardBwProvisioner);
+            VideoCard videoCard = new PowerVideoCard(videoCardId, GridVideoCardTags.NVIDIA_K1_CARD, vgpuScheduler,
+                    videoCardBwProvisioner,videoCardPowerModel);
             videoCards.add(videoCard);
         }
 
@@ -339,7 +343,7 @@ public class  SimProxy {
         VmScheduler vmScheduler = new VmSchedulerSpaceShared();
 
         // Video Card Selection Policy
-        VideoCardAllocationPolicy videoCardAllocationPolicy = new VideoCardAllocationPolicyNull(videoCards);
+        VideoCardAllocationPolicy videoCardAllocationPolicy = new VideoCardAllocationPolicyBreadthFirst(videoCards);
         GpuHost gpuhost =new GpuHost(ram*factor,bw*factor, storage*factor, peList,vmScheduler, videoCardAllocationPolicy);
         gpuhost.setId(lastHostIndex);
         lastHostIndex = ++lastHostIndex ;
@@ -388,7 +392,7 @@ public class  SimProxy {
             // Create GpuTask Scheduler
             GpuTaskSchedulerLeftover gpuTaskScheduler = new GpuTaskSchedulerLeftover();
             // Create a Vgpu
-            Vgpu vgpu = GridVgpuTags.getK180Q(simulation,j, gpuTaskScheduler);
+            Vgpu vgpu = GridVgpuTags.getK120Q(simulation,j, gpuTaskScheduler);
             vm.setVgpu(vgpu);
             vm.setId(lastVmIndex);
             lastVmIndex = ++lastVmIndex ;
