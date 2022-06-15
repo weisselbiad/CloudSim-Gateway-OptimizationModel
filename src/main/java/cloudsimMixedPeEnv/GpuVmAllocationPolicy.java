@@ -5,11 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.hosts.HostSuitability;
 import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
 
 
 import static org.cloudbus.cloudsim.core.UniquelyIdentifiable.getUid;
@@ -21,7 +20,7 @@ import static org.cloudbus.cloudsim.core.UniquelyIdentifiable.getUid;
  * @author Ahmad Siavashi
  *
  */
-public abstract class GpuVmAllocationPolicy implements VmAllocationPolicy {
+public abstract class GpuVmAllocationPolicy extends VmAllocationPolicy {
 
 	/**
 	 * The map between each VM and its allocated host. The map key is a VM UID and
@@ -43,9 +42,10 @@ public abstract class GpuVmAllocationPolicy implements VmAllocationPolicy {
 	 * @param list all data center hosts
 	 */
 	public GpuVmAllocationPolicy(List<? extends Host> list) {
-		//super(list);
+		super(list);
 		setVmTable(new HashMap<String, Host>());
-		setGpuHostList(getHostList());
+		//setGpuHostList(getHostList());
+		setGpuHostList(getGpuHostList());
 		setVgpuHosts(new HashMap<Vgpu, GpuHost>());
 	}
 
@@ -62,6 +62,10 @@ public abstract class GpuVmAllocationPolicy implements VmAllocationPolicy {
 	protected void deallocateGpuForVgpu(Vgpu vgpu) {
 		getVgpuHosts().remove(vgpu).vgpuDestroy(vgpu);
 	}
+
+	public abstract Datacenter getDatacenter();
+
+	public abstract boolean isParallelHostSearchEnabled();
 
 	protected boolean allocateGpuForVgpu(Vgpu vgpu, GpuHost gpuHost) {
 		if (!getVgpuHosts().containsKey(vgpu)) {

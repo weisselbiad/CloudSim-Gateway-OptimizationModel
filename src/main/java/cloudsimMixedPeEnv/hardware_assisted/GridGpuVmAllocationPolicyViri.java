@@ -7,7 +7,7 @@ import java.util.List;
 import org.cloudbus.cloudsim.hosts.Host;
 import cloudsimMixedPeEnv.GpuVm;
 
-public class GridGpuVmAllocationPolicyViri extends GridGpuVmAllocationPolicyVird {
+public abstract class GridGpuVmAllocationPolicyViri extends GridGpuVmAllocationPolicyVird {
 
 	/**
 	 * First-fit vGPU increasing requests increasing (VIRD) heuristic

@@ -18,7 +18,7 @@ import cloudsimMixedPeEnv.Vgpu;
 import cloudsimMixedPeEnv.VideoCard;
 import org.cloudsimplus.autoscaling.VerticalVmScaling;
 
-public class GridGpuVmAllocationPolicyVird extends GpuVmAllocationPolicy {
+public abstract class GridGpuVmAllocationPolicyVird extends GpuVmAllocationPolicy {
 
 	/**
 	 * First-fit vGPU increasing requests decreasing (VIRD) heuristic
@@ -164,75 +164,6 @@ public class GridGpuVmAllocationPolicyVird extends GpuVmAllocationPolicy {
 		}));
 	}
 
-	@Override
-	public Datacenter getDatacenter() {
-		return null;
-	}
-
-	@Override
-	public void setDatacenter(Datacenter datacenter) {
-
-	}
-
-	@Override
-	public HostSuitability allocateHostForVm(Vm vm) {
-		throw new NotImplementedException("not implemented");
-	}
-
-	@Override
-	public <T extends Vm> List<T> allocateHostForVm(Collection<T> vmCollection) {
-		return null;
-	}
-
-	@Override
-	public boolean scaleVmVertically(VerticalVmScaling scaling) {
-		return false;
-	}
-
-	@Override
-	public void setFindHostForVmFunction(BiFunction<VmAllocationPolicy, Vm, Optional<Host>> findHostForVmFunction) {
-
-	}
-
-	@Override
-	public <T extends Host> List<T> getHostList() {
-		return null;
-	}
-
-	@Override
-	public <T extends Host> List<T> getSimpleHostList() {
-		return null;
-	}
-
-	@Override
-	public Map<Vm, Host> getOptimizedAllocationMap(List<? extends Vm> vmList) {
-		return null;
-	}
-
-	@Override
-	public Optional<Host> findHostForVm(Vm vm) {
-		return Optional.empty();
-	}
-
-	@Override
-	public boolean isVmMigrationSupported() {
-		return false;
-	}
-
-	@Override
-	public boolean isParallelHostSearchEnabled() {
-		return super.isParallelHostSearchEnabled();
-	}
-
-	@Override
-	public int getHostCountForParallelSearch() {
-		return 0;
-	}
-
-	@Override
-	public void setHostCountForParallelSearch(int hostCountForParallelSearch) {
-
-	}
 
 	@Override
 	protected boolean allocateGpuForVgpu(Vgpu vgpu, GpuHost gpuHost) {

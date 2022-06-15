@@ -39,9 +39,11 @@ public class GridGpuVmAllocationPolicyBestFit extends GpuVmAllocationPolicy {
 	}
 
 	@Override
-	public void setDatacenter(Datacenter datacenter) {
-
+	public boolean isParallelHostSearchEnabled() {
+		return false;
 	}
+
+
 
 	@Override
 	public HostSuitability allocateHostForVm(Vm vm) {
@@ -80,52 +82,20 @@ public class GridGpuVmAllocationPolicyBestFit extends GpuVmAllocationPolicy {
 		return null;
 	}
 
-	@Override
-	public <T extends Vm> List<T> allocateHostForVm(Collection<T> vmCollection) {
-		return null;
-	}
 
-	@Override
-	public boolean scaleVmVertically(VerticalVmScaling scaling) {
-		return false;
-	}
-
-	@Override
-	public void setFindHostForVmFunction(BiFunction<VmAllocationPolicy, Vm, Optional<Host>> findHostForVmFunction) {
-
-	}
 
 	@Override
 	public <T extends Host> List<T> getHostList() {
 		return null;
 	}
 
-	@Override
-	public <T extends Host> List<T> getSimpleHostList() {
-		return null;
-	}
 
-	@Override
-	public Map<Vm, Host> getOptimizedAllocationMap(List<? extends Vm> vmList) {
-		return null;
-	}
 
-	@Override
-	public Optional<Host> findHostForVm(Vm vm) {
-		return Optional.empty();
-	}
-
-	@Override
-	public boolean isVmMigrationSupported() {
-		return false;
-	}
-
-	@Override
 	public int getHostCountForParallelSearch() {
 		return 0;
 	}
 
-	@Override
+
 	public void setHostCountForParallelSearch(int hostCountForParallelSearch) {
 
 	}

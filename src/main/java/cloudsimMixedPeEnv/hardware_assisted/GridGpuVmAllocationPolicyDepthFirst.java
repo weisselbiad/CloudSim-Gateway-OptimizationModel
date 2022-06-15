@@ -8,7 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.cloudbus.cloudsim.hosts.Host;
 import cloudsimMixedPeEnv.Pgpu;
 
-public class GridGpuVmAllocationPolicyDepthFirst extends GridGpuVmAllocationPolicyBreadthFirst {
+public abstract class GridGpuVmAllocationPolicyDepthFirst extends GridGpuVmAllocationPolicyBreadthFirst {
 
 	public GridGpuVmAllocationPolicyDepthFirst(List<? extends Host> list) {
 		super(list);

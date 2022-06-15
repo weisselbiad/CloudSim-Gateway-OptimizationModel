@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="08.06">
+    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="20.05.0">
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/VmAllocationPolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/GpuExperiment.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.bin" afterDir="false" />
@@ -12,10 +14,25 @@
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/hardware_assisted/GridVgpuSchedulerFairShare.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/hardware_assisted/GridVgpuSchedulerFairShare.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/GpuVmAllocationPolicy.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/GpuVmAllocationPolicy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/GpuVmAllocationPolicySimple.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/GpuVmAllocationPolicySimple.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyBestFit$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyBestFit$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyBestFit.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyBestFit.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyBreadthFirst.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyBreadthFirst.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyDepthFirst.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyDepthFirst.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyVird.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyVird.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyViri.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyViri.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/provisioners/ResourceProvisionerSimple.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/provisioners/ResourceProvisionerSimple.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/SimProxy.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/SimProxy.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridVgpuSchedulerFairShare.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridVgpuSchedulerFairShare.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuVmAllocationPolicy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuVmAllocationPolicy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuVmAllocationPolicySimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuVmAllocationPolicySimple.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyBestFit.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyBestFit.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyBreadthFirst.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyBreadthFirst.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyDepthFirst.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyDepthFirst.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyVird.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyVird.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyViri.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/hardware_assisted/GridGpuVmAllocationPolicyViri.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/provisioners/ResourceProvisionerSimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/provisioners/ResourceProvisionerSimple.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,8 +155,8 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="BasicFirstExample" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="pl.edu.agh.csg.BasicFirstExample" />
+    <configuration name="GpuExperiment" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="pl.edu.agh.csg.GpuExperiment" />
       <module name="CloudSim-Gateway-OptimizationModel.main" />
       <extension name="coverage">
         <pattern>
@@ -230,10 +247,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [run]" />
-        <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [compileJava]" />
         <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [clean]" />
+        <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [compileJava]" />
+        <item itemvalue="Application.GpuExperiment" />
         <item itemvalue="Application.Main" />
-        <item itemvalue="Application.BasicFirstExample" />
       </list>
     </recent_temporary>
   </component>
@@ -296,10 +313,8 @@
       <workItem from="1654333274507" duration="10104000" />
       <workItem from="1654532321386" duration="595000" />
       <workItem from="1654615734053" duration="5949000" />
-      <workItem from="1654677410969" duration="587000" />
-      <workItem from="1655040627517" duration="21000" />
-      <workItem from="1655117532076" duration="949000" />
-      <workItem from="1655135197562" duration="3544000" />
+      <workItem from="1654677410969" duration="305000" />
+      <workItem from="1655279294009" duration="15313000" />
     </task>
     <task id="LOCAL-00001" summary="gradle">
       <created>1637948985872</created>
@@ -392,14 +407,7 @@
       <option name="project" value="LOCAL" />
       <updated>1654677710829</updated>
     </task>
-    <task id="LOCAL-00014" summary="08.06">
-      <created>1654677725168</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1654677725168</updated>
-    </task>
-    <option name="localTasksCounter" value="15" />
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -436,19 +444,19 @@
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuCloudletSchedulerTimeShared.java</url>
-          <line>28</line>
-          <option name="timeStamp" value="26" />
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/GpuExperiment.java</url>
+          <line>113</line>
+          <option name="timeStamp" value="28" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyAbstract.java</url>
-          <line>253</line>
-          <option name="timeStamp" value="30" />
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java</url>
+          <line>175</line>
+          <option name="timeStamp" value="31" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cloudsimplus/cloudsim-plus/7.1.2/3c6d01bece7d9835501bd28439d948acc52e826b/cloudsim-plus-7.1.2-sources.jar!/org/cloudbus/cloudsim/cloudlets/network/NetworkCloudlet.java</url>
           <line>209</line>
-          <properties class="org.cloudbus.cloudsim.cloudlets.network.NetworkCloudlet" method="setVm">
+          <properties class="org.cloudbus.cloudsim.cloudlets.network.NetworkCloudlet">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -459,6 +467,8 @@
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="org.cloudbus.cloudsim.hosts.HostSimple" memberName="vmList" />
+        <PinnedItemInfo parentTag="org.cloudbus.cloudsim.hosts.HostSimple" memberName="powerModel" />
+        <PinnedItemInfo parentTag="org.cloudbus.cloudsim.hosts.HostSimple" memberName="id" />
       </pinned-members>
     </pin-to-top-manager>
     <watches-manager>

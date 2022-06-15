@@ -120,9 +120,9 @@ public class ResourceProvisionerSimple extends ResourceProvisionerAbstract {
         return isSuitableForVm(vm, resource.getCapacity());
     }
     public boolean isSuitableForVm(final Vm vm, final Host host) {
-        if (vm instanceof GpuVm && host instanceof GpuHost){
+        if (vm.getClass().equals(GpuVm.class) && host.getClass().equals(GpuHost.class) ){
             return true;
-        }else if ((vm instanceof VmSimple && host instanceof HostSimple)){
+        }else if ((vm.getClass().equals(VmSimple.class) && host.getClass().equals(HostSimple.class))){
             return true;
         }else return false;
 
