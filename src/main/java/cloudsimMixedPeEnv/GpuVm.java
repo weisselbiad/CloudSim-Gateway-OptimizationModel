@@ -51,9 +51,9 @@ public class GpuVm extends VmSimple implements Vm {
 	 * @param *type specifies the type of the vm
 	 * @see Vm
 	 */
-	public GpuVm(final long id, final long mipsCapacity, final long numberOfPes, final CloudletScheduler cloudletScheduler) {
+	public GpuVm( final long mipsCapacity, final long numberOfPes, final CloudletScheduler cloudletScheduler) {
 		super(mipsCapacity, numberOfPes, cloudletScheduler);
-		setId(id);
+
 		setType(type);
 		setArrivalTime(0.0);
 	}

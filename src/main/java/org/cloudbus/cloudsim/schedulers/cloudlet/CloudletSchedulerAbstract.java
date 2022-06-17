@@ -276,7 +276,7 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
     }
 
     @Override
-    public final double cloudletSubmit(final Cloudlet cloudlet, final double fileTransferTime) {
+    public double cloudletSubmit(final Cloudlet cloudlet, final double fileTransferTime) {
         if(enableCloudletSubmittedList) {
             cloudletSubmittedList.add(cloudlet);
         }

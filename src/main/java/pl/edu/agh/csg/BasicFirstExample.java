@@ -247,7 +247,7 @@ public class BasicFirstExample {
             GpuCloudletSchedulerTimeShared GCSTS = new GpuCloudletSchedulerTimeShared();
 
             // Create a VM
-            GpuVm vm = new GpuVm((long) i, mips, pesNumber, GCSTS);
+            GpuVm vm = new GpuVm(mips, pesNumber, GCSTS);
             vm.setRam(ram);
             vm.setBw(bw);
             vm.setSize(size);

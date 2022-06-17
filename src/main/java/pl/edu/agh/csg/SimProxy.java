@@ -385,7 +385,7 @@ public class  SimProxy {
             //GpuCloudletSchedulerTimeShared GCSTS = new GpuCloudletSchedulerTimeShared();
 
             // Create a VM
-            GpuVm vm = new GpuVm((long) j, gpuMips, vmPes*factor, new CloudletSchedulerSpaceShared());
+            GpuVm vm = new GpuVm( gpuMips, vmPes*factor, new CloudletSchedulerSpaceShared());
             vm.setRam(gpuvmRam*factor);
             vm.setBw(gpuvmBw*factor);
             vm.setSize(gpuvmSize*factor);

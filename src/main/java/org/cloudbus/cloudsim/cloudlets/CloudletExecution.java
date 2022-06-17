@@ -44,7 +44,7 @@ public class CloudletExecution {
     public static final CloudletExecution NULL = new CloudletExecution(Cloudlet.NULL);
 
     /** @see #getCloudlet() */
-    private final Cloudlet cloudlet;
+    public Cloudlet cloudlet;
 
 	/** @see #getFileTransferTime() */
 	private double fileTransferTime;
