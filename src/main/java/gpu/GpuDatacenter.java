@@ -1,148 +1,83 @@
 package gpu;
 
-
+import gpu.core.CloudSimTags;
 import gpu.core.GpuCloudSimTags;
+import gpu.core.Log;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
-import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigration;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.core.*;
-import org.cloudbus.cloudsim.core.CloudSimTags;
-import org.cloudbus.cloudsim.core.events.PredicateType;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristics;
-import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristicsSimple;
-import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.hosts.HostSuitability;
-import org.cloudbus.cloudsim.network.IcmpPacket;
-import org.cloudbus.cloudsim.power.models.PowerModelDatacenter;
-import org.cloudbus.cloudsim.power.models.PowerModelDatacenterSimple;
 import org.cloudbus.cloudsim.resources.DatacenterStorage;
-import org.cloudbus.cloudsim.resources.SanStorage;
-import org.cloudbus.cloudsim.util.InvalidEventDataTypeException;
-import org.cloudbus.cloudsim.util.MathUtil;
 import org.cloudbus.cloudsim.vms.Vm;
-import org.cloudbus.cloudsim.vms.VmSimple;
-import org.cloudsimplus.autoscaling.VerticalVmScaling;
-import org.cloudsimplus.faultinjection.HostFaultInjection;
-import org.cloudsimplus.listeners.DatacenterVmMigrationEventInfo;
-import org.cloudsimplus.listeners.EventListener;
-import org.cloudsimplus.listeners.HostEventInfo;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import static java.util.Objects.requireNonNull;
-import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.toList;
-import static org.cloudbus.cloudsim.util.BytesConversion.bitesToBytes;
+import static org.cloudbus.cloudsim.core.CloudSimTag.CLOUDLET_RETURN;
 
 /**
  * {@link GpuDatacenter} extends {@link Datacenter} to support
  * {@link GpuCloudlet}s as well as the memory transfer between CPU and GPU.
- * 
+ *
  * @author Ahmad Siavashi
- * 
+ *
  */
 public class GpuDatacenter extends CloudSimEntity implements Datacenter {
-	private double lastUnderOrOverloadedDetection = -Double.MAX_VALUE;
-
-	/** @see #getBandwidthPercentForMigration() */
-	private double bandwidthPercentForMigration;
-
-	/**
-	 * Indicates if migrations are disabled or not.
-	 */
-	private boolean migrationsEnabled;
-
-	private List<? extends Host> hostList;
-
-	/** @see #getCharacteristics() */
-	private final DatacenterCharacteristics characteristics;
-
-	/** @see #getVmAllocationPolicy() */
-	private VmAllocationPolicy vmAllocationPolicy;
-
-	/** @see #getLastProcessTime() */
-	private double lastProcessTime;
-
-	/** @see #getSchedulingInterval() */
-	private double schedulingInterval;
-
-	/** @see #getDatacenterStorage() */
-	private DatacenterStorage datacenterStorage;
-
-	private final List<EventListener<HostEventInfo>> onHostAvailableListeners;
-	private final List<EventListener<DatacenterVmMigrationEventInfo>> onVmMigrationFinishListeners;
-
-	/** @see #getTimeZone() */
-	private double timeZone;
-	private Map<Vm, Host> lastMigrationMap;
-
-	/** @see #getHostSearchRetryDelay() */
-	private double hostSearchRetryDelay;
-
-	private PowerModelDatacenter powerModel = PowerModelDatacenter.NULL;
-	private long activeHostsNumber;
-
+	private List<DatacenterStorage> storageList;
+	private DatacenterCharacteristics characteristics;
 	private double gpuTaskLastProcessTime;
 
 	private Map<GpuTask, ResGpuCloudlet> gpuTaskResGpuCloudletMap;
-
+	public Simulation simulation;
 	/**
-	 * See {@link Datacenter#GpuDatacenter}
+	 * See {@link Datacenter#}
 	 */
-
-	public GpuDatacenter(final Simulation simulation, final List<? extends Host> hostList) {
-		this(simulation, hostList, new VmAllocationPolicySimple(), new DatacenterStorage());
-	}
-	public GpuDatacenter(String name, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
-						 DatacenterStorage storage, double schedulingInterval) throws Exception {
-		super();
-		setDatacenterStorage(storage);
+	public GpuDatacenter(String name, Simulation simulation, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
+						 List<DatacenterStorage> storageList, double schedulingInterval) throws Exception {
+		super(simulation);
+		setName(name);
+		addHostList(getHostList());
 		setSchedulingInterval(schedulingInterval);
+		setCharacteristics(characteristics);
+		setVmAllocationPolicy(vmAllocationPolicy);
+		setStorageList(storageList);
 		setGpuTaskLastProcessTime(0.0);
 		setGpuTaskResGpuCloudletMap(new HashMap<>());
+		this.simulation =simulation;
 	}
 
 
-
-	@Override
-	public void processEvent(SimEvent ev) {
-		super.processEvent(ev);
-	}
-
-	@Override
 	protected void processOtherEvent(SimEvent ev) {
 		switch (ev.getTag()) {
-		case GpuCloudSimTags.GPU_MEMORY_TRANSFER:
-			processGpuMemoryTransfer(ev);
-			break;
-		case GpuCloudSimTags.GPU_TASK_SUBMIT:
-			processGpuTaskSubmit(ev);
-			break;
-		case GpuCloudSimTags.GPU_CLOUDLET_RETURN:
-			processGpuCloudletReturn(ev);
-			break;
-		case GpuCloudSimTags.VGPU_DATACENTER_EVENT:
-			updateGpuTaskProcessing();
-			checkGpuTaskCompletion();
-			break;
-		default:
-			super.processOtherEvent(ev);
-			break;
+			case GPU_MEMORY_TRANSFER:
+				processGpuMemoryTransfer(ev);
+				break;
+			case GPU_TASK_SUBMIT:
+				processGpuTaskSubmit(ev);
+				break;
+			case GPU_CLOUDLET_RETURN:
+				processGpuCloudletReturn(ev);
+				break;
+			case VGPU_DATACENTER_EVENT:
+				updateGpuTaskProcessing();
+				checkGpuTaskCompletion();
+				break;
+			default:
+				processOtherEvent1(ev);
+				break;
 		}
 	}
 
 	protected GpuVm getGpuTaskVm(GpuTask gt) {
-		int userId = gt.getCloudlet().getUserId();
-		int vmId = gt.getCloudlet().getVmId();
+		//int userId = gt.getCloudlet().getUserId();
+		int vmId = (int) gt.getCloudlet().getVm().getId();
 
-		GpuHost host = (GpuHost) getVmAllocationPolicy().getHost(vmId, userId);
-		GpuVm vm = (GpuVm) host.getVm(vmId, userId);
+		GpuHost host = (GpuHost) getVmAllocationPolicy().getDatacenter().getHost(vmId);
+		GpuVm vm = (GpuVm) host.getVmList().get(vmId);
 
 		return vm;
 	}
@@ -155,7 +90,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 
 	protected void processGpuCloudletReturn(SimEvent ev) {
 		GpuCloudlet cloudlet = (GpuCloudlet) ev.getData();
-		sendNow(cloudlet.getUserId(), CloudSimTags.CLOUDLET_RETURN, cloudlet);
+		sendNow(ev.getSource(), CLOUDLET_RETURN, cloudlet);
 		notifyGpuTaskCompletion(cloudlet.getGpuTask());
 	}
 
@@ -166,10 +101,10 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 
 		if (gt.getStatus() == GpuTask.CREATED) {
 			double delay = gt.getTaskInputSize() / bandwidth;
-			send(getId(), delay, GpuCloudSimTags.GPU_TASK_SUBMIT, gt);
+			send(ev.getSource(), delay, CloudSimTag.GPU_TASK_SUBMIT, gt);
 		} else if (gt.getStatus() == GpuTask.SUCCESS) {
 			double delay = gt.getTaskOutputSize() / bandwidth;
-			send(getId(), delay, GpuCloudSimTags.GPU_CLOUDLET_RETURN, gt.getCloudlet());
+			send(ev.getSource(), delay, CloudSimTag.GPU_CLOUDLET_RETURN, gt.getCloudlet());
 		}
 	}
 
@@ -177,28 +112,28 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		// if some time passed since last processing
 		// R: for term is to allow loop at simulation start. Otherwise, one initial
 		// simulation step is skipped and schedulers are not properly initialized
-		if (CloudSim.clock() < 0.111
-				|| CloudSim.clock() > geGpuTasktLastProcessTime() + CloudSim.getMinTimeBetweenEvents()) {
+		if (simulation.clock() < 0.111
+				|| simulation.clock() > geGpuTasktLastProcessTime() + simulation.getMinTimeBetweenEvents()) {
 			List<? extends Host> list = getVmAllocationPolicy().getHostList();
 			double smallerTime = Double.MAX_VALUE;
 			// for each host...
 			for (int i = 0; i < list.size(); i++) {
 				GpuHost host = (GpuHost) list.get(i);
 				// inform VMs to update processing
-				double time = host.updateVgpusProcessing(CloudSim.clock());
+				double time = host.updateVgpusProcessing(simulation.clock());
 				// what time do we expect that the next task will finish?
 				if (time < smallerTime) {
 					smallerTime = time;
 				}
 			}
 			// guarantees a minimal interval before scheduling the event
-			if (smallerTime < CloudSim.clock() + CloudSim.getMinTimeBetweenEvents() + 0.01) {
-				smallerTime = CloudSim.clock() + CloudSim.getMinTimeBetweenEvents() + 0.01;
+			if (smallerTime < simulation.clock() + simulation.getMinTimeBetweenEvents() + 0.01) {
+				smallerTime = simulation.clock() + simulation.getMinTimeBetweenEvents() + 0.01;
 			}
 			if (smallerTime != Double.MAX_VALUE) {
-				schedule(getId(), (smallerTime - CloudSim.clock()), GpuCloudSimTags.VGPU_DATACENTER_EVENT);
+				schedule( (smallerTime - simulation.clock()), CloudSimTag.VGPU_DATACENTER_EVENT);
 			}
-			setGpuTaskLastProcessTime(CloudSim.clock());
+			setGpuTaskLastProcessTime(simulation.clock());
 		}
 	}
 
@@ -213,10 +148,10 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 					while (vgpu.getGpuTaskScheduler().hasFinishedTasks()) {
 						ResGpuTask rgt = vgpu.getGpuTaskScheduler().getNextFinishedTask();
 						try {
-							sendNow(getId(), GpuCloudSimTags.GPU_MEMORY_TRANSFER, rgt.getGpuTask());
+							sendNow( (SimEntity) getSimulation(), CloudSimTag.GPU_MEMORY_TRANSFER, rgt.getGpuTask());
 						} catch (Exception e) {
 							e.printStackTrace();
-							CloudSim.abruptallyTerminate();
+							simulation.abort();
 						}
 					}
 				}
@@ -224,9 +159,8 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		}
 	}
 
-	@Override
 	protected void checkCloudletCompletion() {
-		super.checkCloudletCompletion();
+		firstcheckCloudletCompletion();
 		List<? extends Host> list = getVmAllocationPolicy().getHostList();
 		for (int i = 0; i < list.size(); i++) {
 			Host host = list.get(i);
@@ -234,7 +168,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 				GpuCloudletScheduler scheduler = (GpuCloudletScheduler) vm.getCloudletScheduler();
 				while (scheduler.hasGpuTask()) {
 					GpuTask gt = scheduler.getNextGpuTask();
-					sendNow(getId(), GpuCloudSimTags.GPU_MEMORY_TRANSFER, gt);
+					sendNow((SimEntity) getSimulation(), CloudSimTag.GPU_MEMORY_TRANSFER, gt);
 				}
 			}
 		}
@@ -243,7 +177,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 	@Override
 	protected void processVmCreate(SimEvent ev, boolean ack) {
 		Vm vm = (Vm) ev.getData();
-		Log.printLine(CloudSim.clock() + ": Trying to Create VM #" + vm.getId() + " in " + getName());
+		Log.printLine(simulation.clock() + ": Trying to Create VM #" + vm.getId() + " in " + getName());
 
 		boolean result = getVmAllocationPolicy().allocateHostForVm(vm);
 
@@ -348,868 +282,1048 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 	}
 
 
+		/** The characteristics. */
+		private DatacenterCharacteristics characteristics;
 
-		private double lastUnderOrOverloadedDetection = -Double.MAX_VALUE;
-
-		/** @see #getBandwidthPercentForMigration() */
-		private double bandwidthPercentForMigration;
-
-		/**
-		 * Indicates if migrations are disabled or not.
+		/** The regional Cloud Information Service (CIS) name.
+		 * @see org.cloudbus.cloudsim.core.CloudInformationService
 		 */
-		private boolean migrationsEnabled;
+		private String regionalCisName;
 
-		private List<? extends Host> hostList;
-
-		/** @see #getCharacteristics() */
-		private final DatacenterCharacteristics characteristics;
-
-		/** @see #getVmAllocationPolicy() */
+		/** The vm provisioner. */
 		private VmAllocationPolicy vmAllocationPolicy;
 
-		/** @see #getLastProcessTime() */
+		/** The last time some cloudlet was processed in the datacenter. */
 		private double lastProcessTime;
 
-		/** @see #getSchedulingInterval() */
+		/** The storage list. */
+		private List<DatacenterStorage> storageList;
+
+		/** The vm list. */
+		private List<? extends Vm> vmList;
+
+		/** The scheduling delay to process each datacenter received event. */
 		private double schedulingInterval;
 
-		/** @see #getDatacenterStorage() */
-		private DatacenterStorage datacenterStorage;
-
-		private final List<EventListener<HostEventInfo>> onHostAvailableListeners;
-		private final List<EventListener<DatacenterVmMigrationEventInfo>> onVmMigrationFinishListeners;
-
-		/** @see #getTimeZone() */
-		private double timeZone;
-		private Map<Vm, Host> lastMigrationMap;
-
-		/** @see #getHostSearchRetryDelay() */
-		private double hostSearchRetryDelay;
-
-		private PowerModelDatacenter powerModel = PowerModelDatacenter.NULL;
-		private long activeHostsNumber;
-
-
-
 
 		/**
-		 * Creates a Datacenter with an empty {@link #getDatacenterStorage() storage}.
+		 * Overrides this method when making a new and different type of resource. <br>
+		 * <b>NOTE:</b> You do not need to override {@link #body()} method, if you use this method.
 		 *
-		 * @param simulation the CloudSim instance that represents the simulation the Entity belongs
-		 * @param hostList list of {@link Host}s that will compound the Datacenter
-		 * @param vmAllocationPolicy the policy to be used to allocate VMs into hosts
-		 * @see #DatacenterSimple(Simulation, List, VmAllocationPolicy, DatacenterStorage)
-		 */
-		public DatacenterSimple(
-				final Simulation simulation,
-				final List<? extends Host> hostList,
-				final VmAllocationPolicy vmAllocationPolicy)
-		{
-			this(simulation, hostList, vmAllocationPolicy, new DatacenterStorage());
-		}
-
-		/**
-		 * Creates a Datacenter with an empty {@link #getDatacenterStorage() storage}
-		 * and no Hosts.
+		 * @pre $none
+		 * @post $none
 		 *
-		 * @param simulation the CloudSim instance that represents the simulation the Entity belongs
-		 * @param vmAllocationPolicy the policy to be used to allocate VMs into hosts
-		 * @see #DatacenterSimple(Simulation, List, VmAllocationPolicy)
-		 * @see #DatacenterSimple(Simulation, List, VmAllocationPolicy, DatacenterStorage)
-		 * @see #addHost(Host)
-		 * @see #addHostList(List)
+		 * @todo This method doesn't appear to be used
 		 */
-		public DatacenterSimple(
-				final Simulation simulation,
-				final VmAllocationPolicy vmAllocationPolicy)
-		{
-			this(simulation, new ArrayList<>(), vmAllocationPolicy, new DatacenterStorage());
-		}
-
-		/**
-		 * Creates a Datacenter attaching a given storage list to its {@link #getDatacenterStorage() storage}.
-		 *
-		 * @param simulation the CloudSim instance that represents the simulation the Entity belongs
-		 * @param hostList list of {@link Host}s that will compound the Datacenter
-		 * @param vmAllocationPolicy the policy to be used to allocate VMs into hosts
-		 * @param storageList the storage list to attach to the {@link #getDatacenterStorage() datacenter storage}
-		 */
-		public DatacenterSimple(
-				final Simulation simulation,
-				final List<? extends Host> hostList,
-				final VmAllocationPolicy vmAllocationPolicy,
-				final List<SanStorage> storageList)
-		{
-			this(simulation, hostList, vmAllocationPolicy, new DatacenterStorage(storageList));
-		}
-
-		/**
-		 * Creates a Datacenter with a given {@link #getDatacenterStorage() storage}.
-		 *
-		 * @param simulation the CloudSim instance that represents the simulation the Entity belongs
-		 * @param hostList list of {@link Host}s that will compound the Datacenter
-		 * @param vmAllocationPolicy the policy to be used to allocate VMs into hosts
-		 * @param storage the {@link #getDatacenterStorage() storage} for this Datacenter
-		 * @see DatacenterStorage#getStorageList()
-		 */
-		public DatacenterSimple(
-				final Simulation simulation,
-				final List<? extends Host> hostList,
-				final VmAllocationPolicy vmAllocationPolicy,
-				final DatacenterStorage storage)
-		{
-			super(simulation);
-			setHostList(hostList);
-			setLastProcessTime(0.0);
-			setSchedulingInterval(0);
-			setDatacenterStorage(storage);
-			setPowerModel(new PowerModelDatacenterSimple(this));
-
-			this.onHostAvailableListeners = new ArrayList<>();
-			this.onVmMigrationFinishListeners = new ArrayList<>();
-			this.characteristics = new DatacenterCharacteristicsSimple(this);
-			this.bandwidthPercentForMigration = DEF_BW_PERCENT_FOR_MIGRATION;
-			this.migrationsEnabled = true;
-			this.hostSearchRetryDelay = -1;
-
-			this.lastMigrationMap = Collections.emptyMap();
-
-			setVmAllocationPolicy(vmAllocationPolicy);
-		}
-
-		private void setHostList(final List<? extends Host> hostList) {
-			this.hostList = requireNonNull(hostList);
-			setupHosts();
-		}
-
-		private void setupHosts() {
-			long lastHostId = getLastHostId();
-			for (final Host host : hostList) {
-				lastHostId = setupHost(host, lastHostId);
-			}
-		}
-
-		private long getLastHostId() {
-			return hostList.isEmpty() ? -1 : hostList.get(hostList.size()-1).getId();
-		}
-
-		protected long setupHost(final Host host, long nextId) {
-			nextId = Math.max(nextId, -1);
-			if(host.getId() < 0) {
-				host.setId(++nextId);
-			}
-
-			host.setSimulation(getSimulation()).setDatacenter(this);
-			host.setActive(((HostSimple)host).isActivateOnDatacenterStartup());
-			return nextId;
+		protected void registerOtherEntity() {
+			// empty. This should be override by a child class
 		}
 
 		@Override
-		public void processEvent(final SimEvent evt) {
-			if (processCloudletEvents(evt) || processVmEvents(evt) || processNetworkEvents(evt) || processHostEvents(evt)) {
-				return;
-			}
+		public void processEvent(SimEvent ev) {
+			int srcId = -1;
 
-			LOGGER.trace("{}: {}: Unknown event {} received.", getSimulation().clockStr(), this, evt.getTag());
-		}
+			switch (ev.getTag()) {
+				// Resource characteristics inquiry
+				case CloudSimTags.RESOURCE_CHARACTERISTICS:
+					srcId = ((Integer) ev.getData()).intValue();
+					sendNow(srcId, ev.getTag(), getCharacteristics());
+					break;
 
-		private boolean processHostEvents(final SimEvent evt) {
-			if (evt.getTag() == CloudSimTag.HOST_ADD) {
-				processHostAdditionRequest(evt);
-				return true;
-			} else if (evt.getTag() == CloudSimTag.HOST_REMOVE) {
-				processHostRemovalRequest(evt);
-				return true;
-			} else if (evt.getTag() == CloudSimTag.HOST_POWER_ON || evt.getTag() == CloudSimTag.HOST_POWER_OFF) {
-				final HostSimple host = (HostSimple)evt.getData();
-				host.processActivation(evt.getTag() == CloudSimTag.HOST_POWER_ON);
-			}
+				// Resource dynamic info inquiry
+				case CloudSimTags.RESOURCE_DYNAMICS:
+					srcId = ((Integer) ev.getData()).intValue();
+					sendNow(srcId, ev.getTag(), 0);
+					break;
 
-			return false;
-		}
+				case CloudSimTags.RESOURCE_NUM_PE:
+					srcId = ((Integer) ev.getData()).intValue();
+					int numPE = getCharacteristics().getNumberOfPes();
+					sendNow(srcId, ev.getTag(), numPE);
+					break;
 
-		/**
-		 * Process a Host addition request received during simulation runtime.
-		 * @param evt
-		 */
-		private void processHostAdditionRequest(final SimEvent evt) {
-			getHostFromHostEvent(evt).ifPresent(host -> {
-				this.addHost(host);
-				LOGGER.info(
-						"{}: {}: Host {} added to {} during simulation runtime",
-						getSimulation().clockStr(), getClass().getSimpleName(), host.getId(), this);
-				//Notification must be sent only for Hosts added during simulation runtime
-				notifyOnHostAvailableListeners(host);
-			});
-		}
+				case CloudSimTags.RESOURCE_NUM_FREE_PE:
+					srcId = ((Integer) ev.getData()).intValue();
+					int freePesNumber = getCharacteristics().getNumberOfFreePes();
+					sendNow(srcId, ev.getTag(), freePesNumber);
+					break;
 
-		/**
-		 * Process a Host removal request received during simulation runtime.
-		 * @param srcEvt the received event
-		 */
-		private void processHostRemovalRequest(final SimEvent srcEvt) {
-			final long hostId = (long)srcEvt.getData();
-			final Host host = getHostById(hostId);
-			if(Host.NULL.equals(host)) {
-				LOGGER.warn(
-						"{}: {}: Host {} was not found to be removed from {}.",
-						getSimulation().clockStr(), getClass().getSimpleName(), hostId, this);
-				return;
-			}
-
-			final var fault = new HostFaultInjection(this);
-			try {
-				LOGGER.error(
-						"{}: {}: Host {} removed from {} due to injected failure.",
-						getSimulation().clockStr(), getClass().getSimpleName(), host.getId(), this);
-				fault.generateHostFault(host);
-			} finally{
-				fault.shutdown();
-			}
-
-			/*If the Host was found in this Datacenter, cancel the message sent to others
-			 * Datacenters to try to find the Host for removal.*/
-			getSimulation().cancelAll(
-					getSimulation().getCloudInfoService(),
-					evt -> MathUtil.same(evt.getTime(), srcEvt.getTime()) &&
-							evt.getTag() == CloudSimTag.HOST_REMOVE &&
-							(long)evt.getData() == host.getId());
-		}
-
-		private Optional<Host> getHostFromHostEvent(final SimEvent evt) {
-			if(evt.getData() instanceof Host host){
-				return Optional.of(host);
-			}
-
-			return Optional.empty();
-		}
-
-		private boolean processNetworkEvents(final SimEvent evt) {
-			if (evt.getTag() == CloudSimTag.ICMP_PKT_SUBMIT) {
-				processPingRequest(evt);
-				return true;
-			}
-
-			return false;
-		}
-
-		/**
-		 * Process a received event.
-		 * @param evt the event to be processed
-		 */
-		private boolean processVmEvents(final SimEvent evt) {
-			return switch (evt.getTag()) {
-				case VM_CREATE_ACK -> processVmCreate(evt);
-				case VM_VERTICAL_SCALING  -> requestVmVerticalScaling(evt);
-				case VM_DESTROY -> processVmDestroy(evt, false);
-				case VM_DESTROY_ACK -> processVmDestroy(evt, true);
-				case VM_MIGRATE -> finishVmMigration(evt, false);
-				case VM_MIGRATE_ACK -> finishVmMigration(evt, true);
-				case VM_UPDATE_CLOUDLET_PROCESSING -> updateCloudletProcessing() != Double.MAX_VALUE;
-				default -> false;
-			};
-		}
-
-		/**
-		 * Process a {@link CloudSimTag#VM_VERTICAL_SCALING} request,
-		 * trying to scale a Vm resource.
-		 *
-		 * @param evt the received  {@link CloudSimTag#VM_VERTICAL_SCALING} event
-		 * @return true if the Vm was scaled, false otherwise
-		 */
-		private boolean requestVmVerticalScaling(final SimEvent evt) {
-			if (evt.getData() instanceof VerticalVmScaling scaling) {
-				return vmAllocationPolicy.scaleVmVertically(scaling);
-			}
-
-			throw new InvalidEventDataTypeException(evt, "VM_VERTICAL_SCALING", "VerticalVmScaling");
-		}
-
-		private boolean processCloudletEvents(final SimEvent evt) {
-			return switch (evt.getTag()) {
 				// New Cloudlet arrives
-				case CLOUDLET_SUBMIT -> processCloudletSubmit(evt, false);
+				case CloudSimTags.CLOUDLET_SUBMIT:
+					processCloudletSubmit(ev, false);
+					break;
+
 				// New Cloudlet arrives, but the sender asks for an ack
-				case CLOUDLET_SUBMIT_ACK -> processCloudletSubmit(evt, true);
+				case CloudSimTags.CLOUDLET_SUBMIT_ACK:
+					processCloudletSubmit(ev, true);
+					break;
+
 				// Cancels a previously submitted Cloudlet
-				case CLOUDLET_CANCEL -> processCloudlet(evt, CloudSimTag.CLOUDLET_CANCEL);
+				case CloudSimTags.CLOUDLET_CANCEL:
+					processCloudlet(ev, CloudSimTags.CLOUDLET_CANCEL);
+					break;
+
 				// Pauses a previously submitted Cloudlet
-				case CLOUDLET_PAUSE -> processCloudlet(evt, CloudSimTag.CLOUDLET_PAUSE);
-				// Pauses a previously submitted Cloudlet, but the sender asks for an acknowledgement
-				case CLOUDLET_PAUSE_ACK -> processCloudlet(evt, CloudSimTag.CLOUDLET_PAUSE_ACK);
+				case CloudSimTags.CLOUDLET_PAUSE:
+					processCloudlet(ev, CloudSimTags.CLOUDLET_PAUSE);
+					break;
+
+				// Pauses a previously submitted Cloudlet, but the sender
+				// asks for an acknowledgement
+				case CloudSimTags.CLOUDLET_PAUSE_ACK:
+					processCloudlet(ev, CloudSimTags.CLOUDLET_PAUSE_ACK);
+					break;
+
 				// Resumes a previously submitted Cloudlet
-				case CLOUDLET_RESUME -> processCloudlet(evt, CloudSimTag.CLOUDLET_RESUME);
-				// Resumes a previously submitted Cloudlet, but the sender asks for an acknowledgement
-				case CLOUDLET_RESUME_ACK -> processCloudlet(evt, CloudSimTag.CLOUDLET_RESUME_ACK);
-				default -> false;
-			};
+				case CloudSimTags.CLOUDLET_RESUME:
+					processCloudlet(ev, CloudSimTags.CLOUDLET_RESUME);
+					break;
+
+				// Resumes a previously submitted Cloudlet, but the sender
+				// asks for an acknowledgement
+				case CloudSimTags.CLOUDLET_RESUME_ACK:
+					processCloudlet(ev, CloudSimTags.CLOUDLET_RESUME_ACK);
+					break;
+
+				// Moves a previously submitted Cloudlet to a different resource
+				case CloudSimTags.CLOUDLET_MOVE:
+					processCloudletMove((int[]) ev.getData(), CloudSimTags.CLOUDLET_MOVE);
+					break;
+
+				// Moves a previously submitted Cloudlet to a different resource
+				case CloudSimTags.CLOUDLET_MOVE_ACK:
+					processCloudletMove((int[]) ev.getData(), CloudSimTags.CLOUDLET_MOVE_ACK);
+					break;
+
+				// Checks the status of a Cloudlet
+				case CloudSimTags.CLOUDLET_STATUS:
+					processCloudletStatus(ev);
+					break;
+
+				// Ping packet
+				case CloudSimTags.INFOPKT_SUBMIT:
+					processPingRequest(ev);
+					break;
+
+				case CloudSimTags.VM_CREATE:
+					processVmCreate(ev, false);
+					break;
+
+				case CloudSimTags.VM_CREATE_ACK:
+					processVmCreate(ev, true);
+					break;
+
+				case CloudSimTags.VM_DESTROY:
+					processVmDestroy(ev, false);
+					break;
+
+				case CloudSimTags.VM_DESTROY_ACK:
+					processVmDestroy(ev, true);
+					break;
+
+				case CloudSimTags.VM_MIGRATE:
+					processVmMigrate(ev, false);
+					break;
+
+				case CloudSimTags.VM_MIGRATE_ACK:
+					processVmMigrate(ev, true);
+					break;
+
+				case CloudSimTags.VM_DATA_ADD:
+					processDataAdd(ev, false);
+					break;
+
+				case CloudSimTags.VM_DATA_ADD_ACK:
+					processDataAdd(ev, true);
+					break;
+
+				case CloudSimTags.VM_DATA_DEL:
+					processDataDelete(ev, false);
+					break;
+
+				case CloudSimTags.VM_DATA_DEL_ACK:
+					processDataDelete(ev, true);
+					break;
+
+				case CloudSimTags.VM_DATACENTER_EVENT:
+					updateCloudletProcessing();
+					checkCloudletCompletion();
+					break;
+
+				// other unknown tags are processed by this method
+				default:
+					processOtherEvent1(ev);
+					break;
+			}
+		}
+
+		/**
+		 * Process a file deletion request.
+		 *
+		 * @param ev information about the event just happened
+		 * @param ack indicates if the event's sender expects to receive
+		 * an acknowledge message when the event finishes to be processed
+		 */
+		protected void processDataDelete(SimEvent ev, boolean ack) {
+			if (ev == null) {
+				return;
+			}
+
+			Object[] data = (Object[]) ev.getData();
+			if (data == null) {
+				return;
+			}
+
+			String filename = (String) data[0];
+			int req_source = ((Integer) data[1]).intValue();
+			int tag = -1;
+
+			// check if this file can be deleted (do not delete is right now)
+			int msg = deleteFileFromStorage(filename);
+			if (msg == DataCloudTags.FILE_DELETE_SUCCESSFUL) {
+				tag = DataCloudTags.CTLG_DELETE_MASTER;
+			} else { // if an error occured, notify user
+				tag = DataCloudTags.FILE_DELETE_MASTER_RESULT;
+			}
+
+			if (ack) {
+				// send back to sender
+				Object pack[] = new Object[2];
+				pack[0] = filename;
+				pack[1] = Integer.valueOf(msg);
+
+				sendNow(req_source, tag, pack);
+			}
+		}
+
+		/**
+		 * Process a file inclusion request.
+		 *
+		 * @param ev information about the event just happened
+		 * @param ack indicates if the event's sender expects to receive
+		 * an acknowledge message when the event finishes to be processed
+		 */
+		protected void processDataAdd(SimEvent ev, boolean ack) {
+			if (ev == null) {
+				return;
+			}
+
+			Object[] pack = (Object[]) ev.getData();
+			if (pack == null) {
+				return;
+			}
+
+			File file = (File) pack[0]; // get the file
+			file.setMasterCopy(true); // set the file into a master copy
+			int sentFrom = ((Integer) pack[1]).intValue(); // get sender ID
+
+			/******
+			 * // DEBUG Log.printLine(super.get_name() + ".addMasterFile(): " + file.getName() +
+			 * " from " + CloudSim.getEntityName(sentFrom));
+			 *******/
+
+			Object[] data = new Object[3];
+			data[0] = file.getName();
+
+			int msg = addFile(file); // add the file
+
+			if (ack) {
+				data[1] = Integer.valueOf(-1); // no sender id
+				data[2] = Integer.valueOf(msg); // the result of adding a master file
+				sendNow(sentFrom, DataCloudTags.FILE_ADD_MASTER_RESULT, data);
+			}
 		}
 
 		/**
 		 * Processes a ping request.
 		 *
-		 * @param evt information about the event just happened
+		 * @param ev information about the event just happened
+		 *
+		 * @pre ev != null
+		 * @post $none
 		 */
-		protected void processPingRequest(final SimEvent evt) {
-			final IcmpPacket pkt = (IcmpPacket) evt.getData();
-			pkt.setTag(CloudSimTag.ICMP_PKT_RETURN);
-			pkt.setDestination(pkt.getSource());
+		protected void processPingRequest(SimEvent ev) {
+			InfoPacket pkt = (InfoPacket) ev.getData();
+			pkt.setTag(CloudSimTags.INFOPKT_RETURN);
+			pkt.setDestId(pkt.getSrcId());
 
-			// returns the packet to the sender
-			sendNow(pkt.getSource(), CloudSimTag.ICMP_PKT_RETURN, pkt);
+			// sends back to the sender
+			sendNow(pkt.getSrcId(), CloudSimTags.INFOPKT_RETURN, pkt);
+		}
+
+		/**
+		 * Process the event for an User/Broker who wants to know the status of a Cloudlet. This
+		 * Datacenter will then send the status back to the User/Broker.
+		 *
+		 * @param ev information about the event just happened
+		 *
+		 * @pre ev != null
+		 * @post $none
+		 */
+		protected void processCloudletStatus(SimEvent ev) {
+			int cloudletId = 0;
+			int userId = 0;
+			int vmId = 0;
+			int status = -1;
+
+			try {
+				// if a sender using cloudletXXX() methods
+				int data[] = (int[]) ev.getData();
+				cloudletId = data[0];
+				userId = data[1];
+				vmId = data[2];
+
+				status = getVmAllocationPolicy().getHost(vmId, userId).getVm(vmId,userId).getCloudletScheduler()
+						.getCloudletStatus(cloudletId);
+			}
+
+			// if a sender using normal send() methods
+			catch (ClassCastException c) {
+				try {
+					Cloudlet cl = (Cloudlet) ev.getData();
+					cloudletId = cl.getCloudletId();
+					userId = cl.getUserId();
+
+					status = getVmAllocationPolicy().getHost(vmId, userId).getVm(vmId,userId)
+							.getCloudletScheduler().getCloudletStatus(cloudletId);
+				} catch (Exception e) {
+					Log.printConcatLine(getName(), ": Error in processing CloudSimTags.CLOUDLET_STATUS");
+					Log.printLine(e.getMessage());
+					return;
+				}
+			} catch (Exception e) {
+				Log.printConcatLine(getName(), ": Error in processing CloudSimTags.CLOUDLET_STATUS");
+				Log.printLine(e.getMessage());
+				return;
+			}
+
+			int[] array = new int[3];
+			array[0] = getId();
+			array[1] = cloudletId;
+			array[2] = status;
+
+			int tag = CloudSimTags.CLOUDLET_STATUS;
+			sendNow(userId, tag, array);
+		}
+
+		/**
+		 * Process non-default received events that aren't processed by
+		 * the {@link #processEvent(org.cloudbus.cloudsim.core.SimEvent)} method.
+		 * This method should be overridden by subclasses in other to process
+		 * new defined events.
+		 *
+		 * @param ev information about the event just happened
+		 *
+		 * @pre $none
+		 * @post $none
+		 */
+		protected void processOtherEvent1(SimEvent ev) {
+			if (ev == null) {
+				Log.printConcatLine(getName(), ".processOtherEvent(): Error - an event is null.");
+			}
+		}
+
+		/**
+		 * Process the event for an User/Broker who wants to create a VM in this Datacenter. This
+		 * Datacenter will then send the status back to the User/Broker.
+		 *
+		 * @param ev information about the event just happened
+		 * @param ack indicates if the event's sender expects to receive
+		 * an acknowledge message when the event finishes to be processed
+		 *
+		 * @pre ev != null
+		 * @post $none
+		 */
+		protected void processVmCreate(SimEvent ev, boolean ack) {
+			Vm vm = (Vm) ev.getData();
+
+			boolean result = getVmAllocationPolicy().allocateHostForVm(vm);
+
+			if (ack) {
+				int[] data = new int[3];
+				data[0] = getId();
+				data[1] = vm.getId();
+
+				if (result) {
+					data[2] = CloudSimTags.TRUE;
+				} else {
+					data[2] = CloudSimTags.FALSE;
+				}
+				send(vm.getUserId(), CloudSim.getMinTimeBetweenEvents(), CloudSimTags.VM_CREATE_ACK, data);
+			}
+
+			if (result) {
+				getVmList().add(vm);
+
+				if (vm.isBeingInstantiated()) {
+					vm.setBeingInstantiated(false);
+				}
+
+				vm.updateVmProcessing(CloudSim.clock(), getVmAllocationPolicy().getHost(vm).getVmScheduler()
+						.getAllocatedMipsForVm(vm));
+			}
+
+		}
+
+		/**
+		 * Process the event for an User/Broker who wants to destroy a VM previously created in this
+		 * Datacenter. This Datacenter may send, upon request, the status back to the
+		 * User/Broker.
+		 *
+		 * @param ev information about the event just happened
+		 * @param ack indicates if the event's sender expects to receive
+		 * an acknowledge message when the event finishes to be processed
+		 *
+		 * @pre ev != null
+		 * @post $none
+		 */
+		protected void processVmDestroy(SimEvent ev, boolean ack) {
+			Vm vm = (Vm) ev.getData();
+			getVmAllocationPolicy().deallocateHostForVm(vm);
+
+			if (ack) {
+				int[] data = new int[3];
+				data[0] = getId();
+				data[1] = vm.getId();
+				data[2] = CloudSimTags.TRUE;
+
+				sendNow(vm.getUserId(), CloudSimTags.VM_DESTROY_ACK, data);
+			}
+
+			getVmList().remove(vm);
+		}
+
+		/**
+		 * Process the event for an User/Broker who wants to migrate a VM. This Datacenter will
+		 * then send the status back to the User/Broker.
+		 *
+		 * @param ev information about the event just happened
+		 * @param ack indicates if the event's sender expects to receive
+		 * an acknowledge message when the event finishes to be processed
+		 *
+		 * @pre ev != null
+		 * @post $none
+		 */
+		protected void processVmMigrate(SimEvent ev, boolean ack) {
+			Object tmp = ev.getData();
+			if (!(tmp instanceof Map<?, ?>)) {
+				throw new ClassCastException("The data object must be Map<String, Object>");
+			}
+
+			@SuppressWarnings("unchecked")
+			Map<String, Object> migrate = (HashMap<String, Object>) tmp;
+
+			Vm vm = (Vm) migrate.get("vm");
+			Host host = (Host) migrate.get("host");
+
+			getVmAllocationPolicy().deallocateHostForVm(vm);
+			host.removeMigratingInVm(vm);
+			boolean result = getVmAllocationPolicy().allocateHostForVm(vm, host);
+			if (!result) {
+				Log.printLine("[Datacenter.processVmMigrate] VM allocation to the destination host failed");
+				System.exit(0);
+			}
+
+			if (ack) {
+				int[] data = new int[3];
+				data[0] = getId();
+				data[1] = vm.getId();
+
+				if (result) {
+					data[2] = CloudSimTags.TRUE;
+				} else {
+					data[2] = CloudSimTags.FALSE;
+				}
+				sendNow(ev.getSource(), CloudSimTags.VM_CREATE_ACK, data);
+			}
+
+			Log.formatLine(
+					"%.2f: Migration of VM #%d to Host #%d is completed",
+					CloudSim.clock(),
+					vm.getId(),
+					host.getId());
+			vm.setInMigration(false);
 		}
 
 		/**
 		 * Processes a Cloudlet based on the event type.
-		 * @param evt information about the event just happened
-		 * @param tag event tag
-		 * @return
+		 *
+		 * @param ev information about the event just happened
+		 * @param type event type
+		 *
+		 * @pre ev != null
+		 * @pre type > 0
+		 * @post $none
 		 */
-		protected boolean processCloudlet(final SimEvent evt, final CloudSimTag tag) {
-			final Cloudlet cloudlet;
-			try {
-				cloudlet = (Cloudlet) evt.getData();
-			} catch (ClassCastException e) {
-				LOGGER.error("{}: Error in processing Cloudlet: {}", super.getName(), e.getMessage());
-				return false;
+		protected void processCloudlet(SimEvent ev, int type) {
+			int cloudletId = 0;
+			int userId = 0;
+			int vmId = 0;
+
+			try { // if the sender using cloudletXXX() methods
+				int data[] = (int[]) ev.getData();
+				cloudletId = data[0];
+				userId = data[1];
+				vmId = data[2];
 			}
 
-			return switch (tag) {
-				case CLOUDLET_CANCEL -> processCloudletCancel(cloudlet);
-				case CLOUDLET_PAUSE -> processCloudletPause(cloudlet, false);
-				case CLOUDLET_PAUSE_ACK -> processCloudletPause(cloudlet, true);
-				case CLOUDLET_RESUME -> processCloudletResume(cloudlet, false);
-				case CLOUDLET_RESUME_ACK -> processCloudletResume(cloudlet, true);
-				default -> {
-					LOGGER.trace(
-							"{}: Unable to handle a request from {} with event tag = {}",
-							this, evt.getSource().getName(), evt.getTag());
-					yield false;
+			// if the sender using normal send() methods
+			catch (ClassCastException c) {
+				try {
+					Cloudlet cl = (Cloudlet) ev.getData();
+					cloudletId = cl.getCloudletId();
+					userId = cl.getUserId();
+					vmId = cl.getVmId();
+				} catch (Exception e) {
+					Log.printConcatLine(super.getName(), ": Error in processing Cloudlet");
+					Log.printLine(e.getMessage());
+					return;
 				}
-			};
+			} catch (Exception e) {
+				Log.printConcatLine(super.getName(), ": Error in processing a Cloudlet.");
+				Log.printLine(e.getMessage());
+				return;
+			}
+
+			// begins executing ....
+			switch (type) {
+				case CloudSimTags.CLOUDLET_CANCEL:
+					processCloudletCancel(cloudletId, userId, vmId);
+					break;
+
+				case CloudSimTags.CLOUDLET_PAUSE:
+					processCloudletPause(cloudletId, userId, vmId, false);
+					break;
+
+				case CloudSimTags.CLOUDLET_PAUSE_ACK:
+					processCloudletPause(cloudletId, userId, vmId, true);
+					break;
+
+				case CloudSimTags.CLOUDLET_RESUME:
+					processCloudletResume(cloudletId, userId, vmId, false);
+					break;
+
+				case CloudSimTags.CLOUDLET_RESUME_ACK:
+					processCloudletResume(cloudletId, userId, vmId, true);
+					break;
+				default:
+					break;
+			}
+
 		}
 
 		/**
-		 * Processes the submission of a Cloudlet by a DatacenterBroker.
-		 * @param evt information about the event just happened
-		 * @param ack indicates if the event's sender expects to receive an acknowledgement
-		 * @return
+		 * Process the event for an User/Broker who wants to move a Cloudlet.
+		 *
+		 * @param receivedData information about the migration
+		 * @param type event type
+		 *
+		 * @pre receivedData != null
+		 * @pre type > 0
+		 * @post $none
 		 */
-		protected boolean processCloudletSubmit(final SimEvent evt, final boolean ack) {
-			final var cloudlet = (Cloudlet) evt.getData();
-			if (cloudlet.isFinished()) {
-				notifyBrokerAboutAlreadyFinishedCloudlet(cloudlet, ack);
-				return false;
+		protected void processCloudletMove(int[] receivedData, int type) {
+			updateCloudletProcessing();
+
+			int[] array = receivedData;
+			int cloudletId = array[0];
+			int userId = array[1];
+			int vmId = array[2];
+			int vmDestId = array[3];
+			int destId = array[4];
+
+			// get the cloudlet
+			Cloudlet cl = getVmAllocationPolicy().getHost(vmId, userId).getVm(vmId,userId)
+					.getCloudletScheduler().cloudletCancel(cloudletId);
+
+			boolean failed = false;
+			if (cl == null) {// cloudlet doesn't exist
+				failed = true;
+			} else {
+				// has the cloudlet already finished?
+				if (cl.getCloudletStatusString() == "Success") {// if yes, send it back to user
+					int[] data = new int[3];
+					data[0] = getId();
+					data[1] = cloudletId;
+					data[2] = 0;
+					sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_SUBMIT_ACK, data);
+					sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_RETURN, cl);
+				}
+
+				// prepare cloudlet for migration
+				cl.setVmId(vmDestId);
+
+				// the cloudlet will migrate from one vm to another does the destination VM exist?
+				if (destId == getId()) {
+					Vm vm = getVmAllocationPolicy().getHost(vmDestId, userId).getVm(vmDestId,userId);
+					if (vm == null) {
+						failed = true;
+					} else {
+						// time to transfer the files
+						double fileTransferTime = predictFileTransferTime(cl.getRequiredFiles());
+						vm.getCloudletScheduler().cloudletSubmit(cl, fileTransferTime);
+					}
+				} else {// the cloudlet will migrate from one resource to another
+					int tag = ((type == CloudSimTags.CLOUDLET_MOVE_ACK) ? CloudSimTags.CLOUDLET_SUBMIT_ACK
+							: CloudSimTags.CLOUDLET_SUBMIT);
+					sendNow(destId, tag, cl);
+				}
 			}
 
-			cloudlet.assignToDatacenter(this);
-			submitCloudletToVm(cloudlet, ack);
-			return true;
+			if (type == CloudSimTags.CLOUDLET_MOVE_ACK) {// send ACK if requested
+				int[] data = new int[3];
+				data[0] = getId();
+				data[1] = cloudletId;
+				if (failed) {
+					data[2] = 0;
+				} else {
+					data[2] = 1;
+				}
+				sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_SUBMIT_ACK, data);
+			}
 		}
 
 		/**
-		 * Submits a cloudlet to be executed inside its bind VM.
+		 * Processes a Cloudlet submission.
 		 *
-		 * @param cloudlet the cloudlet to the executed
-		 * @param ack indicates if the Broker is waiting for an ACK after the Datacenter
-		 * receives the cloudlet submission
+		 * @param ev information about the event just happened
+		 * @param ack indicates if the event's sender expects to receive
+		 * an acknowledge message when the event finishes to be processed
+		 *
+		 * @pre ev != null
+		 * @post $none
 		 */
-		private void submitCloudletToVm(final Cloudlet cloudlet, final boolean ack) {
-			// time to transfer cloudlet's files
-			final double fileTransferTime = getDatacenterStorage().predictFileTransferTime(cloudlet.getRequiredFiles());
+		protected void processCloudletSubmit(SimEvent ev, boolean ack) {
+			updateCloudletProcessing();
 
-			final var scheduler = cloudlet.getVm().getCloudletScheduler();
-			final double estimatedFinishTime = scheduler.cloudletSubmit(cloudlet, fileTransferTime);
+			try {
+				// gets the Cloudlet object
+				Cloudlet cl = (Cloudlet) ev.getData();
 
-			// if this cloudlet is in the exec queue
-			if (estimatedFinishTime > 0.0 && !Double.isInfinite(estimatedFinishTime)) {
-				send(this,
-						getCloudletProcessingUpdateInterval(estimatedFinishTime),
-						CloudSimTag.VM_UPDATE_CLOUDLET_PROCESSING);
+				// checks whether this Cloudlet has finished or not
+				if (cl.isFinished()) {
+					String name = CloudSim.getEntityName(cl.getUserId());
+					Log.printConcatLine(getName(), ": Warning - Cloudlet #", cl.getCloudletId(), " owned by ", name,
+							" is already completed/finished.");
+					Log.printLine("Therefore, it is not being executed again");
+					Log.printLine();
+
+					// NOTE: If a Cloudlet has finished, then it won't be processed.
+					// So, if ack is required, this method sends back a result.
+					// If ack is not required, this method don't send back a result.
+					// Hence, this might cause CloudSim to be hanged since waiting
+					// for this Cloudlet back.
+					if (ack) {
+						int[] data = new int[3];
+						data[0] = getId();
+						data[1] = cl.getCloudletId();
+						data[2] = CloudSimTags.FALSE;
+
+						// unique tag = operation tag
+						int tag = CloudSimTags.CLOUDLET_SUBMIT_ACK;
+						sendNow(cl.getUserId(), tag, data);
+					}
+
+					sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_RETURN, cl);
+
+					return;
+				}
+
+				// process this Cloudlet to this CloudResource
+				cl.setResourceParameter(
+						getId(), getCharacteristics().getCostPerSecond(),
+						getCharacteristics().getCostPerBw());
+
+				int userId = cl.getUserId();
+				int vmId = cl.getVmId();
+
+				// time to transfer the files
+				double fileTransferTime = predictFileTransferTime(cl.getRequiredFiles());
+
+				Host host = getVmAllocationPolicy().getHost(vmId, userId);
+				Vm vm = host.getVm(vmId, userId);
+				CloudletScheduler scheduler = vm.getCloudletScheduler();
+				double estimatedFinishTime = scheduler.cloudletSubmit(cl, fileTransferTime);
+
+				// if this cloudlet is in the exec queue
+				if (estimatedFinishTime > 0.0 && !Double.isInfinite(estimatedFinishTime)) {
+					estimatedFinishTime += fileTransferTime;
+					send(getId(), estimatedFinishTime, CloudSimTags.VM_DATACENTER_EVENT);
+				}
+
+				if (ack) {
+					int[] data = new int[3];
+					data[0] = getId();
+					data[1] = cl.getCloudletId();
+					data[2] = CloudSimTags.TRUE;
+
+					// unique tag = operation tag
+					int tag = CloudSimTags.CLOUDLET_SUBMIT_ACK;
+					sendNow(cl.getUserId(), tag, data);
+				}
+			} catch (ClassCastException c) {
+				Log.printLine(getName() + ".processCloudletSubmit(): " + "ClassCastException error.");
+				c.printStackTrace();
+			} catch (Exception e) {
+				Log.printLine(getName() + ".processCloudletSubmit(): " + "Exception error.");
+				e.printStackTrace();
 			}
 
-			((CustomerEntityAbstract)cloudlet).setCreationTime();
-			sendCloudletSubmitAckToBroker(cloudlet, ack);
+			checkCloudletCompletion();
 		}
 
 		/**
-		 * Gets the time when the next update of cloudlets has to be performed.
-		 * This is the minimum value between the {@link #getSchedulingInterval()} and the given time
-		 * (if the scheduling interval is enable, i.e. if it's greater than 0),
-		 * which represents when the next update of Cloudlets processing
-		 * has to be performed.
+		 * Predict the total time to transfer a list of files.
 		 *
-		 * @param nextFinishingCloudletTime the predicted completion time of the earliest finishing cloudlet
-		 * (which is a relative delay from the current simulation time),
-		 * or {@link Double#MAX_VALUE} if there is no next Cloudlet to execute
-		 * @return next time cloudlets processing will be updated (a relative delay from the current simulation time)
-		 *
-		 * @see #updateCloudletProcessing()
+		 * @param requiredFiles the files to be transferred
+		 * @return the predicted time
 		 */
-		protected double getCloudletProcessingUpdateInterval(final double nextFinishingCloudletTime){
-			if(schedulingInterval == 0) {
-				return nextFinishingCloudletTime;
+		protected double predictFileTransferTime(List<String> requiredFiles) {
+			double time = 0.0;
+
+			Iterator<String> iter = requiredFiles.iterator();
+			while (iter.hasNext()) {
+				String fileName = iter.next();
+				for (int i = 0; i < getStorageList().size(); i++) {
+					Storage tempStorage = getStorageList().get(i);
+					File tempFile = tempStorage.getFile(fileName);
+					if (tempFile != null) {
+						time += tempFile.getSize() / tempStorage.getMaxTransferRate();
+						break;
+					}
+				}
 			}
-
-			final double time = Math.floor(clock());
-			final double mod = time % schedulingInterval;
-			/* If a scheduling interval is set, ensures the next time that Cloudlets' processing
-			 * are updated is multiple of the scheduling interval.
-			 * If there is an event happening before such a time, then the event
-			 * will be scheduled as usual. Otherwise, the update
-			 * is scheduled to the next time multiple of the scheduling interval.*/
-			final double delay = mod == 0 ? schedulingInterval : (time - mod + schedulingInterval) - time;
-			return Math.min(nextFinishingCloudletTime, delay);
-		}
-
-		private double clock() {
-			return getSimulation().clock();
+			return time;
 		}
 
 		/**
 		 * Processes a Cloudlet resume request.
-		 * @param cloudlet cloudlet to be resumed
-		 * @param ack indicates if the event's sender expects to receive an
-		 * @return
+		 *
+		 * @param cloudletId ID of the cloudlet to be resumed
+		 * @param userId ID of the cloudlet's owner
+		 * @param ack indicates if the event's sender expects to receive
+		 * an acknowledge message when the event finishes to be processed
+		 * @param vmId the id of the VM where the cloudlet has to be resumed
+		 *
+		 * @pre $none
+		 * @post $none
 		 */
-		protected boolean processCloudletResume(final Cloudlet cloudlet, final boolean ack) {
-			final double estimatedFinishTime = cloudlet.getVm().getCloudletScheduler().cloudletResume(cloudlet);
+		protected void processCloudletResume(int cloudletId, int userId, int vmId, boolean ack) {
+			double eventTime = getVmAllocationPolicy().getHost(vmId, userId).getVm(vmId,userId)
+					.getCloudletScheduler().cloudletResume(cloudletId);
 
-			if (estimatedFinishTime > 0.0 && estimatedFinishTime > clock()) {
-				schedule(this,
-						getCloudletProcessingUpdateInterval(estimatedFinishTime),
-						CloudSimTag.VM_UPDATE_CLOUDLET_PROCESSING);
+			boolean status = false;
+			if (eventTime > 0.0) { // if this cloudlet is in the exec queue
+				status = true;
+				if (eventTime > CloudSim.clock()) {
+					schedule(getId(), eventTime, CloudSimTags.VM_DATACENTER_EVENT);
+				}
 			}
 
-			sendAck(ack, cloudlet, CloudSimTag.CLOUDLET_RESUME_ACK);
-			return true;
-		}
-
-		private void sendAck(final boolean ack, final Cloudlet cloudlet, final CloudSimTag tag) {
 			if (ack) {
-				sendNow(cloudlet.getBroker(), tag, cloudlet);
+				int[] data = new int[3];
+				data[0] = getId();
+				data[1] = cloudletId;
+				if (status) {
+					data[2] = CloudSimTags.TRUE;
+				} else {
+					data[2] = CloudSimTags.FALSE;
+				}
+				sendNow(userId, CloudSimTags.CLOUDLET_RESUME_ACK, data);
 			}
 		}
 
 		/**
 		 * Processes a Cloudlet pause request.
-		 *  @param cloudlet cloudlet to be paused
-		 * @param ack indicates if the event's sender expects to receive an
-		 * @return
+		 *
+		 * @param cloudletId ID of the cloudlet to be paused
+		 * @param userId ID of the cloudlet's owner
+		 * @param ack indicates if the event's sender expects to receive
+		 * an acknowledge message when the event finishes to be processed
+		 * @param vmId the id of the VM where the cloudlet has to be paused
+		 *
+		 * @pre $none
+		 * @post $none
 		 */
-		protected boolean processCloudletPause(final Cloudlet cloudlet, final boolean ack) {
-			cloudlet.getVm().getCloudletScheduler().cloudletPause(cloudlet);
-			sendAck(ack, cloudlet, CloudSimTag.CLOUDLET_PAUSE_ACK);
-			return true;
+		protected void processCloudletPause(int cloudletId, int userId, int vmId, boolean ack) {
+			boolean status = getVmAllocationPolicy().getHost(vmId, userId).getVm(vmId,userId)
+					.getCloudletScheduler().cloudletPause(cloudletId);
+
+			if (ack) {
+				int[] data = new int[3];
+				data[0] = getId();
+				data[1] = cloudletId;
+				if (status) {
+					data[2] = CloudSimTags.TRUE;
+				} else {
+					data[2] = CloudSimTags.FALSE;
+				}
+				sendNow(userId, CloudSimTags.CLOUDLET_PAUSE_ACK, data);
+			}
 		}
 
 		/**
 		 * Processes a Cloudlet cancel request.
 		 *
-		 * @param cloudlet cloudlet to be canceled
-		 * @return
+		 * @param cloudletId ID of the cloudlet to be canceled
+		 * @param userId ID of the cloudlet's owner
+		 * @param vmId the id of the VM where the cloudlet has to be canceled
+		 *
+		 * @pre $none
+		 * @post $none
 		 */
-		protected boolean processCloudletCancel(final Cloudlet cloudlet) {
-			cloudlet.getVm().getCloudletScheduler().cloudletCancel(cloudlet);
-			sendNow(cloudlet.getBroker(), CloudSimTag.CLOUDLET_CANCEL, cloudlet);
-			return true;
+		protected void processCloudletCancel(int cloudletId, int userId, int vmId) {
+			Cloudlet cl = getVmAllocationPolicy().getHost(vmId, userId).getVm(vmId,userId)
+					.getCloudletScheduler().cloudletCancel(cloudletId);
+			sendNow(userId, CloudSimTags.CLOUDLET_CANCEL, cl);
 		}
 
 		/**
-		 * Process the event for a Broker which wants to create a VM in this
-		 * Datacenter. This Datacenter will then send the status back to
-		 * the Broker.
+		 * Updates processing of each cloudlet running in this Datacenter. It is necessary because
+		 * Hosts and VirtualMachines are simple objects, not entities. So, they don't receive events and
+		 * updating cloudlets inside them must be called from the outside.
 		 *
-		 * @param evt information about the event just happened
-		 * acknowledge message when the event finishes to be processed
-		 * @return true if a host was allocated to the VM; false otherwise
+		 * @pre $none
+		 * @post $none
 		 */
-		private boolean processVmCreate(final SimEvent evt) {
-			final var vm = (Vm) evt.getData();
-
-			final boolean hostAllocatedForVm = vmAllocationPolicy.allocateHostForVm(vm).fully();
-			if (hostAllocatedForVm) {
-				vm.updateProcessing(vm.getHost().getVmScheduler().getAllocatedMips(vm));
-			}
-
-        /* Acknowledges that the request was received by the Datacenter,
-          (the broker is expecting that if the Vm was created or not). */
-			send(vm.getBroker(), getSimulation().getMinTimeBetweenEvents(), CloudSimTag.VM_CREATE_ACK, vm);
-
-			return hostAllocatedForVm;
-		}
-
-		/**
-		 * Process the event sent by a Broker, requesting the destruction of a given VM
-		 * created in this Datacenter. This Datacenter may send,
-		 * upon request, the status back to the Broker.
-		 *
-		 * @param evt information about the event just happened
-		 * @param ack indicates if the event's sender expects to receive an
-		 * @return
-		 */
-		protected boolean processVmDestroy(final SimEvent evt, final boolean ack) {
-			final var vm = (Vm) evt.getData();
-			vmAllocationPolicy.deallocateHostForVm(vm);
-
-			if (ack) {
-				sendNow(vm.getBroker(), CloudSimTag.VM_DESTROY_ACK, vm);
-			}
-
-			vm.getBroker().requestShutdownWhenIdle();
-			if(getSimulation().isAborted() || getSimulation().isAbortRequested()) {
-				return true;
-			}
-
-			final String warningMsg = generateNotFinishedCloudletsWarning(vm);
-			final String msg = String.format(
-					"%s: %s: %s destroyed on %s. %s",
-					getSimulation().clockStr(), getClass().getSimpleName(), vm, vm.getHost(), warningMsg);
-			if(warningMsg.isEmpty() || getSimulation().isTerminationTimeSet())
-				LOGGER.info(msg);
-			else LOGGER.warn(msg);
-			return true;
-		}
-
-		private String generateNotFinishedCloudletsWarning(final Vm vm) {
-			final int cloudletsNoFinished = vm.getCloudletScheduler().getCloudletList().size();
-			if(cloudletsNoFinished == 0) {
-				return "";
-			}
-
-			return String.format(
-					"It had a total of %d cloudlets (running + waiting). %s", cloudletsNoFinished,
-					"Some events may have been missed. You can try: " +
-							"(a) decreasing CloudSim's minTimeBetweenEvents and/or Datacenter's schedulingInterval attribute; " +
-							"(b) increasing broker's Vm destruction delay for idle VMs if you set it to zero; " +
-							"(c) defining Cloudlets with smaller length (your Datacenter's scheduling interval may be smaller than the time to finish some Cloudlets).");
-		}
-
-		/**
-		 * Finishes the process of migrating a VM.
-		 *
-		 * @param evt information about the event just happened
-		 * @param ack indicates if the event's sender expects to receive an
-		 * acknowledgement message when the event finishes being processed
-		 * @see CloudSimTag#VM_MIGRATE
-		 * @return
-		 */
-		protected boolean finishVmMigration(final SimEvent evt, final boolean ack) {
-			if (!(evt.getData() instanceof Map.Entry<?, ?>)) {
-				throw new InvalidEventDataTypeException(evt, "VM_MIGRATE", "Map.Entry<Vm, Host>");
-			}
-
-			final var entry = (Map.Entry<Vm, Host>) evt.getData();
-
-			final Vm vm = entry.getKey();
-			final Host sourceHost = vm.getHost();
-			final Host targetHost = entry.getValue();
-
-			//Updates processing of all Hosts to get their latest state before migrating VMs
-			updateHostsProcessing();
-
-			//De-allocates the VM on the source Host (where it is migrating out)
-			vmAllocationPolicy.deallocateHostForVm(vm);
-
-			targetHost.removeMigratingInVm(vm);
-			final HostSuitability suitability = vmAllocationPolicy.allocateHostForVm(vm, targetHost);
-			if(suitability.fully()) {
-				((VmSimple)vm).updateMigrationFinishListeners(targetHost);
-            /*When the VM is destroyed from the source host, it's removed from the vmExecList.
-            After migration, we need to add it again.*/
-				vm.getBroker().getVmExecList().add(vm);
-
-				if (ack) {
-					sendNow(evt.getSource(), CloudSimTag.VM_CREATE_ACK, vm);
-				}
-			}
-
-			final SimEvent event = getSimulation().findFirstDeferred(this, new PredicateType(CloudSimTag.VM_MIGRATE));
-			if (event == null || event.getTime() > clock()) {
-				//Updates processing of all Hosts again to get their latest state after the VMs migrations
-				updateHostsProcessing();
-			}
-
-			if (suitability.fully())
-				LOGGER.info("{}: Migration of {} from {} to {} is completed.", getSimulation().clockStr(), vm, sourceHost, targetHost);
-			else LOGGER.error(
-					"{}: {}: Allocation of {} to the destination {} failed due to {}!",
-					getSimulation().clockStr(), this, vm, targetHost, suitability);
-
-			onVmMigrationFinishListeners.forEach(listener -> listener.update(DatacenterVmMigrationEventInfo.of(listener, vm, suitability)));
-			return true;
-		}
-
-		/**
-		 * Checks if a submitted cloudlet has already finished.
-		 * If it is the case, the Datacenter notifies the Broker that
-		 * the Cloudlet cannot be created again because it has already finished.
-		 *
-		 * @param cloudlet the finished cloudlet
-		 * @param ack indicates if the Broker is waiting for an ACK after the Datacenter
-		 * receives the cloudlet submission
-		 */
-		private void notifyBrokerAboutAlreadyFinishedCloudlet(final Cloudlet cloudlet, final boolean ack) {
-			LOGGER.warn(
-					"{}: {} owned by {} is already completed/finished. It won't be executed again.",
-					getName(), cloudlet, cloudlet.getBroker());
-
-        /*
-         NOTE: If a Cloudlet has finished, then it won't be processed.
-         So, if ack is required, this method sends back a result.
-         If ack is not required, this method don't send back a result.
-         Hence, this might cause CloudSim to be hanged since waiting
-         for this Cloudlet back.
-        */
-			sendCloudletSubmitAckToBroker(cloudlet, ack);
-
-			sendNow(cloudlet.getBroker(), CloudSimTag.CLOUDLET_RETURN, cloudlet);
-		}
-
-		/**
-		 * Sends an ACK to the DatacenterBroker that submitted the Cloudlet for execution
-		 * in order to respond the reception of the submission request,
-		 * informing if the cloudlet was created or not.
-		 *
-		 * The ACK is sent just if the Broker is waiting for it and that condition
-		 * is indicated in the ack parameter.
-		 *
-		 * @param cloudlet the cloudlet to respond to DatacenterBroker if it was created or not
-		 * @param ack indicates if the Broker is waiting for an ACK after the Datacenter
-		 * receives the cloudlet submission
-		 */
-		private void sendCloudletSubmitAckToBroker(final Cloudlet cloudlet, final boolean ack) {
-			if(!ack){
-				return;
-			}
-
-			sendNow(cloudlet.getBroker(), CloudSimTag.CLOUDLET_SUBMIT_ACK, cloudlet);
-		}
-
-		/**
-		 * Updates the processing of all Hosts, meaning
-		 * it makes the processing of VMs running inside such hosts to be updated.
-		 * Finally, the processing of Cloudlets running inside such VMs is updated too.
-		 *
-		 * @return the predicted completion time of the earliest finishing cloudlet
-		 * (which is a relative delay from the current simulation time),
-		 * or {@link Double#MAX_VALUE} if there is no next Cloudlet to execute
-		 */
-		protected double updateHostsProcessing() {
-			double nextSimulationDelay = Double.MAX_VALUE;
-			for (final Host host : getHostList()) {
-				final double delay = host.updateProcessing(clock());
-				nextSimulationDelay = Math.min(delay, nextSimulationDelay);
-			}
-
-			// Guarantees a minimal interval before scheduling the event
-			final double minTimeBetweenEvents = getSimulation().getMinTimeBetweenEvents()+0.01;
-			nextSimulationDelay = nextSimulationDelay == 0 ? nextSimulationDelay : Math.max(nextSimulationDelay, minTimeBetweenEvents);
-
-			return nextSimulationDelay;
-		}
-
-		/**
-		 * Updates processing of each Host, that fires the update of VMs,
-		 * which in turn updates cloudlets running in this Datacenter.
-		 * After that, the method schedules the next processing update.
-		 * It is necessary because Hosts and VMs are simple objects, not
-		 * entities. So, they don't receive events and updating cloudlets inside
-		 * them must be called from the outside.
-		 *
-		 * @return the predicted completion time of the earliest finishing cloudlet
-		 * (which is a relative delay from the current simulation time),
-		 * or {@link Double#MAX_VALUE} if there is no next Cloudlet to execute
-		 * or it isn't time to update the cloudlets
-		 */
-		protected double updateCloudletProcessing() {
-			if (!isTimeToUpdateCloudletsProcessing()){
-				return Double.MAX_VALUE;
-			}
-
-			double nextSimulationDelay = updateHostsProcessing();
-
-			if (nextSimulationDelay != Double.MAX_VALUE) {
-				nextSimulationDelay = getCloudletProcessingUpdateInterval(nextSimulationDelay);
-				schedule(nextSimulationDelay, CloudSimTag.VM_UPDATE_CLOUDLET_PROCESSING);
-			}
-			setLastProcessTime(clock());
-
-			checkIfVmMigrationsAreNeeded();
-			return nextSimulationDelay;
-		}
-
-		private boolean isTimeToUpdateCloudletsProcessing() {
+		protected void updateCloudletProcessing() {
 			// if some time passed since last processing
 			// R: for term is to allow loop at simulation start. Otherwise, one initial
 			// simulation step is skipped and schedulers are not properly initialized
-			return clock() < 0.111 ||
-					clock() >= lastProcessTime + getSimulation().getMinTimeBetweenEvents();
+			if (CloudSim.clock() < 0.111 || CloudSim.clock() > getLastProcessTime() + CloudSim.getMinTimeBetweenEvents()) {
+				List<? extends Host> list = getVmAllocationPolicy().getHostList();
+				double smallerTime = Double.MAX_VALUE;
+				// for each host...
+				for (int i = 0; i < list.size(); i++) {
+					Host host = list.get(i);
+					// inform VMs to update processing
+					double time = host.updateVmsProcessing(CloudSim.clock());
+					// what time do we expect that the next cloudlet will finish?
+					if (time < smallerTime) {
+						smallerTime = time;
+					}
+				}
+				// gurantees a minimal interval before scheduling the event
+				if (smallerTime < CloudSim.clock() + CloudSim.getMinTimeBetweenEvents() + 0.01) {
+					smallerTime = CloudSim.clock() + CloudSim.getMinTimeBetweenEvents() + 0.01;
+				}
+				if (smallerTime != Double.MAX_VALUE) {
+					schedule(getId(), (smallerTime - CloudSim.clock()), CloudSimTags.VM_DATACENTER_EVENT);
+				}
+				setLastProcessTime(CloudSim.clock());
+			}
 		}
 
 		/**
-		 * Checks if the {@link #getVmAllocationPolicy()} has defined
-		 * a new VM placement map, then sends the request to migrate VMs.
+		 * Verifies if some cloudlet inside this Datacenter already finished.
+		 * If yes, send it to the User/Broker
 		 *
-		 * <p><b>This is an expensive operation for large scale simulations.</b></p>
+		 * @pre $none
+		 * @post $none
 		 */
-		private void checkIfVmMigrationsAreNeeded() {
-			if (!isTimeToSearchForSuitableHosts()) {
-				return;
-			}
-
-			lastMigrationMap = vmAllocationPolicy.getOptimizedAllocationMap(getVmList());
-			for (final Map.Entry<Vm, Host> entry : lastMigrationMap.entrySet()) {
-				requestVmMigration(entry.getKey(), entry.getValue());
-			}
-
-			if(areThereUnderOrOverloadedHostsAndMigrationIsSupported()){
-				lastUnderOrOverloadedDetection = clock();
-			}
-		}
-
-
-
-		/**
-		 * Indicates if it's time to check if suitable Hosts are available to migrate VMs
-		 * from under or overload Hosts.
-		 * @return
-		 */
-		private boolean isTimeToSearchForSuitableHosts(){
-			final double elapsedSecs = clock() - lastUnderOrOverloadedDetection;
-			return isMigrationsEnabled() && elapsedSecs >= hostSearchRetryDelay;
-		}
-
-		private boolean areThereUnderOrOverloadedHostsAndMigrationIsSupported(){
-			if(vmAllocationPolicy instanceof VmAllocationPolicyMigration migrationPolicy){
-				return migrationPolicy.areHostsUnderOrOverloaded();
-			}
-
-			return false;
-		}
-
-		@Override
-		public void requestVmMigration(final Vm sourceVm) {
-			requestVmMigration(sourceVm, Host.NULL);
-		}
-
-		@Override
-		public void requestVmMigration(final Vm sourceVm, Host targetHost) {
-			//If Host.NULL is given, it must try to find a target host
-			if(Host.NULL.equals(targetHost)){
-				targetHost = vmAllocationPolicy.findHostForVm(sourceVm).orElse(Host.NULL);
-			}
-
-			//If a host couldn't be found yet
-			if(Host.NULL.equals(targetHost)) {
-				LOGGER.warn("{}: {}: No suitable host found for {} in {}", sourceVm.getSimulation().clockStr(), getClass().getSimpleName(), sourceVm, this);
-				return;
-			}
-
-			final Host sourceHost = sourceVm.getHost();
-			final double delay = timeToMigrateVm(sourceVm, targetHost);
-			final String msg1 =
-					Host.NULL.equals(sourceHost) ?
-							String.format("%s to %s", sourceVm, targetHost) :
-							String.format("%s from %s to %s", sourceVm, sourceHost, targetHost);
-
-			final String currentTime = getSimulation().clockStr();
-			final var fmt = "It's expected to finish in %.2f seconds, considering the %.0f%% of bandwidth allowed for migration and the VM RAM size.";
-			final String msg2 = String.format(fmt, delay, getBandwidthPercentForMigration()*100);
-			LOGGER.info("{}: {}: Migration of {} is started. {}", currentTime, getName(), msg1, msg2);
-
-			if(targetHost.addMigratingInVm(sourceVm)) {
-				sourceHost.addVmMigratingOut(sourceVm);
-				send(this, delay, CloudSimTag.VM_MIGRATE, new TreeMap.SimpleEntry<>(sourceVm, targetHost));
+		protected void firstcheckCloudletCompletion() {
+			List<? extends Host> list = getVmAllocationPolicy().getHostList();
+			for (int i = 0; i < list.size(); i++) {
+				Host host = list.get(i);
+				for (Vm vm : host.getVmList()) {
+					while (vm.getCloudletScheduler().isFinishedCloudlets()) {
+						Cloudlet cl = vm.getCloudletScheduler().getNextFinishedCloudlet();
+						if (cl != null) {
+							sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_RETURN, cl);
+						}
+					}
+				}
 			}
 		}
 
 		/**
-		 * Computes the expected time to migrate a VM to a given Host.
-		 * It is computed as: VM RAM (MB)/Target Host Bandwidth (Mb/s).
+		 * Adds a file into the resource's storage before the experiment starts.
+		 * If the file is a master file, then it will be registered to the RC
+		 * when the experiment begins.
 		 *
-		 * @param vm the VM to migrate.
-		 * @param targetHost the Host where tto migrate the VM
-		 * @return the time (in seconds) that is expected to migrate the VM
+		 * @param file a DataCloud file
+		 * @return a tag number denoting whether this operation is a success or not
 		 */
-		private double timeToMigrateVm(final Vm vm, final Host targetHost) {
-			return vm.getRam().getCapacity() / bitesToBytes(targetHost.getBw().getCapacity() * getBandwidthPercentForMigration());
+		public int addFile(File file) {
+			if (file == null) {
+				return DataCloudTags.FILE_ADD_ERROR_EMPTY;
+			}
+
+			if (contains(file.getName())) {
+				return DataCloudTags.FILE_ADD_ERROR_EXIST_READ_ONLY;
+			}
+
+			// check storage space first
+			if (getStorageList().size() <= 0) {
+				return DataCloudTags.FILE_ADD_ERROR_STORAGE_FULL;
+			}
+
+			Storage tempStorage = null;
+			int msg = DataCloudTags.FILE_ADD_ERROR_STORAGE_FULL;
+
+			for (int i = 0; i < getStorageList().size(); i++) {
+				tempStorage = getStorageList().get(i);
+				if (tempStorage.getAvailableSpace() >= file.getSize()) {
+					tempStorage.addFile(file);
+					msg = DataCloudTags.FILE_ADD_SUCCESSFUL;
+					break;
+				}
+			}
+
+			return msg;
+		}
+
+		/**
+		 * Checks whether the datacenter has the given file.
+		 *
+		 * @param file a file to be searched
+		 * @return <tt>true</tt> if successful, <tt>false</tt> otherwise
+		 */
+		protected boolean contains(File file) {
+			if (file == null) {
+				return false;
+			}
+			return contains(file.getName());
+		}
+
+		/**
+		 * Checks whether the datacenter has the given file.
+		 *
+		 * @param fileName a file name to be searched
+		 * @return <tt>true</tt> if successful, <tt>false</tt> otherwise
+		 */
+		protected boolean contains(String fileName) {
+			if (fileName == null || fileName.length() == 0) {
+				return false;
+			}
+
+			Iterator<Storage> it = getStorageList().iterator();
+			Storage storage = null;
+			boolean result = false;
+
+			while (it.hasNext()) {
+				storage = it.next();
+				if (storage.contains(fileName)) {
+					result = true;
+					break;
+				}
+			}
+
+			return result;
+		}
+
+		/**
+		 * Deletes the file from the storage.
+		 * Also, check whether it is possible to delete the file from the storage.
+		 *
+		 * @param fileName the name of the file to be deleted
+		 * @return the tag denoting the status of the operation,
+		 * either {@link DataCloudTags#FILE_DELETE_ERROR} or
+		 *  {@link DataCloudTags#FILE_DELETE_SUCCESSFUL}
+		 */
+		private int deleteFileFromStorage(String fileName) {
+			Storage tempStorage = null;
+			File tempFile = null;
+			int msg = DataCloudTags.FILE_DELETE_ERROR;
+
+			for (int i = 0; i < getStorageList().size(); i++) {
+				tempStorage = getStorageList().get(i);
+				tempFile = tempStorage.getFile(fileName);
+				tempStorage.deleteFile(fileName, tempFile);
+				msg = DataCloudTags.FILE_DELETE_SUCCESSFUL;
+			} // end for
+
+			return msg;
 		}
 
 		@Override
-		public void shutdown() {
-			super.shutdown();
-			LOGGER.info("{}: {} is shutting down...", getSimulation().clockStr(), getName());
+		public void shutdownEntity() {
+			Log.printConcatLine(getName(), " is shutting down...");
 		}
 
 		@Override
-		protected void startInternal() {
-			LOGGER.info("{}: {} is starting...", getSimulation().clockStr(), getName());
-			hostList.stream()
-					.filter(not(Host::isActive))
-					.map(host -> (HostSimple)host)
-					.forEach(host -> host.setActive(host.isActivateOnDatacenterStartup()));
-			sendNow(getSimulation().getCloudInfoService(), CloudSimTag.DC_REGISTRATION_REQUEST, this);
+		public void startEntity() {
+			Log.printConcatLine(getName(), " is starting...");
+			// this resource should register to regional CIS.
+			// However, if not specified, then register to system CIS (the
+			// default CloudInformationService) entity.
+			int gisID = CloudSim.getEntityId(regionalCisName);
+			if (gisID == -1) {
+				gisID = CloudSim.getCloudInfoServiceEntityId();
+			}
+
+			// send the registration to CIS
+			sendNow(gisID, CloudSimTags.REGISTER_RESOURCE, getId());
+			// Below method is for a child class to override
+			registerOtherEntity();
 		}
 
-		@Override
+		/**
+		 * Gets the host list.
+		 *
+		 * @return the host list
+		 */
+		@SuppressWarnings("unchecked")
 		public <T extends Host> List<T> getHostList() {
-			return (List<T>)Collections.unmodifiableList(hostList);
+			return (List<T>) getCharacteristics().getHostList();
 		}
 
-		public final List<HostSimple> getSimpleHostList() {
-			ArrayList<HostSimple> SimpleHostList = new ArrayList<>();
-			for (Host host : hostList) {
-				if (host.getClass().equals(HostSimple.class)) {
-					SimpleHostList.add((HostSimple) host);
-				}
-
-			}return  SimpleHostList;
-		}
-
-		public final  List<cloudsimMixedPeEnv.GpuHost> getGpuHostList() {
-			ArrayList<cloudsimMixedPeEnv.GpuHost> GpuHostList = new ArrayList<>();
-			for (Host host : hostList) {
-				if (host.getClass().equals(cloudsimMixedPeEnv.GpuHost.class)) {
-					GpuHostList.add((cloudsimMixedPeEnv.GpuHost) host);
-				}
-
-			}return  GpuHostList;
-		}
-
-		@Override
-		public Stream<? extends Host> getActiveHostStream() {
-			return hostList.stream().filter(Host::isActive);
-		}
-
-		@Override
-		public DatacenterCharacteristics getCharacteristics() {
+		/**
+		 * Gets the datacenter characteristics.
+		 *
+		 * @return the datacenter characteristics
+		 */
+		protected DatacenterCharacteristics getCharacteristics() {
 			return characteristics;
 		}
 
-		@Override
+		/**
+		 * Sets the datacenter characteristics.
+		 *
+		 * @param characteristics the new datacenter characteristics
+		 */
+		protected void setCharacteristics(DatacenterCharacteristics characteristics) {
+			this.characteristics = characteristics;
+		}
+
+		/**
+		 * Gets the regional Cloud Information Service (CIS) name.
+		 *
+		 * @return the regional CIS name
+		 */
+		protected String getRegionalCisName() {
+			return regionalCisName;
+		}
+
+		/**
+		 * Sets the regional cis name.
+		 *
+		 * @param regionalCisName the new regional cis name
+		 */
+		protected void setRegionalCisName(String regionalCisName) {
+			this.regionalCisName = regionalCisName;
+		}
+
+		/**
+		 * Gets the vm allocation policy.
+		 *
+		 * @return the vm allocation policy
+		 */
 		public VmAllocationPolicy getVmAllocationPolicy() {
 			return vmAllocationPolicy;
 		}
 
 		/**
-		 * Sets the policy to be used by the Datacenter to allocate VMs into hosts.
+		 * Sets the vm allocation policy.
 		 *
 		 * @param vmAllocationPolicy the new vm allocation policy
 		 */
-		public final Datacenter setVmAllocationPolicy(final VmAllocationPolicy vmAllocationPolicy) {
-			requireNonNull(vmAllocationPolicy);
-			if(vmAllocationPolicy.getDatacenter() != null && vmAllocationPolicy.getDatacenter() != Datacenter.NULL && !this.equals(vmAllocationPolicy.getDatacenter())){
-				throw new IllegalStateException("The given VmAllocationPolicy is already used by another Datacenter.");
-			}
-
-			vmAllocationPolicy.setDatacenter(this);
+		protected void setVmAllocationPolicy(VmAllocationPolicy vmAllocationPolicy) {
 			this.vmAllocationPolicy = vmAllocationPolicy;
-			return this;
 		}
 
 		/**
-		 * Gets the last time some cloudlet was processed in the Datacenter.
+		 * Gets the last time some cloudlet was processed in the datacenter.
 		 *
 		 * @return the last process time
 		 */
@@ -1218,230 +1332,69 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		}
 
 		/**
-		 * Sets the last time some cloudlet was processed in the Datacenter.
+		 * Sets the last process time.
 		 *
 		 * @param lastProcessTime the new last process time
 		 */
-		protected final void setLastProcessTime(final double lastProcessTime) {
+		protected void setLastProcessTime(double lastProcessTime) {
 			this.lastProcessTime = lastProcessTime;
 		}
 
-		@Override
-		public DatacenterStorage getDatacenterStorage() {
-			return this.datacenterStorage;
-		}
-
-		@Override
-		public final void setDatacenterStorage(final DatacenterStorage datacenterStorage) {
-			datacenterStorage.setDatacenter(this);
-			this.datacenterStorage = datacenterStorage;
+		/**
+		 * Gets the storage list.
+		 *
+		 * @return the storage list
+		 */
+		protected List<Storage> getStorageList() {
+			return storageList;
 		}
 
 		/**
-		 * Gets a <b>read-only</b> list all VMs from all Hosts of this Datacenter.
+		 * Sets the storage list.
 		 *
-		 * @param <T> the class of VMs inside the list
-		 * @return the list all VMs from all Hosts
+		 * @param storageList the new storage list
 		 */
-		private <T extends Vm> List<T> getVmList() {
-			return (List<T>) Collections.unmodifiableList(
-					getHostList()
-							.stream()
-							.map(Host::getVmList)
-							.flatMap(List::stream)
-							.collect(toList()));
+		protected void setStorageList(List<DatacenterStorage> storageList) {
+			this.storageList = storageList;
 		}
 
-		@Override
-		public double getSchedulingInterval() {
+		/**
+		 * Gets the vm list.
+		 *
+		 * @return the vm list
+		 */
+		@SuppressWarnings("unchecked")
+		public <T extends Vm> List<T> getVmList() {
+			return (List<T>) vmList;
+		}
+
+		/**
+		 * Sets the vm list.
+		 *
+		 * @param vmList the new vm list
+		 */
+		protected <T extends Vm> void setVmList(List<T> vmList) {
+			this.vmList = vmList;
+		}
+
+		/**
+		 * Gets the scheduling interval.
+		 *
+		 * @return the scheduling interval
+		 */
+		protected double getSchedulingInterval() {
 			return schedulingInterval;
 		}
 
-		@Override
-		public final Datacenter setSchedulingInterval(final double schedulingInterval) {
-			this.schedulingInterval = Math.max(schedulingInterval, 0);
-			return this;
-		}
-
-		@Override
-		public double getTimeZone() {
-			return timeZone;
-		}
-
-		@Override
-		public final Datacenter setTimeZone(final double timeZone) {
-			this.timeZone = validateTimeZone(timeZone);
-			return this;
-		}
-
-		@Override
-		public Host getHost(final int index) {
-			if (index >= 0 && index < getHostList().size()) {
-				return getHostList().get(index);
-			}
-
-			return Host.NULL;
-		}
-
-		@Override
-		public long getActiveHostsNumber(){
-			return activeHostsNumber;
-		}
-
 		/**
-		 * Update the number of active Hosts inside the datacenter
+		 * Sets the scheduling interval.
+		 *
+		 * @param schedulingInterval the new scheduling interval
 		 */
-		public void updateActiveHostsNumber(final Host host){
-			activeHostsNumber += host.isActive() ? 1 : -1;
+		protected void setSchedulingInterval(double schedulingInterval) {
+			this.schedulingInterval = schedulingInterval;
 		}
 
-		@Override
-		public long size() {
-			return hostList.size();
-		}
-
-		@Override
-		public Host getHostById(final long id) {
-			return hostList.stream().filter(host -> host.getId() == id).findFirst().map(host -> (Host)host).orElse(Host.NULL);
-		}
-
-		@Override
-		public <T extends Host> Datacenter addHostList(final List<T> hostList) {
-			requireNonNull(hostList);
-			hostList.forEach(this::addHost);
-			return this;
-		}
-
-		@Override
-		public <T extends Host> Datacenter addHost(final T host) {
-			if(vmAllocationPolicy == null || vmAllocationPolicy == VmAllocationPolicy.NULL){
-				throw new IllegalStateException("A VmAllocationPolicy must be set before adding a new Host to the Datacenter.");
-			}
-
-			setupHost(host, getLastHostId());
-			((List<T>)hostList).add(host);
-			return this;
-		}
-
-		private <T extends Host> void notifyOnHostAvailableListeners(final T host) {
-			onHostAvailableListeners.forEach(listener -> listener.update(HostEventInfo.of(listener, host, clock())));
-		}
-
-		@Override
-		public <T extends Host> Datacenter removeHost(final T host) {
-			hostList.remove(host);
-			return this;
-		}
-
-		@Override
-		public String toString() {
-			return String.format("Datacenter %d", getId());
-		}
-
-		@Override
-		public boolean equals(final Object object) {
-			if (this == object) return true;
-			if (object == null || getClass() != object.getClass()) return false;
-			if (!super.equals(object)) return false;
-
-			final org.cloudbus.cloudsim.datacenters.DatacenterSimple that = (org.cloudbus.cloudsim.datacenters.DatacenterSimple) object;
-
-			return !characteristics.equals(that.characteristics);
-		}
-
-		@Override
-		public int hashCode() {
-			int result = super.hashCode();
-			result = 31 * result + characteristics.hashCode();
-			return result;
-		}
-
-		@Override
-		public double getBandwidthPercentForMigration() {
-			return bandwidthPercentForMigration;
-		}
-
-		@Override
-		public void setBandwidthPercentForMigration(final double bandwidthPercentForMigration) {
-			if(bandwidthPercentForMigration <= 0){
-				throw new IllegalArgumentException("The bandwidth migration percentage must be greater than 0.");
-			}
-
-			if(bandwidthPercentForMigration > 1){
-				throw new IllegalArgumentException("The bandwidth migration percentage must be lower or equal to 1.");
-			}
-
-			this.bandwidthPercentForMigration = bandwidthPercentForMigration;
-		}
-
-		@Override
-		public Datacenter addOnHostAvailableListener(final EventListener<HostEventInfo> listener) {
-			onHostAvailableListeners.add(requireNonNull(listener));
-			return this;
-		}
-
-		@Override
-		public Datacenter addOnVmMigrationFinishListener(final EventListener<DatacenterVmMigrationEventInfo> listener) {
-			onVmMigrationFinishListeners.add(requireNonNull(listener));
-			return this;
-		}
-
-		@Override
-		public boolean isMigrationsEnabled() {
-			return migrationsEnabled && vmAllocationPolicy.isVmMigrationSupported();
-		}
-
-		@Override
-		public final Datacenter enableMigrations() {
-			if(!vmAllocationPolicy.isVmMigrationSupported()){
-				LOGGER.warn(
-						"{}: {}: It was requested to enable VM migrations but the {} doesn't support that.",
-						getSimulation().clockStr(), getName(), vmAllocationPolicy.getClass().getSimpleName());
-				return this;
-			}
-
-			this.migrationsEnabled = true;
-			return this;
-		}
-
-		@Override
-		public final Datacenter disableMigrations() {
-			this.migrationsEnabled = false;
-			return this;
-		}
-
-		@Override
-		public PowerModelDatacenter getPowerModel() {
-			return powerModel;
-		}
-
-		@Override
-		public final void setPowerModel(final PowerModelDatacenter powerModel) {
-			requireNonNull(powerModel,
-					"powerModel cannot be null. You could provide a " +
-							PowerModelDatacenter.class.getSimpleName() + ".NULL instead");
-
-			if(powerModel.getDatacenter() != null && powerModel.getDatacenter() != Datacenter.NULL && !this.equals(powerModel.getDatacenter())){
-				throw new IllegalStateException("The given PowerModel is already assigned to another Datacenter. Each Datacenter must have its own PowerModel instance.");
-			}
-
-			this.powerModel = powerModel;
-		}
-
-		@Override
-		public double getHostSearchRetryDelay() {
-			return hostSearchRetryDelay;
-		}
-
-		@Override
-		public Datacenter setHostSearchRetryDelay(final double delay) {
-			if(delay == 0){
-				throw new IllegalArgumentException("hostSearchRetryDelay cannot be 0. Set a positive value to define an actual delay or a negative value to indicate a new Host search must be tried as soon as possible.");
-			}
-
-			this.hostSearchRetryDelay = delay;
-			return this;
-		}
 	}
 
 

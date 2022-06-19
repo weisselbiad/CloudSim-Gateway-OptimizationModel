@@ -1,7 +1,8 @@
 package gpu;
 
-import org.cloudbus.cloudsim.CloudletScheduler;
-import org.cloudbus.cloudsim.Vm;
+import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletScheduler;
+import org.cloudbus.cloudsim.vms.Vm;
+import org.cloudbus.cloudsim.vms.VmSimple;
 
 /**
  * 
@@ -10,7 +11,7 @@ import org.cloudbus.cloudsim.Vm;
  * @author Ahmad Siavashi
  * 
  */
-public class GpuVm extends Vm {
+public class GpuVm extends VmSimple implements Vm {
 
 	/**
 	 * Describes vm's type. A type can be associated with a configuration, therefore
@@ -28,14 +29,19 @@ public class GpuVm extends Vm {
 
 	/**
 	 * @see Vm
-	 * @param vgpu
+	 *
 	 *            the vgpu associated with this VM. Pass null in case of no vgpu.
 	 * @param type
 	 *            specifies the type of the vm
 	 */
-	public GpuVm(int id, int userId, double mips, int numberOfPes, int ram, long bw, long size, String vmm, String type,
+	public GpuVm(int id, double mips, int numberOfPes, int ram, long bw, long size, String type,
 			CloudletScheduler cloudletScheduler) {
-		super(id, userId, mips, numberOfPes, ram, bw, size, vmm, cloudletScheduler);
+		super( mips, numberOfPes);
+		setId(id);
+		setRam(ram);
+		setBw(bw);
+		setSize(size);
+		setCloudletScheduler(cloudletScheduler);
 		setType(type);
 		setArrivalTime(0.0);
 	}

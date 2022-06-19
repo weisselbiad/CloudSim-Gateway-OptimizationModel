@@ -6,6 +6,7 @@
  */
 package org.cloudbus.cloudsim.hosts;
 
+
 import org.cloudbus.cloudsim.core.*;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
@@ -50,7 +51,7 @@ public class HostSimple implements Host {
     protected HostResourceStats cpuUtilizationStats;
 
     /** @see #getStateHistory() */
-    private final List<HostStateHistoryEntry> stateHistory;
+    private  List<HostStateHistoryEntry> stateHistory;
     private boolean activateOnDatacenterStartup;
 
     /**@see #getPowerModel() */
@@ -88,11 +89,11 @@ public class HostSimple implements Host {
     /** @see #getIdleShutdownDeadline() */
     private double idleShutdownDeadline;
 
-    private final Ram ram;
-    private final Bandwidth bw;
+    private  Ram ram;
+    private  Bandwidth bw;
 
     /** @see #getStorage() */
-    private final HarddriveStorage disk;
+    private  HarddriveStorage disk;
 
     /** @see #getRamProvisioner() */
     private ResourceProvisioner ramProvisioner;
@@ -110,22 +111,22 @@ public class HostSimple implements Host {
     private List<Pe> peList;
 
     /** @see #getVmsMigratingIn() */
-    private final Set<Vm> vmsMigratingIn;
+    private  Set<Vm> vmsMigratingIn;
 
     /** @see #getVmsMigratingOut() */
-    private final Set<Vm> vmsMigratingOut;
+    private  Set<Vm> vmsMigratingOut;
 
     /** @see #getDatacenter() */
     private Datacenter datacenter;
 
     /** @see #addOnUpdateProcessingListener(EventListener) */
-    private final Set<EventListener<HostUpdatesVmsProcessingEventInfo>> onUpdateProcessingListeners;
+    private  Set<EventListener<HostUpdatesVmsProcessingEventInfo>> onUpdateProcessingListeners;
 
     /** @see #addOnStartupListener(EventListener) (EventListener) */
-    private final List<EventListener<HostEventInfo>> onStartupListeners;
+    private  List<EventListener<HostEventInfo>> onStartupListeners;
 
     /** @see #addOnShutdownListener(EventListener) (EventListener) */
-    private final List<EventListener<HostEventInfo>> onShutdownListeners;
+    private  List<EventListener<HostEventInfo>> onShutdownListeners;
 
     /** @see #getSimulation() */
     private Simulation simulation;
@@ -134,7 +135,7 @@ public class HostSimple implements Host {
     private List<ResourceManageable> resources;
 
     private List<ResourceProvisioner> provisioners;
-    private final List<Vm> vmCreatedList;
+    private  List<Vm> vmCreatedList;
 
     /** @see #getFreePesNumber() */
     private int freePesNumber;
@@ -308,6 +309,19 @@ public class HostSimple implements Host {
         this.stateHistory = new LinkedList<>();
         this.activateOnDatacenterStartup = activate;
     }
+
+    public HostSimple( ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner, long storage,
+                   List< Pe> peList, VmScheduler vmScheduler) {
+        setVmScheduler(vmScheduler);
+        setPeList(peList);
+        setDefaultStorageCapacity(storage);
+        setBwProvisioner(bwProvisioner);
+        setRamProvisioner(ramProvisioner);
+        setBwProvisioner(bwProvisioner);
+        setId(id);
+
+    }
+
 
     /**
      * Gets the Default RAM capacity (in MB) for creating Hosts.
@@ -1386,7 +1400,7 @@ public class HostSimple implements Host {
                 getSimulation().clockStr(), this, notAllocatedMipsByPe, vm.getNumberOfPes(), vm, reason);
         }
 
-        final var entry = new VmStateHistoryEntry(
+        final VmStateHistoryEntry entry = new VmStateHistoryEntry(
                            currentTime, totalAllocatedMips, totalRequestedMips,
                            vm.isInMigration() && !getVmsMigratingIn().contains(vm));
         vm.addStateHistoryEntry(entry);
@@ -1429,7 +1443,7 @@ public class HostSimple implements Host {
         final double requestedMips,
         final boolean isActive)
     {
-        final var newState = new HostStateHistoryEntry(time, allocatedMips, requestedMips, isActive);
+        final HostStateHistoryEntry newState = new HostStateHistoryEntry(time, allocatedMips, requestedMips, isActive);
         if (!stateHistory.isEmpty()) {
             final HostStateHistoryEntry previousState = stateHistory.get(stateHistory.size() - 1);
             if (previousState.time() == time) {

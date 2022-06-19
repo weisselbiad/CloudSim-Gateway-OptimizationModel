@@ -7,6 +7,8 @@
  */
 package org.cloudbus.cloudsim.core;
 
+import gpu.GpuVm;
+import gpu.remote.RemoteGpuDatacenterEx;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.core.events.SimEvent;
@@ -361,7 +363,284 @@ public enum CloudSimTag implements Comparable<CloudSimTag> {
      * When such a {@link SimEvent} is sent, the {@link SimEvent#getData()}
      * must be a {@link Host} object.
      */
-    HOST_POWER_OFF;
+    HOST_POWER_OFF,
+    BASE,
+    /** Starting constant value for network-related tags. **/
+    NETBASE,
+
+    /** Denotes boolean <tt>true</tt> in <tt>int</tt> value. */
+     TRUE,
+    /** Denotes boolean <tt>false</tt> in <tt>int</tt> value. */
+    FALSE,
+
+    /** Denotes the default baud rate for CloudSim entities. */
+ DEFAULT_BAUD_RATE,
+
+    /** Schedules an entity without any delay. */
+  SCHEDULE_NOW ,
+
+    /** Denotes the end of simulation. */
+   END_OF_SIMULATION ,
+
+    /**
+     * Denotes an abrupt end of simulation. That is, one event of this type is enough for
+     * {@link } to trigger the end of the simulation
+     */
+   ABRUPT_END_OF_SIMULATION ,
+
+    /**
+     * Denotes insignificant simulation entity or time. This tag will not be used for identification
+     * purposes.
+     */
+    INSIGNIFICANT ,
+
+    /** Sends an Experiment object between UserEntity and Broker entity */
+    EXPERIMENT,
+
+    /**
+     * Denotes a cloud resource to be registered. This tag is normally used between
+     * {@link CloudInformationService} and CloudResouce entities.
+     */
+    REGISTER_RESOURCE ,
+
+    /**
+     * Denotes a cloud resource to be registered, that can support advance reservation. This tag is
+     * normally used between {@link CloudInformationService} and CloudResouce entity.
+     */
+     REGISTER_RESOURCE_AR ,
+
+    /**
+     * Denotes a list of all hostList's, including the ones that can support advance reservation. This
+     * tag is normally used between {@link CloudInformationService} and CloudSim entity.
+     */
+    RESOURCE_LIST ,
+
+    /**
+     * Denotes a list of hostList's that only support advance reservation. This tag is normally used
+     * between {@link CloudInformationService} and CloudSim entity.
+     */
+     RESOURCE_AR_LIST ,
+
+    /**
+     * Denotes cloud resource characteristics information. This tag is normally used between CloudSim
+     * and CloudResource entity.
+     */
+    RESOURCE_CHARACTERISTICS,
+
+    /**
+     * Denotes cloud resource allocation policy. This tag is normally used between CloudSim and
+     * CloudResource entity.
+     */
+    RESOURCE_DYNAMICS,
+
+    /**
+     * Denotes a request to get the total number of Processing Elements (PEs) of a resource. This
+     * tag is normally used between CloudSim and CloudResource entity.
+     */
+    RESOURCE_NUM_PE,
+
+    /**
+     * Denotes a request to get the total number of free Processing Elements (PEs) of a resource.
+     * This tag is normally used between CloudSim and CloudResource entity.
+     */
+   RESOURCE_NUM_FREE_PE,
+
+    /**
+     * Denotes a request to record events for statistical purposes. This tag is normally used
+     * between CloudSim and CloudStatistics entity.
+     */
+    RECORD_STATISTICS,
+
+    /** Denotes a request to get a statistical list. */
+    RETURN_STAT_LIST,
+
+    /**
+     * Denotes a request to send an Accumulator object based on category into an event scheduler.
+     * This tag is normally used between ReportWriter and CloudStatistics entity.
+     */
+   RETURN_ACC_STATISTICS_BY_CATEGORY,
+
+    /**
+     * Denotes a request to register a CloudResource entity to a regional
+     * {@link CloudInformationService} (CIS) entity.
+     */
+    REGISTER_REGIONAL_GIS,
+
+    /**
+     * Denotes a request to get a list of other regional CIS entities from the system CIS entity.
+     */
+    REQUEST_REGIONAL_GIS,
+
+    /**
+     * Denotes request for cloud resource characteristics information. This tag is normally used
+     * between CloudSim and CloudResource entity.
+     */
+    RESOURCE_CHARACTERISTICS_REQUEST,
+
+    /** This tag is used by an entity to send ping requests. */
+    INFOPKT_SUBMIT,
+
+    /** This tag is used to return the ping request back to sender. */
+    INFOPKT_RETURN,
+
+    /**
+     * Denotes the return of a Cloudlet back to sender.
+     * This tag is normally used by CloudResource entity.
+     */
+//    public static final int CLOUDLET_RETURN = BASE + 20;
+
+    /**
+     * Denotes the submission of a Cloudlet.
+     * This tag is normally used between CloudSim User and CloudResource entity.
+     */
+    //   public static final int CLOUDLET_SUBMIT = BASE + 21;
+
+    /**
+     * Denotes the submission of a Cloudlet with an acknowledgement. This tag is normally used
+     * between CloudSim User and CloudResource entity.
+     */
+    //   public static final int CLOUDLET_SUBMIT_ACK = BASE + 22;
+
+    /** Cancels a Cloudlet submitted in the CloudResource entity. */
+    //   public static final int CLOUDLET_CANCEL = BASE + 23;
+
+    /** Denotes the status of a Cloudlet. */
+    CLOUDLET_STATUS,
+
+    /** Pauses a Cloudlet submitted in the CloudResource entity. */
+    //  public static final int CLOUDLET_PAUSE = BASE + 25;
+
+    /**
+     * Pauses a Cloudlet submitted in the CloudResource entity with an acknowledgement.
+     */
+    //  public static final int CLOUDLET_PAUSE_ACK = BASE + 26;
+
+    /** Resumes a Cloudlet submitted in the CloudResource entity. */
+    //  public static final int CLOUDLET_RESUME = BASE + 27;
+
+    /**
+     * Resumes a Cloudlet submitted in the CloudResource entity with an acknowledgement.
+     */
+    //  public static final int CLOUDLET_RESUME_ACK = BASE + 28;
+
+    /** Moves a Cloudlet to another CloudResource entity. */
+    CLOUDLET_MOVE,
+
+    /**
+     * Moves a Cloudlet to another CloudResource entity with an acknowledgement.
+     */
+    CLOUDLET_MOVE_ACK,
+
+    /**
+     * Denotes a request to create a new VM in a {@link Datacenter} with acknowledgement
+     * information sent by the Datacenter.
+     */
+    VM_CREATE,
+
+    /**
+     * Denotes a request to create a new VM in a {@link Datacenter}
+     * with acknowledgement information sent by the Datacenter.
+     */
+    //  public static final int VM_CREATE_ACK = BASE + 32;
+
+    /**
+     * Denotes a request to destroy a new VM in a {@link Datacenter}.
+     */
+    //  public static final int VM_DESTROY = BASE + 33;
+
+    /**
+     * Denotes a request to destroy a new VM in a {@link Datacenter}
+     * with acknowledgement information sent by the Datacener.
+     */
+    //   public static final int VM_DESTROY_ACK = BASE + 34;
+
+    /**
+     * Denotes a request to migrate a new VM in a {@link Datacenter}.
+     */
+    //   public static final int VM_MIGRATE = BASE + 35;
+
+    /**
+     * Denotes a request to migrate a new VM in a {@link Datacenter}
+     * with acknowledgement information sent by the Datacener.
+     */
+    //   public static final int VM_MIGRATE_ACK = BASE + 36;
+
+
+    /**
+     * Denotes an event to send a file from a user to a {@link Datacenter}.
+     */
+    VM_DATA_ADD,
+
+    /**
+     * Denotes an event to send a file from a user to a {@link Datacenter}
+     * with acknowledgement information sent by the Datacener.
+     */
+    VM_DATA_ADD_ACK,
+
+    /**
+     * Denotes an event to remove a file from a {@link Datacenter} .
+     */
+    VM_DATA_DEL,
+
+    /**
+     * Denotes an event to remove a file from a {@link Datacenter}
+     * with acknowledgement information sent by the Datacener.
+     */
+    VM_DATA_DEL_ACK,
+
+    /**
+     * Denotes an internal event generated in a {@link Datacenter}.
+     */
+    VM_DATACENTER_EVENT,
+
+    /**
+     * Denotes an internal event generated in a Broker.
+     */
+    VM_BROKER_EVENT,
+
+    Network_Event_UP ,
+
+    Network_Event_send,
+
+    RESOURCE_Register ,
+
+    Network_Event_DOWN ,
+
+    Network_Event_Host ,
+
+    NextCycle ,
+
+    GPU_TASK_SUBMIT ,
+
+    /**
+     * Denotes an internal event in the GpuDatacenter. Updates the progress of
+     * executions.
+     */
+    VGPU_DATACENTER_EVENT ,
+
+    /**
+     * Denotes an event to evaluate the power consumption of a
+     * {@link gpu.power.PowerGpuDatacenter
+     * PowerGpuDatacenter}.
+     */
+    GPU_VM_DATACENTER_POWER_EVENT ,
+
+    /**
+     * Denotes an event to perform a {@link GpuVm} placement in a
+     * {@link RemoteGpuDatacenterEx}.
+     */
+     GPU_VM_DATACENTER_PLACEMENT ,
+
+    /**
+     * Denotes an event to update GPU memory transfers.
+     */
+     GPU_MEMORY_TRANSFER,
+
+    /**
+     * Denotes the return of a GpuCloudlet to the sender.
+     */
+    GPU_CLOUDLET_RETURN
+    ;
 
     private final int priority;
 
@@ -396,4 +675,9 @@ public enum CloudSimTag implements Comparable<CloudSimTag> {
     public boolean between(final CloudSimTag startInclusive, final CloudSimTag endInclusive){
         return this.ordinal() >= startInclusive.ordinal() && this.ordinal() <= endInclusive.ordinal();
     }
+
+
+
+
+
 }

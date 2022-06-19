@@ -1,7 +1,7 @@
 package gpu.core;
 
-import org.cloudbus.cloudsim.gpu.GpuVm;
-import org.cloudbus.cloudsim.gpu.remote.RemoteGpuDatacenterEx;
+import gpu.GpuVm;
+import gpu.remote.RemoteGpuDatacenterEx;
 
 /**
  * Contains Gpu-related events in the simulator.

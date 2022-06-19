@@ -1,11 +1,13 @@
 package gpu;
 
-import org.cloudbus.cloudsim.Host;
-import org.cloudbus.cloudsim.Pe;
-import org.cloudbus.cloudsim.VmScheduler;
-import org.cloudbus.cloudsim.gpu.allocation.VideoCardAllocationPolicy;
-import org.cloudbus.cloudsim.provisioners.BwProvisioner;
-import org.cloudbus.cloudsim.provisioners.RamProvisioner;
+import org.cloudbus.cloudsim.hosts.Host;
+import org.cloudbus.cloudsim.hosts.HostSimple;
+import org.cloudbus.cloudsim.provisioners.ResourceProvisioner;
+import org.cloudbus.cloudsim.resources.Pe;
+import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
+import gpu.allocation.VideoCardAllocationPolicy;
+import gpu.provisioners.BwProvisioner;
+import gpu.provisioners.RamProvisioner;
 
 import java.util.List;
 import java.util.Set;
@@ -18,7 +20,7 @@ import java.util.Set;
  * @author Ahmad Siavashi
  * 
  */
-public class GpuHost extends Host {
+public class GpuHost extends HostSimple {
 
 	/**
 	 * type of the host
@@ -30,29 +32,32 @@ public class GpuHost extends Host {
 
 	/**
 	 * 
-	 * See {@link Host#Host}
+	 * See {@link}
 	 * 
 	 * @param type                      type of the host which is specified in
 	 *                                  {@link GpuHostTags}.
 	 * @param videoCardAllocationPolicy the policy in which the host allocates video
 	 *                                  cards to vms
 	 */
-	public GpuHost(int id, String type, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner, long storage,
-			List<? extends Pe> peList, VmScheduler vmScheduler, VideoCardAllocationPolicy videoCardAllocationPolicy) {
-		super(id, ramProvisioner, bwProvisioner, storage, peList, vmScheduler);
+	public GpuHost(int id, String type, ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner, long storage,
+				   List<Pe> peList, VmScheduler vmScheduler, VideoCardAllocationPolicy videoCardAllocationPolicy) {
+		super( ramProvisioner, bwProvisioner, storage, peList, vmScheduler);
+
+		setId(id);
 		setType(type);
 		setVideoCardAllocationPolicy(videoCardAllocationPolicy);
 	}
 
 	/**
 	 * 
-	 * See {@link Host#Host}
+	 * See {@link }
 	 * 
 	 * @param type type of the host which is specified in {@link GpuHostTags}.
 	 */
-	public GpuHost(int id, String type, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner, long storage,
-			List<? extends Pe> peList, VmScheduler vmScheduler) {
-		super(id, ramProvisioner, bwProvisioner, storage, peList, vmScheduler);
+	public GpuHost(int id, String type, ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner, long storage,
+			List<Pe> peList, VmScheduler vmScheduler) {
+		super(ramProvisioner, bwProvisioner, storage, peList, vmScheduler);
+		setId(id);
 		setType(type);
 		setVideoCardAllocationPolicy(null);
 	}
