@@ -4,16 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="17.06">
+    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="08.06">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuVm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuVm.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuCloudlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuCloudlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuTask.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/CloudSim.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/CloudSim.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/CloudSimTag.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/CloudSimTag.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/Simulation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/Simulation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/util/DataCloudTags.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/util/DataCloudTags.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuHost.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuHost.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,18 +88,18 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Weiss/IdeaProjects/CloudSim-Gateway-OptimizationModel/src/main/java/gpu&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/shadow01/Documents/3bi9a/CloudSim-Gateway-OptimizationModel/src/main/java&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\Weiss\IdeaProjects\CloudSim-Gateway-OptimizationModel\src\main\java\gpu" />
       <recent name="$PROJECT_DIR$/src/main/java" />
       <recent name="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv" />
       <recent name="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/allocation" />
       <recent name="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg" />
+      <recent name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cloudsimplus/cloudsim-plus/7.1.2/9d8b5226f4a63df358851e8ec9d4b9ba5f231657/cloudsim-plus-7.1.2.jar!/org/cloudbus/cloudsim" />
     </key>
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="" />
@@ -122,7 +116,7 @@
       <command value="gradle run" />
     </option>
   </component>
-  <component name="RunManager" selected="Application.GpuExperiment">
+  <component name="RunManager" selected="Gradle.CloudSim-Gateway-OptimizationModel [run]">
     <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
@@ -136,8 +130,8 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GpuExperiment" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="pl.edu.agh.csg.GpuExperiment" />
+    <configuration name="BasicFirstExample" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="pl.edu.agh.csg.BasicFirstExample" />
       <module name="CloudSim-Gateway-OptimizationModel.main" />
       <extension name="coverage">
         <pattern>
@@ -230,8 +224,8 @@
         <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [run]" />
         <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [compileJava]" />
         <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [clean]" />
-        <item itemvalue="Application.GpuExperiment" />
         <item itemvalue="Application.Main" />
+        <item itemvalue="Application.BasicFirstExample" />
       </list>
     </recent_temporary>
   </component>
@@ -294,10 +288,11 @@
       <workItem from="1654333274507" duration="10104000" />
       <workItem from="1654532321386" duration="595000" />
       <workItem from="1654615734053" duration="5949000" />
-      <workItem from="1654677410969" duration="305000" />
-      <workItem from="1655279294009" duration="15464000" />
-      <workItem from="1655365166475" duration="21351000" />
-      <workItem from="1655454756955" duration="19942000" />
+      <workItem from="1654677410969" duration="587000" />
+      <workItem from="1655040627517" duration="21000" />
+      <workItem from="1655117532076" duration="949000" />
+      <workItem from="1655135197562" duration="3544000" />
+      <workItem from="1655634471932" duration="20099000" />
     </task>
     <task id="LOCAL-00001" summary="gradle">
       <created>1637948985872</created>
@@ -390,12 +385,12 @@
       <option name="project" value="LOCAL" />
       <updated>1654677710829</updated>
     </task>
-    <task id="LOCAL-00014" summary="15.06">
-      <created>1655303905673</created>
+    <task id="LOCAL-00014" summary="08.06">
+      <created>1654677725168</created>
       <option name="number" value="00014" />
       <option name="presentableId" value="LOCAL-00014" />
       <option name="project" value="LOCAL" />
-      <updated>1655303905673</updated>
+      <updated>1654677725168</updated>
     </task>
     <option name="localTasksCounter" value="15" />
     <servers />
@@ -423,8 +418,7 @@
     <MESSAGE value="06.06" />
     <MESSAGE value="07.06" />
     <MESSAGE value="08.06" />
-    <MESSAGE value="15.06" />
-    <option name="LAST_COMMIT_MESSAGE" value="15.06" />
+    <option name="LAST_COMMIT_MESSAGE" value="08.06" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -435,34 +429,19 @@
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/hosts/HostSimple.java</url>
-          <line>505</line>
-          <option name="timeStamp" value="34" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuHost.java</url>
-          <line>186</line>
-          <option name="timeStamp" value="35" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/provisioners/GpuGddramProvisionerSimple.java</url>
-          <line>37</line>
-          <option name="timeStamp" value="36" />
+          <url>file://$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuCloudletSchedulerTimeShared.java</url>
+          <line>28</line>
+          <option name="timeStamp" value="26" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyAbstract.java</url>
-          <line>342</line>
-          <option name="timeStamp" value="37" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicySimple.java</url>
-          <line>72</line>
-          <option name="timeStamp" value="43" />
+          <line>253</line>
+          <option name="timeStamp" value="30" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cloudsimplus/cloudsim-plus/7.1.2/3c6d01bece7d9835501bd28439d948acc52e826b/cloudsim-plus-7.1.2-sources.jar!/org/cloudbus/cloudsim/cloudlets/network/NetworkCloudlet.java</url>
           <line>209</line>
-          <properties class="org.cloudbus.cloudsim.cloudlets.network.NetworkCloudlet">
+          <properties class="org.cloudbus.cloudsim.cloudlets.network.NetworkCloudlet" method="setVm">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -473,8 +452,6 @@
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="org.cloudbus.cloudsim.hosts.HostSimple" memberName="vmList" />
-        <PinnedItemInfo parentTag="org.cloudbus.cloudsim.hosts.HostSimple" memberName="powerModel" />
-        <PinnedItemInfo parentTag="org.cloudbus.cloudsim.hosts.HostSimple" memberName="id" />
       </pinned-members>
     </pin-to-top-manager>
     <watches-manager>

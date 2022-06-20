@@ -9,18 +9,30 @@ import org.cloudbus.cloudsim.core.*;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristics;
+import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristicsSimple;
+import org.cloudbus.cloudsim.datacenters.TimeZoned;
 import org.cloudbus.cloudsim.hosts.Host;
+import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.hosts.HostSuitability;
+import org.cloudbus.cloudsim.power.models.PowerModelDatacenter;
+import org.cloudbus.cloudsim.power.models.PowerModelDatacenterSimple;
 import org.cloudbus.cloudsim.resources.DatacenterStorage;
 import org.cloudbus.cloudsim.resources.File;
 import org.cloudbus.cloudsim.resources.SanStorage;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletScheduler;
 import org.cloudbus.cloudsim.util.DataCloudTags;
 import org.cloudbus.cloudsim.vms.Vm;
+import org.cloudsimplus.listeners.DatacenterVmMigrationEventInfo;
+import org.cloudsimplus.listeners.EventListener;
+import org.cloudsimplus.listeners.HostEventInfo;
 
 import java.util.*;
+import java.util.stream.Stream;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.function.Predicate.not;
 import static org.cloudbus.cloudsim.core.CloudSimTag.CLOUDLET_RETURN;
+import static org.cloudbus.cloudsim.util.BytesConversion.bitesToBytes;
 
 /**
  * {@link GpuDatacenter} extends {@link Datacenter} to support
@@ -33,16 +45,28 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 	private List<SanStorage> storageList;
 	private DatacenterCharacteristics characteristics;
 	private double gpuTaskLastProcessTime;
-
+	private long activeHostsNumber;
+	private DatacenterStorage datacenterStorage;
+	private SanStorage sanStorage;
+	private PowerModelDatacenter powerModel = PowerModelDatacenter.NULL;
+	private double bandwidthPercentForMigration;
+	private final List<EventListener<HostEventInfo>> onHostAvailableListeners;
+	private final List<EventListener<DatacenterVmMigrationEventInfo>> onVmMigrationFinishListeners;
+	private double hostSearchRetryDelay;
+	private double timeZone;
+	private boolean migrationsEnabled;
+	private List<? extends Host> hostList;
 	private Map<GpuTask, ResGpuCloudlet> gpuTaskResGpuCloudletMap;
+
 	public Simulation simulation;
 	/**
 	 * See {@link Datacenter#}
 	 */
 	public GpuDatacenter(String name, Simulation simulation, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
-						 List<DatacenterStorage> storageList, double schedulingInterval) throws Exception {
+						 List<SanStorage> storageList, double schedulingInterval) throws Exception {
 		super(simulation);
 		setName(name);
+
 		addHostList(getHostList());
 		setSchedulingInterval(schedulingInterval);
 		setCharacteristics(characteristics);
@@ -50,7 +74,15 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		setStorageList(storageList);
 		setGpuTaskLastProcessTime(0.0);
 		setGpuTaskResGpuCloudletMap(new HashMap<>());
+		setPowerModel(new PowerModelDatacenterSimple(this));
+
 		this.simulation =simulation;
+		this.onHostAvailableListeners = new ArrayList<>();
+		this.onVmMigrationFinishListeners = new ArrayList<>();
+		this.characteristics = new DatacenterCharacteristicsSimple(this);
+		this.bandwidthPercentForMigration = DEF_BW_PERCENT_FOR_MIGRATION;
+		this.migrationsEnabled = true;
+		this.hostSearchRetryDelay = -1;
 	}
 
 
@@ -171,7 +203,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 				GpuCloudletScheduler scheduler = (GpuCloudletScheduler) vm.getCloudletScheduler();
 				while (scheduler.hasGpuTask()) {
 					GpuTask gt = scheduler.getNextGpuTask();
-					sendNow((ev.getSource(), CloudSimTag.GPU_MEMORY_TRANSFER, gt);
+					sendNow(ev.getSource(), CloudSimTag.GPU_MEMORY_TRANSFER, gt);
 				}
 			}
 		}
@@ -1237,17 +1269,146 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			registerOtherEntity();
 		}
 
-		/**
+	@Override
+	public void requestVmMigration(Vm sourceVm, Host targetHost) {
+		//If Host.NULL is given, it must try to find a target host
+		if(Host.NULL.equals(targetHost)){
+			targetHost = vmAllocationPolicy.findHostForVm(sourceVm).orElse(Host.NULL);
+		}
+
+		//If a host couldn't be found yet
+		if(Host.NULL.equals(targetHost)) {
+			LOGGER.warn("{}: {}: No suitable host found for {} in {}", sourceVm.getSimulation().clockStr(), getClass().getSimpleName(), sourceVm, this);
+			return;
+		}
+
+		final Host sourceHost = sourceVm.getHost();
+		final double delay = timeToMigrateVm(sourceVm, targetHost);
+		final String msg1 =
+				Host.NULL.equals(sourceHost) ?
+						String.format("%s to %s", sourceVm, targetHost) :
+						String.format("%s from %s to %s", sourceVm, sourceHost, targetHost);
+
+		final String currentTime = getSimulation().clockStr();
+		final var fmt = "It's expected to finish in %.2f seconds, considering the %.0f%% of bandwidth allowed for migration and the VM RAM size.";
+		final String msg2 = String.format(fmt, delay, getBandwidthPercentForMigration()*100);
+		LOGGER.info("{}: {}: Migration of {} is started. {}", currentTime, getName(), msg1, msg2);
+
+		if(targetHost.addMigratingInVm(sourceVm)) {
+			sourceHost.addVmMigratingOut(sourceVm);
+			send(this, delay, CloudSimTag.VM_MIGRATE, new TreeMap.SimpleEntry<>(sourceVm, targetHost));
+		}
+
+	}
+	private double timeToMigrateVm(final Vm vm, final Host targetHost) {
+		return vm.getRam().getCapacity() / bitesToBytes(targetHost.getBw().getCapacity() * getBandwidthPercentForMigration());
+	}
+
+
+	@Override
+	public void requestVmMigration(Vm sourceVm) {
+		requestVmMigration(sourceVm, Host.NULL);
+	}
+
+	/**
 		 * Gets the host list.
 		 *
 		 * @return the host list
 		 */
 		@SuppressWarnings("unchecked")
 		public <T extends Host> List<T> getHostList() {
-			return (List<T>) getCharacteristics().getDatacenter().getHostList();
+			return (List<T>)Collections.unmodifiableList(hostList);
 		}
 
-		/**
+	@Override
+	public <T extends Host> List<T> getSimpleHostList() {
+		return null;
+	}
+
+	@Override
+	public <T extends Host> List<T> getGpuHostList() {
+		return null;
+	}
+
+	@Override
+	public Stream<? extends Host> getActiveHostStream() {
+		return hostList.stream().filter(Host::isActive);
+	}
+
+	@Override
+	public Host getHost(int index) {
+		if (index >= 0 && index < getHostList().size()) {
+		}return getHostList().get(index);}
+
+	@Override
+	public long getActiveHostsNumber() {
+		return activeHostsNumber;
+	}
+	public void updateActiveHostsNumber(final Host host){
+		activeHostsNumber += host.isActive() ? 1 : -1;
+	}
+
+	private void setHostList(final List<? extends Host> hostList) {
+		this.hostList = requireNonNull(hostList);
+		setupHosts();
+	}
+
+	private void setupHosts() {
+		long lastHostId = getLastHostId();
+		for (final Host host : hostList) {
+			lastHostId = setupHost(host, lastHostId);
+		}
+	}
+	private long getLastHostId() {
+		return hostList.isEmpty() ? -1 : hostList.get(hostList.size()-1).getId();
+	}
+
+	protected long setupHost(final Host host, long nextId) {
+		nextId = Math.max(nextId, -1);
+		if(host.getId() < 0) {
+			host.setId(++nextId);
+		}
+
+		host.setSimulation(getSimulation()).setDatacenter(this);
+		host.setActive(((HostSimple)host).isActivateOnDatacenterStartup());
+		return nextId;
+	}
+	@Override
+	public long size() {
+		return hostList.size();
+	}
+
+	@Override
+	public Host getHostById(long id) {
+		return hostList.stream().filter(host -> host.getId() == id).findFirst().map(host -> (Host)host).orElse(Host.NULL);
+	}
+
+	@Override
+	public <T extends Host> Datacenter addHostList(List<T> hostList) {
+		requireNonNull(hostList);
+		hostList.forEach(this::addHost);
+		return this;
+	}
+
+	@Override
+	public <T extends Host> Datacenter addHost(T host) {
+		if(vmAllocationPolicy == null || vmAllocationPolicy == VmAllocationPolicy.NULL){
+			throw new IllegalStateException("A VmAllocationPolicy must be set before adding a new Host to the Datacenter.");
+		}
+
+		setupHost(host, getLastHostId());
+		((List<T>)hostList).add(host);
+		return this;
+	}
+
+
+	@Override
+	public <T extends Host> Datacenter removeHost(final T host) {
+		hostList.remove(host);
+		return this;
+	}
+
+	/**
 		 * Gets the datacenter characteristics.
 		 *
 		 * @return the datacenter characteristics
@@ -1256,7 +1417,85 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			return characteristics;
 		}
 
-		/**
+	@Override
+	public DatacenterStorage getDatacenterStorage() {
+		return this.datacenterStorage;
+	}
+
+	@Override
+	public final void setDatacenterStorage(final DatacenterStorage datacenterStorage) {
+		datacenterStorage.setDatacenter(this);
+		this.datacenterStorage = datacenterStorage;
+	}
+
+	@Override
+	public double getBandwidthPercentForMigration() {
+		return bandwidthPercentForMigration;
+	}
+	@Override
+	public void setBandwidthPercentForMigration(final double bandwidthPercentForMigration) {
+		if(bandwidthPercentForMigration <= 0){
+			throw new IllegalArgumentException("The bandwidth migration percentage must be greater than 0.");
+		}
+
+		if(bandwidthPercentForMigration > 1){
+			throw new IllegalArgumentException("The bandwidth migration percentage must be lower or equal to 1.");
+		}
+
+		this.bandwidthPercentForMigration = bandwidthPercentForMigration;
+	}
+
+	@Override
+	public Datacenter addOnHostAvailableListener(final EventListener<HostEventInfo> listener) {
+		onHostAvailableListeners.add(requireNonNull(listener));
+		return this;
+	}
+
+	@Override
+	public Datacenter addOnVmMigrationFinishListener(final EventListener<DatacenterVmMigrationEventInfo> listener) {
+		onVmMigrationFinishListeners.add(requireNonNull(listener));
+		return this;
+	}
+
+
+	public boolean isMigrationsEnabled() {
+		return migrationsEnabled && vmAllocationPolicy.isVmMigrationSupported();
+	}
+
+	@Override
+	public final Datacenter enableMigrations() {
+		if(!vmAllocationPolicy.isVmMigrationSupported()){
+			LOGGER.warn(
+					"{}: {}: It was requested to enable VM migrations but the {} doesn't support that.",
+					getSimulation().clockStr(), getName(), vmAllocationPolicy.getClass().getSimpleName());
+			return this;
+		}
+
+		this.migrationsEnabled = true;
+		return this;
+	}
+
+	@Override
+	public final Datacenter disableMigrations() {
+		this.migrationsEnabled = false;
+		return this;
+	}
+
+	@Override
+	public double getHostSearchRetryDelay() {
+		return hostSearchRetryDelay;
+	}
+
+	@Override
+	public Datacenter setHostSearchRetryDelay(final double delay) {
+		if(delay == 0){
+			throw new IllegalArgumentException("hostSearchRetryDelay cannot be 0. Set a positive value to define an actual delay or a negative value to indicate a new Host search must be tried as soon as possible.");
+		}
+
+		this.hostSearchRetryDelay = delay;
+		return this;
+	}
+	/**
 		 * Sets the datacenter characteristics.
 		 *
 		 * @param characteristics the new datacenter characteristics
@@ -1376,7 +1615,45 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			return this;
 		}
 
+	@Override
+	protected void startInternal() {
+		LOGGER.info("{}: {} is starting...", getSimulation().clockStr(), getName());
+		hostList.stream()
+				.filter(not(Host::isActive))
+				.map(host -> (HostSimple)host)
+				.forEach(host -> host.setActive(host.isActivateOnDatacenterStartup()));
+		sendNow(getSimulation().getCloudInfoService(), CloudSimTag.DC_REGISTRATION_REQUEST, this);
+
 	}
+
+	@Override
+	public double getTimeZone() {
+		return timeZone;
+	}
+
+	@Override
+	public final Datacenter setTimeZone(final double timeZone) {
+		this.timeZone = validateTimeZone(timeZone);
+		return this;
+	}
+	@Override
+	public PowerModelDatacenter getPowerModel() {
+		return powerModel;
+	}
+
+	@Override
+	public final void setPowerModel(final PowerModelDatacenter powerModel) {
+		requireNonNull(powerModel,
+				"powerModel cannot be null. You could provide a " +
+						PowerModelDatacenter.class.getSimpleName() + ".NULL instead");
+
+		if(powerModel.getDatacenter() != null && powerModel.getDatacenter() != Datacenter.NULL && !this.equals(powerModel.getDatacenter())){
+			throw new IllegalStateException("The given PowerModel is already assigned to another Datacenter. Each Datacenter must have its own PowerModel instance.");
+		}
+
+		this.powerModel = powerModel;
+	}
+}
 
 
 

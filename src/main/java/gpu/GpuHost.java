@@ -20,7 +20,7 @@ import java.util.Set;
  * @author Ahmad Siavashi
  * 
  */
-public class GpuHost extends HostSimple {
+public class GpuHost extends HostSimple implements Host{
 
 	/**
 	 * type of the host
