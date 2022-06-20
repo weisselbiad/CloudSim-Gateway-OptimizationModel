@@ -83,6 +83,9 @@ public final class DataCloudTags {
      */
     public static final int CTLG_DELETE_MASTER_RESULT = CTLG_BASE + 21;
 
+    public static final int FILE_DELETE_MASTER_RESULT = RM_BASE + 31;
+    public static final int FILE_ADD_ERROR_EMPTY = RM_BASE + 22;
+
     /**
      * A private constructor to avoid class instantiation.
      */

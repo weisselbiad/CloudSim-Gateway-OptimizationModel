@@ -639,7 +639,8 @@ public enum CloudSimTag implements Comparable<CloudSimTag> {
     /**
      * Denotes the return of a GpuCloudlet to the sender.
      */
-    GPU_CLOUDLET_RETURN
+    GPU_CLOUDLET_RETURN,
+
     ;
 
     private final int priority;

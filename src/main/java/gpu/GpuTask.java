@@ -1,6 +1,6 @@
 package gpu;
 
-import org.cloudbus.cloudsim.UtilizationModel;
+import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.core.CloudSim;
 
 import java.text.DecimalFormat;

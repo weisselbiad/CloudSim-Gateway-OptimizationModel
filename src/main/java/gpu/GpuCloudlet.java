@@ -2,6 +2,7 @@ package gpu;
 
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletAbstract;
+import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 
 import java.util.List;
@@ -15,7 +16,8 @@ import java.util.Objects;
  * @author Ahmad Siavashi
  * 
  */
-public class GpuCloudlet extends CloudletAbstract {
+public class GpuCloudlet extends CloudletAbstract implements Cloudlet {
+	private int userId;
 
 	/**
 	 * A tag associated with the GpuCloudlet. A tag can be used to describe the
@@ -45,7 +47,7 @@ public class GpuCloudlet extends CloudletAbstract {
 			long cloudletOutputSize, UtilizationModel utilizationModelCpu, UtilizationModel utilizationModelRam,
 			UtilizationModel utilizationModelBw, GpuTask gpuTask) {
 		super(cloudletLength, pesNumber);
-
+		userId = -1;
 		setFileSize(cloudletFileSize);
 		setOutputSize(cloudletOutputSize);
 		setUtilizationModelCpu(utilizationModelCpu);
@@ -58,7 +60,7 @@ public class GpuCloudlet extends CloudletAbstract {
 					   long cloudletOutputSize, UtilizationModel utilizationModelCpu, UtilizationModel utilizationModelRam,
 					   UtilizationModel utilizationModelBw, GpuTask gpuTask) {
 		super(id, cloudletLength, pesNumber);
-
+		userId = -1;
 		setFileSize(cloudletFileSize);
 		setOutputSize(cloudletOutputSize);
 		setUtilizationModelCpu(utilizationModelCpu);
@@ -108,5 +110,21 @@ public class GpuCloudlet extends CloudletAbstract {
 		return Double.compare(getLength(), other.getLength()) +
 				Long.compare(this.getId(), other.getId()) +
 				this.getBroker().compareTo(other.getBroker());
+	}
+
+	public void setUserId(final int id) {
+		userId = id;
+
+	}
+
+	/**
+	 * Gets the user or owner ID of this Cloudlet.
+	 *
+	 * @return the user ID or <tt>-1</tt> if the user ID has not been set before
+	 * @pre $none
+	 * @post $result >= -1
+	 */
+	public int getUserId() {
+		return userId;
 	}
 }

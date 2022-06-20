@@ -59,7 +59,7 @@ public class CloudSim implements Simulation {
      * The time the simulation should be terminated (in seconds).
      */
     private double terminationTime = -1;
-
+    private static final int NOT_FOUND = -1;
     private double lastCloudletProcessingUpdate;
 
     /**
@@ -131,6 +131,7 @@ public class CloudSim implements Simulation {
     private final Set<EventListener<EventInfo>> onSimulationPauseListeners;
     private final Set<EventListener<EventInfo>> onClockTickListeners;
     private final Set<EventListener<EventInfo>> onSimulationStartListeners;
+    private static Map<String, SimEntity> entitiesByName;
 
     private boolean processEventsInParallel;
 
@@ -394,7 +395,7 @@ public class CloudSim implements Simulation {
         return terminationTime;
     }
 
-    @Override
+
     public double getMinTimeBetweenEvents() {
         return minTimeBetweenEvents;
     }
@@ -990,5 +991,14 @@ public class CloudSim implements Simulation {
     @Override
     public boolean isAbortRequested() {
         return abortRequested;
+    }
+
+    public  SimEntity getEntityId(String name) {
+        SimEntity obj = entitiesByName.get(name);
+        if (obj == null) {
+            return SimEntity.NULL;
+        } else {
+            return obj;
+        }
     }
 }

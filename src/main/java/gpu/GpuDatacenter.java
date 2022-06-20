@@ -1,21 +1,24 @@
 package gpu;
 
 import gpu.core.CloudSimTags;
-import gpu.core.GpuCloudSimTags;
 import gpu.core.Log;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
+import org.cloudbus.cloudsim.cloudlets.Cloudlet;
+import org.cloudbus.cloudsim.cloudlets.CloudletExecution;
 import org.cloudbus.cloudsim.core.*;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristics;
 import org.cloudbus.cloudsim.hosts.Host;
+import org.cloudbus.cloudsim.hosts.HostSuitability;
 import org.cloudbus.cloudsim.resources.DatacenterStorage;
+import org.cloudbus.cloudsim.resources.File;
+import org.cloudbus.cloudsim.resources.SanStorage;
+import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletScheduler;
+import org.cloudbus.cloudsim.util.DataCloudTags;
 import org.cloudbus.cloudsim.vms.Vm;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.cloudbus.cloudsim.core.CloudSimTag.CLOUDLET_RETURN;
 
@@ -27,7 +30,7 @@ import static org.cloudbus.cloudsim.core.CloudSimTag.CLOUDLET_RETURN;
  *
  */
 public class GpuDatacenter extends CloudSimEntity implements Datacenter {
-	private List<DatacenterStorage> storageList;
+	private List<SanStorage> storageList;
 	private DatacenterCharacteristics characteristics;
 	private double gpuTaskLastProcessTime;
 
@@ -159,8 +162,8 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		}
 	}
 
-	protected void checkCloudletCompletion() {
-		firstcheckCloudletCompletion();
+	protected void checkCloudletCompletion(SimEvent ev) {
+		firstcheckCloudletCompletion(ev);
 		List<? extends Host> list = getVmAllocationPolicy().getHostList();
 		for (int i = 0; i < list.size(); i++) {
 			Host host = list.get(i);
@@ -168,43 +171,42 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 				GpuCloudletScheduler scheduler = (GpuCloudletScheduler) vm.getCloudletScheduler();
 				while (scheduler.hasGpuTask()) {
 					GpuTask gt = scheduler.getNextGpuTask();
-					sendNow((SimEntity) getSimulation(), CloudSimTag.GPU_MEMORY_TRANSFER, gt);
+					sendNow((ev.getSource(), CloudSimTag.GPU_MEMORY_TRANSFER, gt);
 				}
 			}
 		}
 	}
 
-	@Override
-	protected void processVmCreate(SimEvent ev, boolean ack) {
+	public void processVmCreate(SimEvent ev, boolean ack) {
 		Vm vm = (Vm) ev.getData();
 		Log.printLine(simulation.clock() + ": Trying to Create VM #" + vm.getId() + " in " + getName());
 
-		boolean result = getVmAllocationPolicy().allocateHostForVm(vm);
+		HostSuitability result = getVmAllocationPolicy().allocateHostForVm(vm);
 
 		if (ack) {
 			int[] data = new int[3];
-			data[0] = getId();
-			data[1] = vm.getId();
+			data[0] = (int)getId();
+			data[1] = (int)vm.getId();
 
-			if (result) {
+			if (result.fully()) {
 				data[2] = CloudSimTags.TRUE;
 			} else {
 				data[2] = CloudSimTags.FALSE;
 			}
-			send(vm.getUserId(), CloudSim.getMinTimeBetweenEvents(), CloudSimTags.VM_CREATE_ACK, data);
+			send(ev.getSource(), simulation.getMinTimeBetweenEvents(), CloudSimTag.VM_CREATE_ACK, data);
 		}
 
-		if (result) {
+		if (result.fully()) {
 			getVmList().add(vm);
 			GpuVm gpuVm = (GpuVm) vm;
 			Vgpu vgpu = gpuVm.getVgpu();
 
-			if (vm.isBeingInstantiated()) {
-				vm.setBeingInstantiated(false);
+			if (vm.isWorking()) {
+				vm.setFailed(true);
 			}
 
-			vm.updateVmProcessing(CloudSim.clock(),
-					getVmAllocationPolicy().getHost(vm).getVmScheduler().getAllocatedMipsForVm(vm));
+			vm.updateProcessing(simulation.clock(),
+					getVmAllocationPolicy().getDatacenter().getHost((int)vm.getHost().getId()).getVmScheduler().getAllocatedMips(vm));
 
 			if (vgpu != null) {
 				if (vgpu.isBeingInstantiated()) {
@@ -212,20 +214,20 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 				}
 
 				VideoCard videoCard = vgpu.getVideoCard();
-				vgpu.updateGpuTaskProcessing(CloudSim.clock(),
+				vgpu.updateGpuTaskProcessing(simulation.clock(),
 						videoCard.getVgpuScheduler().getAllocatedMipsForVgpu(vgpu));
 			}
 		}
 
 	}
 
-	@Override
+
 	protected void processVmDestroy(SimEvent ev, boolean ack) {
 		GpuVm vm = (GpuVm) ev.getData();
 		if (vm.hasVgpu()) {
 			((GpuVmAllocationPolicy) getVmAllocationPolicy()).deallocateGpuForVgpu(vm.getVgpu());
 		}
-		super.processVmDestroy(ev, ack);
+		firstprocessVmDestroy(ev, ack);
 	}
 
 	protected void processGpuTaskSubmit(SimEvent ev) {
@@ -238,7 +240,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			// TODO: checks whether this task has finished or not
 
 			// process this task to this CloudResource
-			gt.setResourceParameter(getId(), getCharacteristics().getCostPerSecond(),
+			gt.setResourceParameter((int)getId(), getCharacteristics().getCostPerSecond(),
 					getCharacteristics().getCostPerBw());
 
 			GpuVm vm = getGpuTaskVm(gt);
@@ -250,7 +252,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 
 			// if this task is in the exec queue
 			if (estimatedFinishTime > 0.0 && !Double.isInfinite(estimatedFinishTime)) {
-				send(getId(), estimatedFinishTime, GpuCloudSimTags.VGPU_DATACENTER_EVENT);
+				send(ev.getSource(), estimatedFinishTime, CloudSimTag.VGPU_DATACENTER_EVENT);
 			}
 
 		} catch (ClassCastException c) {
@@ -282,9 +284,6 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 	}
 
 
-		/** The characteristics. */
-		private DatacenterCharacteristics characteristics;
-
 		/** The regional Cloud Information Service (CIS) name.
 		 * @see org.cloudbus.cloudsim.core.CloudInformationService
 		 */
@@ -296,8 +295,6 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		/** The last time some cloudlet was processed in the datacenter. */
 		private double lastProcessTime;
 
-		/** The storage list. */
-		private List<DatacenterStorage> storageList;
 
 		/** The vm list. */
 		private List<? extends Vm> vmList;
@@ -308,7 +305,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 
 		/**
 		 * Overrides this method when making a new and different type of resource. <br>
-		 * <b>NOTE:</b> You do not need to override {@link #body()} method, if you use this method.
+		 * <b>NOTE:</b> You do not need to override {@link } method, if you use this method.
 		 *
 		 * @pre $none
 		 * @post $none
@@ -325,129 +322,112 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 
 			switch (ev.getTag()) {
 				// Resource characteristics inquiry
-				case CloudSimTags.RESOURCE_CHARACTERISTICS:
+				case RESOURCE_CHARACTERISTICS:
 					srcId = ((Integer) ev.getData()).intValue();
-					sendNow(srcId, ev.getTag(), getCharacteristics());
+					sendNow(ev.getSource(), ev.getTag(), getCharacteristics());
 					break;
 
 				// Resource dynamic info inquiry
-				case CloudSimTags.RESOURCE_DYNAMICS:
+				case RESOURCE_DYNAMICS:
 					srcId = ((Integer) ev.getData()).intValue();
-					sendNow(srcId, ev.getTag(), 0);
+					sendNow(ev.getSource(), ev.getTag(), 0);
 					break;
 
-				case CloudSimTags.RESOURCE_NUM_PE:
+				case RESOURCE_NUM_PE:
 					srcId = ((Integer) ev.getData()).intValue();
 					int numPE = getCharacteristics().getNumberOfPes();
-					sendNow(srcId, ev.getTag(), numPE);
+					sendNow(ev.getSource(), ev.getTag(), numPE);
 					break;
 
-				case CloudSimTags.RESOURCE_NUM_FREE_PE:
+				case RESOURCE_NUM_FREE_PE:
 					srcId = ((Integer) ev.getData()).intValue();
-					int freePesNumber = getCharacteristics().getNumberOfFreePes();
-					sendNow(srcId, ev.getTag(), freePesNumber);
+					int freePesNumber = (int) getCharacteristics().getDatacenter().getHostList().stream().mapToLong(Host::getFreePesNumber).sum();
+					sendNow(ev.getSource(), ev.getTag(), freePesNumber);
 					break;
 
 				// New Cloudlet arrives
-				case CloudSimTags.CLOUDLET_SUBMIT:
+				case CLOUDLET_SUBMIT:
 					processCloudletSubmit(ev, false);
 					break;
 
 				// New Cloudlet arrives, but the sender asks for an ack
-				case CloudSimTags.CLOUDLET_SUBMIT_ACK:
+				case CLOUDLET_SUBMIT_ACK:
 					processCloudletSubmit(ev, true);
 					break;
 
 				// Cancels a previously submitted Cloudlet
-				case CloudSimTags.CLOUDLET_CANCEL:
+				case CLOUDLET_CANCEL:
 					processCloudlet(ev, CloudSimTags.CLOUDLET_CANCEL);
 					break;
 
 				// Pauses a previously submitted Cloudlet
-				case CloudSimTags.CLOUDLET_PAUSE:
+				case CLOUDLET_PAUSE:
 					processCloudlet(ev, CloudSimTags.CLOUDLET_PAUSE);
 					break;
 
 				// Pauses a previously submitted Cloudlet, but the sender
 				// asks for an acknowledgement
-				case CloudSimTags.CLOUDLET_PAUSE_ACK:
+				case CLOUDLET_PAUSE_ACK:
 					processCloudlet(ev, CloudSimTags.CLOUDLET_PAUSE_ACK);
 					break;
 
 				// Resumes a previously submitted Cloudlet
-				case CloudSimTags.CLOUDLET_RESUME:
+				case CLOUDLET_RESUME:
 					processCloudlet(ev, CloudSimTags.CLOUDLET_RESUME);
 					break;
 
 				// Resumes a previously submitted Cloudlet, but the sender
 				// asks for an acknowledgement
-				case CloudSimTags.CLOUDLET_RESUME_ACK:
+				case CLOUDLET_RESUME_ACK:
 					processCloudlet(ev, CloudSimTags.CLOUDLET_RESUME_ACK);
 					break;
 
 				// Moves a previously submitted Cloudlet to a different resource
-				case CloudSimTags.CLOUDLET_MOVE:
-					processCloudletMove((int[]) ev.getData(), CloudSimTags.CLOUDLET_MOVE);
+				case CLOUDLET_MOVE:
+					processCloudletMove( ev,(int[]) ev.getData(), CloudSimTags.CLOUDLET_MOVE);
 					break;
 
 				// Moves a previously submitted Cloudlet to a different resource
-				case CloudSimTags.CLOUDLET_MOVE_ACK:
-					processCloudletMove((int[]) ev.getData(), CloudSimTags.CLOUDLET_MOVE_ACK);
+				case CLOUDLET_MOVE_ACK:
+					processCloudletMove( ev,(int[]) ev.getData(), CloudSimTags.CLOUDLET_MOVE_ACK);
 					break;
 
 				// Checks the status of a Cloudlet
-				case CloudSimTags.CLOUDLET_STATUS:
+				case CLOUDLET_STATUS:
 					processCloudletStatus(ev);
 					break;
 
 				// Ping packet
-				case CloudSimTags.INFOPKT_SUBMIT:
-					processPingRequest(ev);
+
+				case VM_CREATE:
+					firstprocessVmCreate(ev, false);
 					break;
 
-				case CloudSimTags.VM_CREATE:
-					processVmCreate(ev, false);
+				case VM_CREATE_ACK:
+					firstprocessVmCreate(ev, true);
 					break;
 
-				case CloudSimTags.VM_CREATE_ACK:
-					processVmCreate(ev, true);
-					break;
-
-				case CloudSimTags.VM_DESTROY:
+				case VM_DESTROY:
 					processVmDestroy(ev, false);
 					break;
 
-				case CloudSimTags.VM_DESTROY_ACK:
+				case VM_DESTROY_ACK:
 					processVmDestroy(ev, true);
 					break;
 
-				case CloudSimTags.VM_MIGRATE:
+				case VM_MIGRATE:
 					processVmMigrate(ev, false);
 					break;
 
-				case CloudSimTags.VM_MIGRATE_ACK:
+				case VM_MIGRATE_ACK:
 					processVmMigrate(ev, true);
 					break;
 
-				case CloudSimTags.VM_DATA_ADD:
-					processDataAdd(ev, false);
-					break;
 
-				case CloudSimTags.VM_DATA_ADD_ACK:
-					processDataAdd(ev, true);
-					break;
 
-				case CloudSimTags.VM_DATA_DEL:
-					processDataDelete(ev, false);
-					break;
-
-				case CloudSimTags.VM_DATA_DEL_ACK:
-					processDataDelete(ev, true);
-					break;
-
-				case CloudSimTags.VM_DATACENTER_EVENT:
+				case VM_DATACENTER_EVENT:
 					updateCloudletProcessing();
-					checkCloudletCompletion();
+					checkCloudletCompletion(ev);
 					break;
 
 				// other unknown tags are processed by this method
@@ -464,7 +444,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 * @param ack indicates if the event's sender expects to receive
 		 * an acknowledge message when the event finishes to be processed
 		 */
-		protected void processDataDelete(SimEvent ev, boolean ack) {
+	/*	protected void processDataDelete(SimEvent ev, boolean ack) {
 			if (ev == null) {
 				return;
 			}
@@ -476,7 +456,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 
 			String filename = (String) data[0];
 			int req_source = ((Integer) data[1]).intValue();
-			int tag = -1;
+			int tag;
 
 			// check if this file can be deleted (do not delete is right now)
 			int msg = deleteFileFromStorage(filename);
@@ -494,7 +474,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 
 				sendNow(req_source, tag, pack);
 			}
-		}
+		}*/
 
 		/**
 		 * Process a file inclusion request.
@@ -503,7 +483,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 * @param ack indicates if the event's sender expects to receive
 		 * an acknowledge message when the event finishes to be processed
 		 */
-		protected void processDataAdd(SimEvent ev, boolean ack) {
+	/*	protected void processDataAdd(SimEvent ev, boolean ack) {
 			if (ev == null) {
 				return;
 			}
@@ -522,7 +502,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			 * " from " + CloudSim.getEntityName(sentFrom));
 			 *******/
 
-			Object[] data = new Object[3];
+		/*	Object[] data = new Object[3];
 			data[0] = file.getName();
 
 			int msg = addFile(file); // add the file
@@ -532,7 +512,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 				data[2] = Integer.valueOf(msg); // the result of adding a master file
 				sendNow(sentFrom, DataCloudTags.FILE_ADD_MASTER_RESULT, data);
 			}
-		}
+		}*/
 
 		/**
 		 * Processes a ping request.
@@ -542,14 +522,14 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 * @pre ev != null
 		 * @post $none
 		 */
-		protected void processPingRequest(SimEvent ev) {
+	/*	protected void processPingRequest(SimEvent ev) {
 			InfoPacket pkt = (InfoPacket) ev.getData();
 			pkt.setTag(CloudSimTags.INFOPKT_RETURN);
 			pkt.setDestId(pkt.getSrcId());
 
 			// sends back to the sender
 			sendNow(pkt.getSrcId(), CloudSimTags.INFOPKT_RETURN, pkt);
-		}
+		}*/
 
 		/**
 		 * Process the event for an User/Broker who wants to know the status of a Cloudlet. This
@@ -564,7 +544,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			int cloudletId = 0;
 			int userId = 0;
 			int vmId = 0;
-			int status = -1;
+			Cloudlet.Status status ;
 
 			try {
 				// if a sender using cloudletXXX() methods
@@ -573,19 +553,18 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 				userId = data[1];
 				vmId = data[2];
 
-				status = getVmAllocationPolicy().getHost(vmId, userId).getVm(vmId,userId).getCloudletScheduler()
-						.getCloudletStatus(cloudletId);
+				status =getVmList().get(vmId).getCloudletScheduler().getCloudletList().get(cloudletId).getStatus();
+
 			}
 
 			// if a sender using normal send() methods
 			catch (ClassCastException c) {
 				try {
-					Cloudlet cl = (Cloudlet) ev.getData();
-					cloudletId = cl.getCloudletId();
+					GpuCloudlet cl = (GpuCloudlet) ev.getData();
+					cloudletId = (int)cl.getId();
 					userId = cl.getUserId();
 
-					status = getVmAllocationPolicy().getHost(vmId, userId).getVm(vmId,userId)
-							.getCloudletScheduler().getCloudletStatus(cloudletId);
+					status = getVmList().get(vmId).getCloudletScheduler().getCloudletList().get(cloudletId).getStatus();
 				} catch (Exception e) {
 					Log.printConcatLine(getName(), ": Error in processing CloudSimTags.CLOUDLET_STATUS");
 					Log.printLine(e.getMessage());
@@ -597,18 +576,17 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 				return;
 			}
 
-			int[] array = new int[3];
-			array[0] = getId();
+			Object[] array = new Object[3];
+			array[0] = (int)getId();
 			array[1] = cloudletId;
 			array[2] = status;
 
-			int tag = CloudSimTags.CLOUDLET_STATUS;
-			sendNow(userId, tag, array);
+			CloudSimTag tag = CloudSimTag.CLOUDLET_STATUS;
+			sendNow(ev.getSource(), tag, array);
 		}
 
 		/**
 		 * Process non-default received events that aren't processed by
-		 * the {@link #processEvent(org.cloudbus.cloudsim.core.SimEvent)} method.
 		 * This method should be overridden by subclasses in other to process
 		 * new defined events.
 		 *
@@ -634,33 +612,33 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 * @pre ev != null
 		 * @post $none
 		 */
-		protected void processVmCreate(SimEvent ev, boolean ack) {
+		protected void firstprocessVmCreate(SimEvent ev, boolean ack) {
 			Vm vm = (Vm) ev.getData();
 
-			boolean result = getVmAllocationPolicy().allocateHostForVm(vm);
+			HostSuitability result = getVmAllocationPolicy().allocateHostForVm(vm);
 
 			if (ack) {
 				int[] data = new int[3];
-				data[0] = getId();
-				data[1] = vm.getId();
+				data[0] = (int)getId();
+				data[1] = (int)vm.getId();
 
-				if (result) {
+				if (result.fully()) {
 					data[2] = CloudSimTags.TRUE;
 				} else {
 					data[2] = CloudSimTags.FALSE;
 				}
-				send(vm.getUserId(), CloudSim.getMinTimeBetweenEvents(), CloudSimTags.VM_CREATE_ACK, data);
+				send(ev.getSource(), simulation.getMinTimeBetweenEvents(), CloudSimTag.VM_CREATE_ACK, data);
 			}
 
-			if (result) {
+			if (result.fully()) {
 				getVmList().add(vm);
 
-				if (vm.isBeingInstantiated()) {
-					vm.setBeingInstantiated(false);
+				if (vm.isWorking()) {
+					vm.setFailed(true);
 				}
 
-				vm.updateVmProcessing(CloudSim.clock(), getVmAllocationPolicy().getHost(vm).getVmScheduler()
-						.getAllocatedMipsForVm(vm));
+				vm.updateProcessing(simulation.clock(), getVmAllocationPolicy().getDatacenter().getHost((int)vm.getHost().getId()).getVmScheduler()
+						.getAllocatedMips(vm));
 			}
 
 		}
@@ -677,17 +655,17 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 * @pre ev != null
 		 * @post $none
 		 */
-		protected void processVmDestroy(SimEvent ev, boolean ack) {
+		protected void firstprocessVmDestroy(SimEvent ev, boolean ack) {
 			Vm vm = (Vm) ev.getData();
 			getVmAllocationPolicy().deallocateHostForVm(vm);
 
 			if (ack) {
 				int[] data = new int[3];
-				data[0] = getId();
-				data[1] = vm.getId();
+				data[0] = (int) getId();
+				data[1] = (int) vm.getId();
 				data[2] = CloudSimTags.TRUE;
 
-				sendNow(vm.getUserId(), CloudSimTags.VM_DESTROY_ACK, data);
+				sendNow(ev.getSource(), CloudSimTag.VM_DESTROY_ACK, data);
 			}
 
 			getVmList().remove(vm);
@@ -718,28 +696,28 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 
 			getVmAllocationPolicy().deallocateHostForVm(vm);
 			host.removeMigratingInVm(vm);
-			boolean result = getVmAllocationPolicy().allocateHostForVm(vm, host);
-			if (!result) {
+			HostSuitability result = getVmAllocationPolicy().allocateHostForVm(vm, host);
+			if (!result.fully()) {
 				Log.printLine("[Datacenter.processVmMigrate] VM allocation to the destination host failed");
 				System.exit(0);
 			}
 
 			if (ack) {
 				int[] data = new int[3];
-				data[0] = getId();
-				data[1] = vm.getId();
+				data[0] = (int)getId();
+				data[1] = (int)vm.getId();
 
-				if (result) {
+				if (result.fully()) {
 					data[2] = CloudSimTags.TRUE;
 				} else {
 					data[2] = CloudSimTags.FALSE;
 				}
-				sendNow(ev.getSource(), CloudSimTags.VM_CREATE_ACK, data);
+				sendNow(ev.getSource(), CloudSimTag.VM_CREATE_ACK, data);
 			}
 
 			Log.formatLine(
 					"%.2f: Migration of VM #%d to Host #%d is completed",
-					CloudSim.clock(),
+					simulation.clock(),
 					vm.getId(),
 					host.getId());
 			vm.setInMigration(false);
@@ -770,10 +748,10 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			// if the sender using normal send() methods
 			catch (ClassCastException c) {
 				try {
-					Cloudlet cl = (Cloudlet) ev.getData();
-					cloudletId = cl.getCloudletId();
+					GpuCloudlet cl = (GpuCloudlet) ev.getData();
+					cloudletId = (int)cl.getId();
 					userId = cl.getUserId();
-					vmId = cl.getVmId();
+					vmId = (int)cl.getVm().getId();
 				} catch (Exception e) {
 					Log.printConcatLine(super.getName(), ": Error in processing Cloudlet");
 					Log.printLine(e.getMessage());
@@ -788,23 +766,23 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			// begins executing ....
 			switch (type) {
 				case CloudSimTags.CLOUDLET_CANCEL:
-					processCloudletCancel(cloudletId, userId, vmId);
+					processCloudletCancel(ev, cloudletId, userId, vmId);
 					break;
 
 				case CloudSimTags.CLOUDLET_PAUSE:
-					processCloudletPause(cloudletId, userId, vmId, false);
+					processCloudletPause(ev,cloudletId, userId, vmId, false);
 					break;
 
 				case CloudSimTags.CLOUDLET_PAUSE_ACK:
-					processCloudletPause(cloudletId, userId, vmId, true);
+					processCloudletPause(ev,cloudletId, userId, vmId, true);
 					break;
 
 				case CloudSimTags.CLOUDLET_RESUME:
-					processCloudletResume(cloudletId, userId, vmId, false);
+					processCloudletResume(ev,cloudletId, userId, vmId, false);
 					break;
 
 				case CloudSimTags.CLOUDLET_RESUME_ACK:
-					processCloudletResume(cloudletId, userId, vmId, true);
+					processCloudletResume(ev,cloudletId, userId, vmId, true);
 					break;
 				default:
 					break;
@@ -822,7 +800,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 * @pre type > 0
 		 * @post $none
 		 */
-		protected void processCloudletMove(int[] receivedData, int type) {
+		protected void processCloudletMove(SimEvent ev,int[] receivedData, int type) {
 			updateCloudletProcessing();
 
 			int[] array = receivedData;
@@ -833,29 +811,28 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			int destId = array[4];
 
 			// get the cloudlet
-			Cloudlet cl = getVmAllocationPolicy().getHost(vmId, userId).getVm(vmId,userId)
-					.getCloudletScheduler().cloudletCancel(cloudletId);
+			GpuCloudlet cl = (GpuCloudlet) getVmAllocationPolicy().getDatacenter().getHost((int)getVmList().get(vmId).getHost().getId()).getVmList().get(vmId).getCloudletScheduler().getCloudletList().get(cloudletId);
 
 			boolean failed = false;
 			if (cl == null) {// cloudlet doesn't exist
 				failed = true;
 			} else {
 				// has the cloudlet already finished?
-				if (cl.getCloudletStatusString() == "Success") {// if yes, send it back to user
+				if (cl.getStatus() == Cloudlet.Status.SUCCESS) {// if yes, send it back to user
 					int[] data = new int[3];
-					data[0] = getId();
+					data[0] = (int)getId();
 					data[1] = cloudletId;
 					data[2] = 0;
-					sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_SUBMIT_ACK, data);
-					sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_RETURN, cl);
+					sendNow(ev.getSource(), CloudSimTag.CLOUDLET_SUBMIT_ACK, data);
+					sendNow(ev.getSource(), CloudSimTag.CLOUDLET_RETURN, cl);
 				}
 
 				// prepare cloudlet for migration
-				cl.setVmId(vmDestId);
+				cl.getVm().setId(vmDestId);
 
 				// the cloudlet will migrate from one vm to another does the destination VM exist?
 				if (destId == getId()) {
-					Vm vm = getVmAllocationPolicy().getHost(vmDestId, userId).getVm(vmDestId,userId);
+					Vm vm = getVmList().get(vmDestId);
 					if (vm == null) {
 						failed = true;
 					} else {
@@ -864,22 +841,22 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 						vm.getCloudletScheduler().cloudletSubmit(cl, fileTransferTime);
 					}
 				} else {// the cloudlet will migrate from one resource to another
-					int tag = ((type == CloudSimTags.CLOUDLET_MOVE_ACK) ? CloudSimTags.CLOUDLET_SUBMIT_ACK
-							: CloudSimTags.CLOUDLET_SUBMIT);
-					sendNow(destId, tag, cl);
+					CloudSimTag tag = ((type == CloudSimTags.CLOUDLET_MOVE_ACK) ? CloudSimTag.CLOUDLET_SUBMIT_ACK
+							: CloudSimTag.CLOUDLET_SUBMIT);
+					sendNow(ev.getDestination(), tag, cl);
 				}
 			}
 
 			if (type == CloudSimTags.CLOUDLET_MOVE_ACK) {// send ACK if requested
 				int[] data = new int[3];
-				data[0] = getId();
+				data[0] = (int)getId();
 				data[1] = cloudletId;
 				if (failed) {
 					data[2] = 0;
 				} else {
 					data[2] = 1;
 				}
-				sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_SUBMIT_ACK, data);
+				sendNow(ev.getSource(), CloudSimTag.CLOUDLET_SUBMIT_ACK, data);
 			}
 		}
 
@@ -898,12 +875,12 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 
 			try {
 				// gets the Cloudlet object
-				Cloudlet cl = (Cloudlet) ev.getData();
+				GpuCloudlet cl = (GpuCloudlet) ev.getData();
 
 				// checks whether this Cloudlet has finished or not
 				if (cl.isFinished()) {
-					String name = CloudSim.getEntityName(cl.getUserId());
-					Log.printConcatLine(getName(), ": Warning - Cloudlet #", cl.getCloudletId(), " owned by ", name,
+					String name = simulation.toString();
+					Log.printConcatLine(getName(), ": Warning - Cloudlet #", cl.getId(), " owned by ", name,
 							" is already completed/finished.");
 					Log.printLine("Therefore, it is not being executed again");
 					Log.printLine();
@@ -915,51 +892,53 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 					// for this Cloudlet back.
 					if (ack) {
 						int[] data = new int[3];
-						data[0] = getId();
-						data[1] = cl.getCloudletId();
+						data[0] = (int)getId();
+						data[1] = (int) cl.getId();
 						data[2] = CloudSimTags.FALSE;
 
 						// unique tag = operation tag
-						int tag = CloudSimTags.CLOUDLET_SUBMIT_ACK;
-						sendNow(cl.getUserId(), tag, data);
+						CloudSimTag tag = CloudSimTag.CLOUDLET_SUBMIT_ACK;
+						sendNow(ev.getSource(), tag, data);
 					}
 
-					sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_RETURN, cl);
+					sendNow(ev.getSource(), CloudSimTag.CLOUDLET_RETURN, cl);
 
 					return;
 				}
 
 				// process this Cloudlet to this CloudResource
+				cl.setId(getId());
+				/*
 				cl.setResourceParameter(
 						getId(), getCharacteristics().getCostPerSecond(),
-						getCharacteristics().getCostPerBw());
+						getCharacteristics().getCostPerBw());*/
 
 				int userId = cl.getUserId();
-				int vmId = cl.getVmId();
+				int vmId = (int)cl.getVm().getId();
 
 				// time to transfer the files
 				double fileTransferTime = predictFileTransferTime(cl.getRequiredFiles());
 
-				Host host = getVmAllocationPolicy().getHost(vmId, userId);
-				Vm vm = host.getVm(vmId, userId);
+				Host host = getVmAllocationPolicy().getDatacenter().getHostById(getVmList().get(vmId).getHost().getId());
+				Vm vm = host.getVmList().get(vmId);
 				CloudletScheduler scheduler = vm.getCloudletScheduler();
 				double estimatedFinishTime = scheduler.cloudletSubmit(cl, fileTransferTime);
 
 				// if this cloudlet is in the exec queue
 				if (estimatedFinishTime > 0.0 && !Double.isInfinite(estimatedFinishTime)) {
 					estimatedFinishTime += fileTransferTime;
-					send(getId(), estimatedFinishTime, CloudSimTags.VM_DATACENTER_EVENT);
+					send(ev.getSource(), estimatedFinishTime, CloudSimTag.VM_DATACENTER_EVENT);
 				}
 
 				if (ack) {
 					int[] data = new int[3];
-					data[0] = getId();
-					data[1] = cl.getCloudletId();
+					data[0] =(int) getId();
+					data[1] = (int)cl.getId();
 					data[2] = CloudSimTags.TRUE;
 
 					// unique tag = operation tag
-					int tag = CloudSimTags.CLOUDLET_SUBMIT_ACK;
-					sendNow(cl.getUserId(), tag, data);
+					CloudSimTag tag = CloudSimTag.CLOUDLET_SUBMIT_ACK;
+					sendNow(ev.getSource(), tag, data);
 				}
 			} catch (ClassCastException c) {
 				Log.printLine(getName() + ".processCloudletSubmit(): " + "ClassCastException error.");
@@ -969,7 +948,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 				e.printStackTrace();
 			}
 
-			checkCloudletCompletion();
+			checkCloudletCompletion(ev);
 		}
 
 		/**
@@ -985,10 +964,10 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			while (iter.hasNext()) {
 				String fileName = iter.next();
 				for (int i = 0; i < getStorageList().size(); i++) {
-					Storage tempStorage = getStorageList().get(i);
-					File tempFile = tempStorage.getFile(fileName);
+					SanStorage tempStorage = getStorageList().get(i);
+					Optional<File> tempFile = tempStorage.getFile(fileName);
 					if (tempFile != null) {
-						time += tempFile.getSize() / tempStorage.getMaxTransferRate();
+						time += tempFile.get().getSize() / tempStorage.getMaxTransferRate();
 						break;
 					}
 				}
@@ -1008,28 +987,28 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 * @pre $none
 		 * @post $none
 		 */
-		protected void processCloudletResume(int cloudletId, int userId, int vmId, boolean ack) {
-			double eventTime = getVmAllocationPolicy().getHost(vmId, userId).getVm(vmId,userId)
-					.getCloudletScheduler().cloudletResume(cloudletId);
+		protected void processCloudletResume(SimEvent ev, int cloudletId, int userId, int vmId, boolean ack) {
+			double eventTime = getVmAllocationPolicy().getDatacenter().getHostById(getVmList().get(vmId).getHost().getId()).getVmList().get(vmId)
+					.getCloudletScheduler().cloudletResume(getVmList().get(vmId).getCloudletScheduler().getCloudletList().get(cloudletId));
 
 			boolean status = false;
 			if (eventTime > 0.0) { // if this cloudlet is in the exec queue
 				status = true;
-				if (eventTime > CloudSim.clock()) {
-					schedule(getId(), eventTime, CloudSimTags.VM_DATACENTER_EVENT);
+				if (eventTime > simulation.clock()) {
+					schedule( eventTime, CloudSimTag.VM_DATACENTER_EVENT);
 				}
 			}
 
 			if (ack) {
 				int[] data = new int[3];
-				data[0] = getId();
+				data[0] = (int)getId();
 				data[1] = cloudletId;
 				if (status) {
 					data[2] = CloudSimTags.TRUE;
 				} else {
 					data[2] = CloudSimTags.FALSE;
 				}
-				sendNow(userId, CloudSimTags.CLOUDLET_RESUME_ACK, data);
+				sendNow(ev.getSource(), CloudSimTag.CLOUDLET_RESUME_ACK, data);
 			}
 		}
 
@@ -1045,20 +1024,20 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 * @pre $none
 		 * @post $none
 		 */
-		protected void processCloudletPause(int cloudletId, int userId, int vmId, boolean ack) {
-			boolean status = getVmAllocationPolicy().getHost(vmId, userId).getVm(vmId,userId)
-					.getCloudletScheduler().cloudletPause(cloudletId);
+		protected void processCloudletPause(SimEvent ev ,int cloudletId, int userId, int vmId, boolean ack) {
+			boolean status = getVmAllocationPolicy().getDatacenter().getHostById(getVmList().get(vmId).getHost().getId()).getVmList().get(vmId)
+					.getCloudletScheduler().cloudletPause(getVmList().get(vmId).getCloudletScheduler().getCloudletList().get(cloudletId));
 
 			if (ack) {
 				int[] data = new int[3];
-				data[0] = getId();
+				data[0] = (int)getId();
 				data[1] = cloudletId;
 				if (status) {
 					data[2] = CloudSimTags.TRUE;
 				} else {
 					data[2] = CloudSimTags.FALSE;
 				}
-				sendNow(userId, CloudSimTags.CLOUDLET_PAUSE_ACK, data);
+				sendNow(ev.getSource(), CloudSimTag.CLOUDLET_PAUSE_ACK, data);
 			}
 		}
 
@@ -1072,10 +1051,10 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 * @pre $none
 		 * @post $none
 		 */
-		protected void processCloudletCancel(int cloudletId, int userId, int vmId) {
-			Cloudlet cl = getVmAllocationPolicy().getHost(vmId, userId).getVm(vmId,userId)
-					.getCloudletScheduler().cloudletCancel(cloudletId);
-			sendNow(userId, CloudSimTags.CLOUDLET_CANCEL, cl);
+		protected void processCloudletCancel(SimEvent ev, int cloudletId, int userId, int vmId) {
+			Cloudlet cl = getVmAllocationPolicy().getDatacenter().getHostById(getVmList().get(vmId).getHost().getId()).getVmList().get(vmId)
+					.getCloudletScheduler().cloudletCancel(getVmList().get(vmId).getCloudletScheduler().getCloudletList().get(cloudletId));
+			sendNow(ev.getSource(), CloudSimTag.CLOUDLET_CANCEL, cl);
 		}
 
 		/**
@@ -1090,27 +1069,27 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			// if some time passed since last processing
 			// R: for term is to allow loop at simulation start. Otherwise, one initial
 			// simulation step is skipped and schedulers are not properly initialized
-			if (CloudSim.clock() < 0.111 || CloudSim.clock() > getLastProcessTime() + CloudSim.getMinTimeBetweenEvents()) {
+			if (simulation.clock() < 0.111 || simulation.clock() > getLastProcessTime() + simulation.getMinTimeBetweenEvents()) {
 				List<? extends Host> list = getVmAllocationPolicy().getHostList();
 				double smallerTime = Double.MAX_VALUE;
 				// for each host...
 				for (int i = 0; i < list.size(); i++) {
 					Host host = list.get(i);
 					// inform VMs to update processing
-					double time = host.updateVmsProcessing(CloudSim.clock());
+					double time = host.updateProcessing(simulation.clock());
 					// what time do we expect that the next cloudlet will finish?
 					if (time < smallerTime) {
 						smallerTime = time;
 					}
 				}
 				// gurantees a minimal interval before scheduling the event
-				if (smallerTime < CloudSim.clock() + CloudSim.getMinTimeBetweenEvents() + 0.01) {
-					smallerTime = CloudSim.clock() + CloudSim.getMinTimeBetweenEvents() + 0.01;
+				if (smallerTime < simulation.clock() + simulation.getMinTimeBetweenEvents() + 0.01) {
+					smallerTime = simulation.clock() + simulation.getMinTimeBetweenEvents() + 0.01;
 				}
 				if (smallerTime != Double.MAX_VALUE) {
-					schedule(getId(), (smallerTime - CloudSim.clock()), CloudSimTags.VM_DATACENTER_EVENT);
+					schedule(simulation.getEntityList().get((int)getId()), (smallerTime - simulation.clock()), CloudSimTag.VM_DATACENTER_EVENT);
 				}
-				setLastProcessTime(CloudSim.clock());
+				setLastProcessTime(simulation.clock());
 			}
 		}
 
@@ -1121,15 +1100,15 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 * @pre $none
 		 * @post $none
 		 */
-		protected void firstcheckCloudletCompletion() {
+		protected void firstcheckCloudletCompletion(SimEvent ev) {
 			List<? extends Host> list = getVmAllocationPolicy().getHostList();
 			for (int i = 0; i < list.size(); i++) {
 				Host host = list.get(i);
 				for (Vm vm : host.getVmList()) {
-					while (vm.getCloudletScheduler().isFinishedCloudlets()) {
-						Cloudlet cl = vm.getCloudletScheduler().getNextFinishedCloudlet();
+					while (vm.getCloudletScheduler().isEmpty() ) {
+						CloudletExecution cl = vm.getCloudletScheduler().getCloudletFinishedList().get(i);
 						if (cl != null) {
-							sendNow(cl.getUserId(), CloudSimTags.CLOUDLET_RETURN, cl);
+							sendNow(ev.getSource(), CloudSimTag.CLOUDLET_RETURN, cl);
 						}
 					}
 				}
@@ -1158,12 +1137,12 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 				return DataCloudTags.FILE_ADD_ERROR_STORAGE_FULL;
 			}
 
-			Storage tempStorage = null;
+			SanStorage tempStorage = null;
 			int msg = DataCloudTags.FILE_ADD_ERROR_STORAGE_FULL;
 
 			for (int i = 0; i < getStorageList().size(); i++) {
 				tempStorage = getStorageList().get(i);
-				if (tempStorage.getAvailableSpace() >= file.getSize()) {
+				if (tempStorage.getAvailableResource() >= file.getSize()) {
 					tempStorage.addFile(file);
 					msg = DataCloudTags.FILE_ADD_SUCCESSFUL;
 					break;
@@ -1197,8 +1176,8 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 				return false;
 			}
 
-			Iterator<Storage> it = getStorageList().iterator();
-			Storage storage = null;
+			Iterator<SanStorage> it = getStorageList().iterator();
+			SanStorage storage = null;
 			boolean result = false;
 
 			while (it.hasNext()) {
@@ -1222,38 +1201,38 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 *  {@link DataCloudTags#FILE_DELETE_SUCCESSFUL}
 		 */
 		private int deleteFileFromStorage(String fileName) {
-			Storage tempStorage = null;
-			File tempFile = null;
+			SanStorage tempStorage = null;
+			Optional<File> tempFile = null;
 			int msg = DataCloudTags.FILE_DELETE_ERROR;
 
 			for (int i = 0; i < getStorageList().size(); i++) {
 				tempStorage = getStorageList().get(i);
 				tempFile = tempStorage.getFile(fileName);
-				tempStorage.deleteFile(fileName, tempFile);
+				tempStorage.deleteFile(fileName);
 				msg = DataCloudTags.FILE_DELETE_SUCCESSFUL;
 			} // end for
 
 			return msg;
 		}
 
-		@Override
+
 		public void shutdownEntity() {
 			Log.printConcatLine(getName(), " is shutting down...");
 		}
 
-		@Override
+
 		public void startEntity() {
 			Log.printConcatLine(getName(), " is starting...");
 			// this resource should register to regional CIS.
 			// However, if not specified, then register to system CIS (the
 			// default CloudInformationService) entity.
-			int gisID = CloudSim.getEntityId(regionalCisName);
-			if (gisID == -1) {
-				gisID = CloudSim.getCloudInfoServiceEntityId();
+			SimEntity gisID = simulation.getEntityId(regionalCisName);
+			if (gisID == SimEntity.NULL) {
+				gisID = CloudSim.NULL.getCloudInfoService();
 			}
 
 			// send the registration to CIS
-			sendNow(gisID, CloudSimTags.REGISTER_RESOURCE, getId());
+			sendNow(gisID, CloudSimTag.REGISTER_RESOURCE, getId());
 			// Below method is for a child class to override
 			registerOtherEntity();
 		}
@@ -1265,7 +1244,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 */
 		@SuppressWarnings("unchecked")
 		public <T extends Host> List<T> getHostList() {
-			return (List<T>) getCharacteristics().getHostList();
+			return (List<T>) getCharacteristics().getDatacenter().getHostList();
 		}
 
 		/**
@@ -1273,7 +1252,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 *
 		 * @return the datacenter characteristics
 		 */
-		protected DatacenterCharacteristics getCharacteristics() {
+		public DatacenterCharacteristics getCharacteristics() {
 			return characteristics;
 		}
 
@@ -1345,7 +1324,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 *
 		 * @return the storage list
 		 */
-		protected List<Storage> getStorageList() {
+		protected List<SanStorage> getStorageList() {
 			return storageList;
 		}
 
@@ -1354,7 +1333,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 *
 		 * @param storageList the new storage list
 		 */
-		protected void setStorageList(List<DatacenterStorage> storageList) {
+		protected void setStorageList(List<SanStorage> storageList) {
 			this.storageList = storageList;
 		}
 
@@ -1382,7 +1361,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 *
 		 * @return the scheduling interval
 		 */
-		protected double getSchedulingInterval() {
+		public double getSchedulingInterval() {
 			return schedulingInterval;
 		}
 
@@ -1390,13 +1369,15 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 * Sets the scheduling interval.
 		 *
 		 * @param schedulingInterval the new scheduling interval
+		 * @return
 		 */
-		protected void setSchedulingInterval(double schedulingInterval) {
+		public final Datacenter setSchedulingInterval(double schedulingInterval) {
 			this.schedulingInterval = schedulingInterval;
+			return this;
 		}
 
 	}
 
 
 
-}
+

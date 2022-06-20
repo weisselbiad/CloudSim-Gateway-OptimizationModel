@@ -198,7 +198,7 @@ public interface Simulation {
      * @return
      */
     List<SimEntity> getEntityList();
-
+    SimEntity getEntityId(String name);
     /**
      * Gets the minimum time between events (in seconds).
      * Events within shorter periods after the last event are discarded.

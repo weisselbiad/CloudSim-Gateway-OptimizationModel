@@ -29,7 +29,7 @@ import java.util.List;
  * 
  */
 public class GpuVm extends VmSimple implements Vm {
-
+	private int userId;
 	/**
 	 * Describes vm's type. A type can be associated with a configuration, therefore
 	 * it helps identifying the vm
@@ -55,6 +55,14 @@ public class GpuVm extends VmSimple implements Vm {
 		super(mipsCapacity, numberOfPes, cloudletScheduler);
 
 		setType(type);
+		setArrivalTime(0.0);
+	}
+
+	public GpuVm(int userId,final long mipsCapacity, final long numberOfPes, final CloudletScheduler cloudletScheduler) {
+		super(mipsCapacity, numberOfPes, cloudletScheduler);
+
+		setType(type);
+		setUserId(userId);
 		setArrivalTime(0.0);
 	}
 
@@ -101,6 +109,21 @@ public class GpuVm extends VmSimple implements Vm {
 
 	public void setArrivalTime(double arrivalTime) {
 		this.arrivalTime = arrivalTime;
+	}
+
+	protected void setUserId(int userId) {
+		this.userId = userId;
+	}
+
+	/**
+	 * Gets the ID of the owner of the VM.
+	 *
+	 * @return VM's owner ID
+	 * @pre $none
+	 * @post $none
+	 */
+	public int getUserId() {
+		return userId;
 	}
 
 }
