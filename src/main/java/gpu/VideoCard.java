@@ -1,6 +1,6 @@
 package gpu;
 
-import org.cloudbus.cloudsim.gpu.provisioners.VideoCardBwProvisioner;
+import gpu.provisioners.VideoCardBwProvisioner;
 
 /**
  * Represents a physical video card attached to a host

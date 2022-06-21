@@ -1342,7 +1342,7 @@ public class HostSimple implements Host {
     }
 
     @Override
-    public final void setPowerModel(final PowerModelHost powerModel) {
+    public  void setPowerModel(final PowerModelHost powerModel) {
         requireNonNull(powerModel,
             "powerModel cannot be null. You could provide a " +
             PowerModelHost.class.getSimpleName() + ".NULL instead.");

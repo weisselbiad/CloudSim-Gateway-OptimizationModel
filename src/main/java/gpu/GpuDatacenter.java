@@ -348,8 +348,8 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			// empty. This should be override by a child class
 		}
 
-		@Override
-		public void processEvent(SimEvent ev) {
+
+		public void processgpuEvent(SimEvent ev) {
 			int srcId = -1;
 
 			switch (ev.getTag()) {

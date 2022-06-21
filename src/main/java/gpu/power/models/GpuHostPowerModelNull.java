@@ -1,6 +1,8 @@
 package gpu.power.models;
 
+import org.cloudbus.cloudsim.power.PowerMeasurement;
 import org.cloudbus.cloudsim.power.models.PowerModel;
+import org.cloudbus.cloudsim.power.models.PowerModelHost;
 
 /**
  * Implements a power model where the power consumption is zeroed out.
@@ -8,7 +10,7 @@ import org.cloudbus.cloudsim.power.models.PowerModel;
  * @author Ahmad Siavashi
  *
  */
-public class GpuHostPowerModelNull implements PowerModel {
+public class GpuHostPowerModelNull extends PowerModelHost implements PowerModel {
 
 	/**
 	 * The host will be zeroed out.
@@ -21,4 +23,8 @@ public class GpuHostPowerModelNull implements PowerModel {
 		return 0;
 	}
 
+	@Override
+	public PowerMeasurement getPowerMeasurement() {
+		return null;
+	}
 }

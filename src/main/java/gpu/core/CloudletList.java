@@ -6,7 +6,7 @@
  * Copyright (c) 2009-2012, The University of Melbourne, Australia
  */
 
-package cloudsimMixedPeEnv.lists;
+package gpu.core;
 
 import java.util.Collections;
 import java.util.Comparator;

@@ -6,10 +6,11 @@
  * Copyright (c) 2009-2012, The University of Melbourne, Australia
  */
 
-package cloudsimMixedPeEnv.lists;
+package gpu.core;
 
 import java.util.List;
 
+import cloudsimMixedPeEnv.lists.PeList;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
 
@@ -71,7 +72,7 @@ public class HostList {
 	public static <T extends Host> int getNumberOfFreePes(List<T> hostList) {
 		int numberOfFreePes = 0;
 		for (T host : hostList) {
-			numberOfFreePes += PeList.getNumberOfFreePes(host.getPeList());
+			numberOfFreePes += cloudsimMixedPeEnv.lists.PeList.getNumberOfFreePes(host.getPeList());
 		}
 		return numberOfFreePes;
 	}
@@ -88,7 +89,7 @@ public class HostList {
 	public static <T extends Host> int getNumberOfBusyPes(List<T> hostList) {
 		int numberOfBusyPes = 0;
 		for (T host : hostList) {
-			numberOfBusyPes += PeList.getNumberOfBusyPes(host.getPeList());
+			numberOfBusyPes += cloudsimMixedPeEnv.lists.PeList.getNumberOfBusyPes(host.getPeList());
 		}
 		return numberOfBusyPes;
 	}

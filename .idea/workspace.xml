@@ -4,10 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="08.06">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/core/PeList.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/core/VmList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/lists/CloudletList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/core/CloudletList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/lists/HostList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/core/HostList.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuHost.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuHost.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenterBroker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenterBroker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/Pgpu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/Pgpu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/VideoCard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/VideoCard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/performance/PerformanceGpuHost.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/performance/PerformanceGpuHost.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/power/PowerGpuDatacenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/power/PowerGpuDatacenter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/power/PowerGpuHost.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/power/PowerGpuHost.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/power/PowerVideoCard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/power/PowerVideoCard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/power/models/GpuHostPowerModelNull.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/power/models/GpuHostPowerModelNull.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/power/models/VideoCardPowerModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/power/models/VideoCardPowerModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyAbstract.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBrokerAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBrokerAbstract.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/hosts/HostSimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/hosts/HostSimple.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -392,7 +406,14 @@
       <option name="project" value="LOCAL" />
       <updated>1654677725168</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="20.06.1">
+      <created>1655754159732</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1655754159732</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -418,7 +439,8 @@
     <MESSAGE value="06.06" />
     <MESSAGE value="07.06" />
     <MESSAGE value="08.06" />
-    <option name="LAST_COMMIT_MESSAGE" value="08.06" />
+    <MESSAGE value="20.06.1" />
+    <option name="LAST_COMMIT_MESSAGE" value="20.06.1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -435,7 +457,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyAbstract.java</url>
-          <line>253</line>
+          <line>252</line>
           <option name="timeStamp" value="30" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">

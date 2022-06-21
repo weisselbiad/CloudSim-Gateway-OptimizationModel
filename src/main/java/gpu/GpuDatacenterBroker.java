@@ -1,13 +1,16 @@
 package gpu;
 
+import gpu.core.CloudSimTags;
+import gpu.core.GpuCloudSimTags;
+import gpu.core.Log;
+import gpu.core.VmList;
 import org.apache.commons.lang3.NotImplementedException;
-import org.cloudbus.cloudsim.*;
+import org.cloudbus.cloudsim.brokers.DatacenterBrokerAbstract;
 import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.core.CloudSimTags;
-import org.cloudbus.cloudsim.core.SimEvent;
-import org.cloudbus.cloudsim.core.predicates.PredicateType;
-import org.cloudbus.cloudsim.gpu.core.GpuCloudSimTags;
-import org.cloudbus.cloudsim.lists.VmList;
+import org.cloudbus.cloudsim.core.events.PredicateType;
+import org.cloudbus.cloudsim.core.events.SimEvent;
+import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristics;
+import org.cloudbus.cloudsim.vms.Vm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +25,7 @@ import java.util.List;
  * @author Ahmad Siavashi
  * 
  */
-public class GpuDatacenterBroker extends DatacenterBroker {
+public class GpuDatacenterBroker extends DatacenterBrokerAbstract {
 
 	/** A structure to maintain VM-GpuCloudlet mapping */
 	private HashMap<String, List<GpuCloudlet>> vmGpuCloudletMap;
@@ -33,7 +36,7 @@ public class GpuDatacenterBroker extends DatacenterBroker {
 	/**
 	 * @see DatacenterBroker
 	 */
-	public GpuDatacenterBroker(String name) throws Exception {
+	public GpuDatacenterBroker(final String name) throws Exception {
 		super(name);
 		setGpuVmCloudletMap(new HashMap<String, List<GpuCloudlet>>());
 		setVmGpuCloudletsSubmitted(new HashMap<String, Integer>());

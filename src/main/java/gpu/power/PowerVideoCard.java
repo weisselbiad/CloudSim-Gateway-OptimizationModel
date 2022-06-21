@@ -1,13 +1,13 @@
 package gpu.power;
 
-import org.cloudbus.cloudsim.gpu.Pgpu;
-import org.cloudbus.cloudsim.gpu.Vgpu;
-import org.cloudbus.cloudsim.gpu.VgpuScheduler;
-import org.cloudbus.cloudsim.gpu.VideoCard;
-import org.cloudbus.cloudsim.gpu.performance.PerformanceScheduler;
-import org.cloudbus.cloudsim.gpu.power.models.VideoCardPowerModel;
-import org.cloudbus.cloudsim.gpu.provisioners.VideoCardBwProvisioner;
-import org.cloudbus.cloudsim.lists.PeList;
+import gpu.Pgpu;
+import gpu.Vgpu;
+import gpu.VgpuScheduler;
+import gpu.VideoCard;
+import gpu.performance.PerformanceScheduler;
+import gpu.power.models.VideoCardPowerModel;
+import gpu.provisioners.VideoCardBwProvisioner;
+import gpu.core.PeList;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +27,7 @@ public class PowerVideoCard extends VideoCard {
 	private VideoCardPowerModel powerModel;
 
 	/**
-	 * @see VideoCard#VideoCard(int, int, VgpuScheduler, VideoCardBwProvisioner)
+	 * @see VideoCard(int, int, VgpuScheduler, VideoCardBwProvisioner)
 	 *      VideoCard(int, int, VgpuScheduler, VideoCardBwProvisioner)
 	 * @param powerModel the power model associated with the video card
 	 */

@@ -1,12 +1,15 @@
 package gpu.performance;
 
-import org.cloudbus.cloudsim.Pe;
-import org.cloudbus.cloudsim.VmScheduler;
-import org.cloudbus.cloudsim.gpu.GpuHost;
-import org.cloudbus.cloudsim.gpu.Vgpu;
-import org.cloudbus.cloudsim.gpu.allocation.VideoCardAllocationPolicy;
-import org.cloudbus.cloudsim.provisioners.BwProvisioner;
-import org.cloudbus.cloudsim.provisioners.RamProvisioner;
+import org.cloudbus.cloudsim.resources.Pe;
+import org.cloudbus.cloudsim.resources.PeSimple;
+
+import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
+import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerAbstract;
+import gpu.GpuHost;
+import gpu.Vgpu;
+import gpu.allocation.VideoCardAllocationPolicy;
+import org.cloudbus.cloudsim.provisioners.ResourceProvisioner;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,17 +27,17 @@ public class PerformanceGpuHost extends GpuHost {
 	/**
 	 * @see GpuHost#GpuHost GpuHost
 	 */
-	public PerformanceGpuHost(int id, String type, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner,
-			long storage, List<? extends Pe> peList, VmScheduler vmScheduler,
-			VideoCardAllocationPolicy videoCardAllocationPolicy) {
+	public PerformanceGpuHost(int id, String type, ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner,
+							  long storage, List<Pe> peList, VmScheduler vmScheduler,
+							  VideoCardAllocationPolicy videoCardAllocationPolicy) {
 		super(id, type, ramProvisioner, bwProvisioner, storage, peList, vmScheduler, videoCardAllocationPolicy);
 	}
 
 	/**
 	 * @see GpuHost#GpuHost GpuHost
 	 */
-	public PerformanceGpuHost(int id, String type, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner,
-			long storage, List<? extends Pe> peList, VmScheduler vmScheduler) {
+	public PerformanceGpuHost(int id, String type, ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner,
+			long storage, List< Pe> peList, VmScheduler vmScheduler) {
 		super(id, type, ramProvisioner, bwProvisioner, storage, peList, vmScheduler);
 	}
 

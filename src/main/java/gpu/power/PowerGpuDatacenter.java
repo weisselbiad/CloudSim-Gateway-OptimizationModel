@@ -1,16 +1,18 @@
 package gpu.power;
 
-import org.cloudbus.cloudsim.DatacenterCharacteristics;
-import org.cloudbus.cloudsim.Host;
-import org.cloudbus.cloudsim.Storage;
-import org.cloudbus.cloudsim.VmAllocationPolicy;
+import gpu.GpuDatacenter;
+import gpu.VideoCard;
+import gpu.allocation.VideoCardAllocationPolicy;
+import gpu.core.GpuCloudSimTags;
+import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
 import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.core.SimEvent;
-import org.cloudbus.cloudsim.core.predicates.PredicateType;
-import org.cloudbus.cloudsim.gpu.GpuDatacenter;
-import org.cloudbus.cloudsim.gpu.VideoCard;
-import org.cloudbus.cloudsim.gpu.allocation.VideoCardAllocationPolicy;
-import org.cloudbus.cloudsim.gpu.core.GpuCloudSimTags;
+import org.cloudbus.cloudsim.core.CloudSimTag;
+import org.cloudbus.cloudsim.core.Simulation;
+import org.cloudbus.cloudsim.core.events.PredicateType;
+import org.cloudbus.cloudsim.core.events.SimEvent;
+import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristics;
+import org.cloudbus.cloudsim.hosts.Host;
+import org.cloudbus.cloudsim.resources.SanStorage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,14 +45,14 @@ public class PowerGpuDatacenter extends GpuDatacenter {
 	 *      List, double)
 	 */
 	@SuppressWarnings("unchecked")
-	public PowerGpuDatacenter(String name, DatacenterCharacteristics characteristics,
-			VmAllocationPolicy vmAllocationPolicy, List<Storage> storageList, double schedulingInterval)
+	public PowerGpuDatacenter(String name, Simulation simulation, DatacenterCharacteristics characteristics,
+							  VmAllocationPolicy vmAllocationPolicy, List<SanStorage> storageList, double schedulingInterval)
 			throws Exception {
-		super(name, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
+		super(name, simulation, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
 		setHostEnergyMap(new HashMap<PowerGpuHost, Double>());
 		setHostCpuEnergyMap(new HashMap<PowerGpuHost, Double>());
 		setHostVideoCardEnergyMap(new HashMap<PowerGpuHost, Map<PowerVideoCard, Double>>());
-		for (Host host : getCharacteristics().getHostList()) {
+		for (Host host : getCharacteristics().getDatacenter().getHostList()) {
 			PowerGpuHost powerGpuHost = (PowerGpuHost) host;
 			getHostEnergyMap().put(powerGpuHost, 0.0);
 			getHostCpuEnergyMap().put(powerGpuHost, 0.0);
@@ -93,23 +95,23 @@ public class PowerGpuDatacenter extends GpuDatacenter {
 		}
 	}
 
-	@Override
-	public void processEvent(SimEvent ev) {
+
+	public void processgpuEvent(SimEvent ev) {
 		// if this is the first time processing happens
-		if (CloudSim.clock() == 0.0
-				&& CloudSim.select(getId(), new PredicateType(GpuCloudSimTags.GPU_VM_DATACENTER_POWER_EVENT)) == null) {
-			schedule(getId(), getSchedulingInterval(), GpuCloudSimTags.GPU_VM_DATACENTER_POWER_EVENT);
+		if (simulation.clock() == 0.0
+				&& simulation.select(ev.getSource(), new PredicateType(CloudSimTag.GPU_VM_DATACENTER_POWER_EVENT)) == null) {
+			schedule(ev.getSource(), getSchedulingInterval(), CloudSimTag.GPU_VM_DATACENTER_POWER_EVENT);
 		}
-		super.processEvent(ev);
+		super.processgpuEvent(ev);
 	}
 
 	@Override
 	protected void processOtherEvent(SimEvent ev) {
 		super.processOtherEvent(ev);
 		switch (ev.getTag()) {
-		case GpuCloudSimTags.GPU_VM_DATACENTER_POWER_EVENT:
+		case GPU_VM_DATACENTER_POWER_EVENT:
 			updatePower(getSchedulingInterval());
-			schedule(getId(), getSchedulingInterval(), GpuCloudSimTags.GPU_VM_DATACENTER_POWER_EVENT);
+			schedule(ev.getSource(), getSchedulingInterval(), CloudSimTag.GPU_VM_DATACENTER_POWER_EVENT);
 			break;
 		}
 	}

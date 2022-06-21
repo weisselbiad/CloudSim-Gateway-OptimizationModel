@@ -3,9 +3,11 @@
  */
 package gpu;
 
-import org.cloudbus.cloudsim.Pe;
-import org.cloudbus.cloudsim.gpu.provisioners.GpuBwProvisioner;
-import org.cloudbus.cloudsim.gpu.provisioners.GpuGddramProvisioner;
+import org.cloudbus.cloudsim.resources.Pe;
+import org.cloudbus.cloudsim.resources.PeSimple;
+
+import gpu.provisioners.GpuBwProvisioner;
+import gpu.provisioners.GpuGddramProvisioner;
 
 import java.util.List;
 

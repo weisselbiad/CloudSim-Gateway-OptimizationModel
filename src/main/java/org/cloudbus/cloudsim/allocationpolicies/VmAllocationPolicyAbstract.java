@@ -9,7 +9,6 @@ package org.cloudbus.cloudsim.allocationpolicies;
 
 import cloudsimMixedPeEnv.GpuHost;
 import cloudsimMixedPeEnv.GpuVm;
-import cloudsimMixedPeEnv.lists.HostList;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;

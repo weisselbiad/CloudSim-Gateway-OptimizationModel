@@ -1,6 +1,6 @@
 package gpu.power.models;
 
-import org.cloudbus.cloudsim.gpu.Pgpu;
+import gpu.Pgpu;
 
 import java.util.Map;
 
@@ -14,5 +14,5 @@ import java.util.Map;
  */
 public interface VideoCardPowerModel {
 	public double getPower(Map<Pgpu, Double> pgpuUtilization, Map<Pgpu, Double> gddramUtilization,
-			double PCIeBwUtilization);
+						   double PCIeBwUtilization);
 }

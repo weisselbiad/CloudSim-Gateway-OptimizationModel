@@ -1,15 +1,17 @@
 package gpu.power;
 
-import org.cloudbus.cloudsim.Pe;
-import org.cloudbus.cloudsim.VmScheduler;
-import org.cloudbus.cloudsim.gpu.GpuVm;
-import org.cloudbus.cloudsim.gpu.VideoCard;
-import org.cloudbus.cloudsim.gpu.allocation.VideoCardAllocationPolicy;
-import org.cloudbus.cloudsim.gpu.performance.PerformanceGpuHost;
-import org.cloudbus.cloudsim.gpu.power.models.GpuHostPowerModelNull;
+import org.cloudbus.cloudsim.power.models.PowerModelHost;
+import org.cloudbus.cloudsim.resources.Pe;
+
+import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
+import gpu.VideoCard;
+import gpu.allocation.VideoCardAllocationPolicy;
+import gpu.performance.PerformanceGpuHost;
+import gpu.power.models.GpuHostPowerModelNull;
 import org.cloudbus.cloudsim.power.models.PowerModel;
-import org.cloudbus.cloudsim.provisioners.BwProvisioner;
-import org.cloudbus.cloudsim.provisioners.RamProvisioner;
+import org.cloudbus.cloudsim.provisioners.ResourceProvisioner;
+import org.cloudbus.cloudsim.vms.Vm;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,58 +27,39 @@ import java.util.Map;
 public class PowerGpuHost extends PerformanceGpuHost {
 
 	/** The power model associated with this host (video cards excluded) */
-	private PowerModel powerModel;
+	private PowerModelHost powerModel;
 
 	/**
 	 * 
-	 * @see PerformanceGpuHost#PerformanceGpuHost(int, int, RamProvisioner,
-	 *      BwProvisioner, long, List, VmScheduler, VideoCardAllocationPolicy)
-	 *      erformanceGpuHost(int, int, RamProvisioner, BwProvisioner, long, List,
+
 	 *      VmScheduler, VideoCardAllocationPolicy)
 	 * @param powerModel
 	 *            the power model associated with the host (video cards have their
 	 *            own power models)
 	 */
-	public PowerGpuHost(int id, String type, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner, long storage,
-			List<? extends Pe> peList, VmScheduler vmScheduler, VideoCardAllocationPolicy videoCardAllocationPolicy,
-			PowerModel powerModel) {
+	public PowerGpuHost(int id, String type, ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner, long storage,
+			List<Pe> peList, VmScheduler vmScheduler, VideoCardAllocationPolicy videoCardAllocationPolicy,
+			PowerModelHost powerModel) {
 		super(id, type, ramProvisioner, bwProvisioner, storage, peList, vmScheduler, videoCardAllocationPolicy);
 		setPowerModel(powerModel);
 	}
 	
-	/**
-	 * 
-	 * @see PerformanceGpuHost#PerformanceGpuHost(int, int, RamProvisioner,
-	 *      BwProvisioner, long, List, VmScheduler, VideoCardAllocationPolicy)
-	 *      erformanceGpuHost(int, int, RamProvisioner, BwProvisioner, long, List,
-	 *      VmScheduler, VideoCardAllocationPolicy)
-	 */
-	public PowerGpuHost(int id, String type, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner, long storage,
-			List<? extends Pe> peList, VmScheduler vmScheduler, VideoCardAllocationPolicy videoCardAllocationPolicy) {
+
+	public PowerGpuHost(int id, String type, ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner, long storage,
+			List<Pe> peList, VmScheduler vmScheduler, VideoCardAllocationPolicy videoCardAllocationPolicy) {
 		super(id, type, ramProvisioner, bwProvisioner, storage, peList, vmScheduler, videoCardAllocationPolicy);
 		setPowerModel(new GpuHostPowerModelNull());
 	}
 
-	/**
-	 * 
-	 * @see PerformanceGpuHost#PerformanceGpuHost(int, int, RamProvisioner,
-	 *      BwProvisioner, long, List, VmScheduler) erformanceGpuHost(int, int,
-	 *      RamProvisioner, BwProvisioner, long, List, VmScheduler)
-	 */
-	public PowerGpuHost(int id, String type, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner, long storage,
-			List<? extends Pe> peList, VmScheduler vmScheduler, PowerModel powerModel) {
+	public PowerGpuHost(int id, String type, ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner, long storage,
+			List<Pe> peList, VmScheduler vmScheduler, PowerModelHost powerModel) {
 		super(id, type, ramProvisioner, bwProvisioner, storage, peList, vmScheduler);
 		setPowerModel(powerModel);
 	}
 	
-	/**
-	 * 
-	 * @see PerformanceGpuHost#PerformanceGpuHost(int, int, RamProvisioner,
-	 *      BwProvisioner, long, List, VmScheduler) erformanceGpuHost(int, int,
-	 *      RamProvisioner, BwProvisioner, long, List, VmScheduler)
-	 */
-	public PowerGpuHost(int id, String type, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner, long storage,
-			List<? extends Pe> peList, VmScheduler vmScheduler) {
+
+	public PowerGpuHost(int id, String type, ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner, long storage,
+			List< Pe> peList, VmScheduler vmScheduler) {
 		super(id, type, ramProvisioner, bwProvisioner, storage, peList, vmScheduler);
 		setPowerModel(new GpuHostPowerModelNull());
 	}
@@ -87,14 +70,17 @@ public class PowerGpuHost extends PerformanceGpuHost {
 	 * @return total utilization of host CPUs
 	 **/
 	@SuppressWarnings("unchecked")
-	protected double getCurrentCpuUtilization() {
+/*	protected double getCurrentCpuUtilization() {
 		double totalRequestedMips = 0.0;
 		for (GpuVm vm : (List<GpuVm>) (List<?>) getVmList()) {
-			totalRequestedMips += vm.getCurrentRequestedTotalMips();
+			totalRequestedMips += vm.getCurrentRequestedMips();
 		}
-		return totalRequestedMips / getTotalMips();
-	}
+		return totalRequestedMips / getMips();
+	}*/
 
+	protected double getCurrentCpuUtilization() {
+		return getVmList().stream().mapToDouble(Vm::getTotalCpuMipsUtilization).sum();
+	}
 	/**
 	 * Returns the current total power consumption of the host (CPUs + GPUs).
 	 * 
@@ -137,7 +123,7 @@ public class PowerGpuHost extends PerformanceGpuHost {
 	/**
 	 * @return the powerModel
 	 */
-	public PowerModel getPowerModel() {
+	public PowerModelHost getPowerModel() {
 		return powerModel;
 	}
 
@@ -145,7 +131,7 @@ public class PowerGpuHost extends PerformanceGpuHost {
 	 * @param powerModel
 	 *            the powerModel to set
 	 */
-	protected void setPowerModel(PowerModel powerModel) {
+	public  void setPowerModel(PowerModelHost powerModel) {
 		this.powerModel = powerModel;
 	}
 
