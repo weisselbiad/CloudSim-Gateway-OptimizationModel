@@ -1,6 +1,7 @@
 package gpu;
 
 import gpu.core.CloudSimTags;
+import gpu.core.DataCloudTag;
 import gpu.core.Log;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
@@ -10,7 +11,6 @@ import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristics;
 import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristicsSimple;
-import org.cloudbus.cloudsim.datacenters.TimeZoned;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.hosts.HostSuitability;
@@ -349,7 +349,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		}
 
 
-		public void processgpuEvent(SimEvent ev) {
+		public void processEvent(SimEvent ev) {
 			int srcId = -1;
 
 			switch (ev.getTag()) {
@@ -476,7 +476,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 * @param ack indicates if the event's sender expects to receive
 		 * an acknowledge message when the event finishes to be processed
 		 */
-	/*	protected void processDataDelete(SimEvent ev, boolean ack) {
+		protected void processDataDelete(SimEvent ev, boolean ack) {
 			if (ev == null) {
 				return;
 			}
@@ -488,14 +488,14 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 
 			String filename = (String) data[0];
 			int req_source = ((Integer) data[1]).intValue();
-			int tag;
+			CloudSimTag tag;
 
 			// check if this file can be deleted (do not delete is right now)
 			int msg = deleteFileFromStorage(filename);
 			if (msg == DataCloudTags.FILE_DELETE_SUCCESSFUL) {
-				tag = DataCloudTags.CTLG_DELETE_MASTER;
+				tag = CloudSimTag.CTLG_DELETE_MASTER;
 			} else { // if an error occured, notify user
-				tag = DataCloudTags.FILE_DELETE_MASTER_RESULT;
+				tag = CloudSimTag.FILE_DELETE_MASTER_RESULT;
 			}
 
 			if (ack) {
@@ -504,9 +504,9 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 				pack[0] = filename;
 				pack[1] = Integer.valueOf(msg);
 
-				sendNow(req_source, tag, pack);
+				sendNow(ev.getSource(), tag, pack);
 			}
-		}*/
+		}
 
 		/**
 		 * Process a file inclusion request.
@@ -515,7 +515,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 * @param ack indicates if the event's sender expects to receive
 		 * an acknowledge message when the event finishes to be processed
 		 */
-	/*	protected void processDataAdd(SimEvent ev, boolean ack) {
+		protected void processDataAdd(SimEvent ev, boolean ack) {
 			if (ev == null) {
 				return;
 			}
@@ -534,7 +534,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			 * " from " + CloudSim.getEntityName(sentFrom));
 			 *******/
 
-		/*	Object[] data = new Object[3];
+			Object[] data = new Object[3];
 			data[0] = file.getName();
 
 			int msg = addFile(file); // add the file
@@ -542,9 +542,9 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			if (ack) {
 				data[1] = Integer.valueOf(-1); // no sender id
 				data[2] = Integer.valueOf(msg); // the result of adding a master file
-				sendNow(sentFrom, DataCloudTags.FILE_ADD_MASTER_RESULT, data);
+				sendNow(ev.getSource(), CloudSimTag.FILE_ADD_MASTER_RESULT, data);
 			}
-		}*/
+		}
 
 		/**
 		 * Processes a ping request.

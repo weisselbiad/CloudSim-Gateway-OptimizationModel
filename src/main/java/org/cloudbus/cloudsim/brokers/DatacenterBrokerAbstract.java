@@ -7,8 +7,11 @@
  */
 package org.cloudbus.cloudsim.brokers;
 
-import gpu.core.CloudletList;
+import gpu.GpuDatacenter;
 import gpu.core.CloudSimTags;
+import gpu.core.CloudletList;
+import gpu.core.Log;
+import gpu.core.VmList;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import org.cloudbus.cloudsim.core.*;
@@ -16,6 +19,7 @@ import org.cloudbus.cloudsim.core.events.CloudSimEvent;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristics;
+import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.datacenters.TimeZoned;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletScheduler;
 import org.cloudbus.cloudsim.util.InvalidEventDataTypeException;
@@ -500,12 +504,43 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
 
     @Override
     public void processEvent(final SimEvent evt) {
+        if (evt.getData().equals(DatacenterSimple.class)){
         if (processCloudletEvents(evt) || processVmEvents(evt) || processGeneralEvents(evt)) {
             return;
         }
 
         LOGGER.trace("{}: {}: Unknown event {} received.", getSimulation().clockStr(), this, evt.getTag());
     }
+        if (evt.getData().equals(GpuDatacenter.class)){
+            switch (evt.getTag()) {
+                // Resource characteristics request
+                case RESOURCE_CHARACTERISTICS_REQUEST:
+                    processResourceCharacteristicsRequest(evt);
+                    break;
+                // Resource characteristics answer
+                case RESOURCE_CHARACTERISTICS:
+                    processResourceCharacteristics(evt);
+                    break;
+                // VM Creation answer
+                case VM_CREATE_ACK:
+                    processVmCreate(evt);
+                    break;
+                // A finished cloudlet returned
+                case CLOUDLET_RETURN:
+                    processgpuCloudletReturn(evt);
+                    break;
+                // if the simulation finishes
+                case END_OF_SIMULATION:
+                    shutdownEntity();
+                    break;
+                // other unknown tags are processed by this method
+                default:
+                    processOtherEvent(evt);
+                    break;
+            }
+        }
+
+        }
 
     private boolean processCloudletEvents(final SimEvent evt) {
         return switch (evt.getTag()) {
@@ -1434,35 +1469,6 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
         CloudletList.getById(getgpuCloudletList(), cloudletId).setVm(getVmFromCreatedList(vmId));
     }
 
-    @Override
-    public void processEvent(SimEvent ev) {
-        switch (ev.getTag()) {
-            // Resource characteristics request
-            case CloudSimTags.RESOURCE_CHARACTERISTICS_REQUEST:
-                processResourceCharacteristicsRequest(ev);
-                break;
-            // Resource characteristics answer
-            case CloudSimTags.RESOURCE_CHARACTERISTICS:
-                processResourceCharacteristics(ev);
-                break;
-            // VM Creation answer
-            case CloudSimTags.VM_CREATE_ACK:
-                processVmCreate(ev);
-                break;
-            // A finished cloudlet returned
-            case CloudSimTags.CLOUDLET_RETURN:
-                processCloudletReturn(ev);
-                break;
-            // if the simulation finishes
-            case CloudSimTags.END_OF_SIMULATION:
-                shutdownEntity();
-                break;
-            // other unknown tags are processed by this method
-            default:
-                processOtherEvent(ev);
-                break;
-        }
-    }
 
     /**
      * Process the return of a request for the characteristics of a Datacenter.
@@ -1473,7 +1479,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
      */
     protected void processResourceCharacteristics(SimEvent ev) {
         DatacenterCharacteristics characteristics = (DatacenterCharacteristics) ev.getData();
-        getDatacenterCharacteristicsList().put(characteristics.getId(), characteristics);
+        getDatacenterCharacteristicsList().put((int)characteristics.getId(), characteristics);
 
         if (getDatacenterCharacteristicsList().size() == getDatacenterIdsList().size()) {
             setDatacenterRequestedIdsList(new ArrayList<Integer>());
@@ -1489,14 +1495,14 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
      * @post $none
      */
     protected void processResourceCharacteristicsRequest(SimEvent ev) {
-        setDatacenterIdsList(CloudSim.getCloudResourceList());
+        setDatacenterIdsList(getSimulation().getEntityList());
         setDatacenterCharacteristicsList(new HashMap<Integer, DatacenterCharacteristics>());
 
-        Log.printConcatLine(CloudSim.clock(), ": ", getName(), ": Cloud Resource List received with ",
+        Log.printConcatLine(getSimulation().clock(), ": ", getName(), ": Cloud Resource List received with ",
                 getDatacenterIdsList().size(), " resource(s)");
 
         for (Integer datacenterId : getDatacenterIdsList()) {
-            sendNow(datacenterId, CloudSimTags.RESOURCE_CHARACTERISTICS, getId());
+            sendNow(ev.getSource(), CloudSimTag.RESOURCE_CHARACTERISTICS, getId());
         }
     }
 
@@ -1515,23 +1521,23 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
 
         if (result == CloudSimTags.TRUE) {
             getVmsToDatacentersMap().put(vmId, datacenterId);
-            getVmsCreatedList().add(VmList.getById(getVmList(), vmId));
-            Log.printConcatLine(CloudSim.clock(), ": ", getName(), ": VM #", vmId,
+            getVmCreatedList().add(VmList.getById(getgpuVmList(), vmId));
+            Log.printConcatLine(getSimulation().clock(), ": ", getName(), ": VM #", vmId,
                     " has been created in Datacenter #", datacenterId, ", Host #",
-                    VmList.getById(getVmsCreatedList(), vmId).getHost().getId());
+                    VmList.getById(getVmCreatedList(), vmId).getHost().getId());
         } else {
-            Log.printConcatLine(CloudSim.clock(), ": ", getName(), ": Creation of VM #", vmId,
+            Log.printConcatLine(getSimulation().clock(), ": ", getName(), ": Creation of VM #", vmId,
                     " failed in Datacenter #", datacenterId);
         }
 
         incrementVmsAcks();
 
         // all the requested VMs have been created
-        if (getVmsCreatedList().size() == getVmList().size() - getVmsDestroyed()) {
+        if (getVmCreatedList().size() == getgpuVmList().size() - getVmsDestroyed()) {
             submitCloudlets();
         } else {
             // all the acks received, but some VMs were not created
-            if (getVmsRequested() == getVmsAcks()) {
+            if (getgpuVmsRequested() == getVmsAcks()) {
                 // find id of the next datacenter that has not been tried
                 for (int nextDatacenterId : getDatacenterIdsList()) {
                     if (!getDatacenterRequestedIdsList().contains(nextDatacenterId)) {
@@ -1541,10 +1547,10 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
                 }
 
                 // all datacenters already queried
-                if (getVmsCreatedList().size() > 0) { // if some vm were created
+                if (getVmCreatedList().size() > 0) { // if some vm were created
                     submitCloudlets();
                 } else { // no vms created. abort
-                    Log.printLine(CloudSim.clock() + ": " + getName()
+                    Log.printLine(getSimulation().clock() + ": " + getName()
                             + ": none of the required VMs could be created. Aborting");
                     finishExecution();
                 }
@@ -1559,18 +1565,18 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
      * @pre ev != $null
      * @post $none
      */
-    protected void processCloudletReturn(SimEvent ev) {
+    protected void processgpuCloudletReturn(SimEvent ev) {
         Cloudlet cloudlet = (Cloudlet) ev.getData();
-        getCloudletReceivedList().add(cloudlet);
-        Log.printConcatLine(CloudSim.clock(), ": ", getName(), ": Cloudlet ", cloudlet.getCloudletId(),
+        getgpuCloudletReceivedList().add(cloudlet);
+        Log.printConcatLine(getSimulation().clock(), ": ", getName(), ": Cloudlet ", cloudlet.getId(),
                 " received");
         cloudletsSubmitted--;
-        if (getCloudletList().size() == 0 && cloudletsSubmitted == 0) { // all cloudlets executed
-            Log.printConcatLine(CloudSim.clock(), ": ", getName(), ": All Cloudlets executed. Finishing...");
+        if (getgpuCloudletList().size() == 0 && cloudletsSubmitted == 0) { // all cloudlets executed
+            Log.printConcatLine(getSimulation().clock(), ": ", getName(), ": All Cloudlets executed. Finishing...");
             clearDatacenters();
             finishExecution();
         } else { // some cloudlets haven't finished yet
-            if (getCloudletList().size() > 0 && cloudletsSubmitted == 0) {
+            if (getgpuCloudletList().size() > 0 && cloudletsSubmitted == 0) {
                 // all the cloudlets sent finished. It means that some bount
                 // cloudlet is waiting its VM be created
                 clearDatacenters();
@@ -1612,8 +1618,8 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
     protected void createVmsInDatacenter(int datacenterId) {
         // send as much vms as possible for this datacenter before trying the next one
         int requestedVms = 0;
-        String datacenterName = CloudSim.getEntityName(datacenterId);
-        for (Vm vm : getVmList()) {
+        String datacenterName = getSimulation().getEntityName(datacenterId);
+        for (Vm vm : getgpuVmList()) {
             if (!getVmsToDatacentersMap().containsKey(vm.getId())) {
                 Log.printLine(CloudSim.clock() + ": " + getName() + ": Trying to Create VM #" + vm.getId()
                         + " in " + datacenterName);
