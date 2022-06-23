@@ -1,7 +1,7 @@
 package gpu;
 
-import org.cloudbus.cloudsim.UtilizationModel;
-
+import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
+import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelAbstract;
 import java.util.Random;
 
 public class UtilizationModelGaussian implements UtilizationModel{

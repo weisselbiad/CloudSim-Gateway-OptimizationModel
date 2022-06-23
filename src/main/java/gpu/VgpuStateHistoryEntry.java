@@ -1,6 +1,6 @@
 package gpu;
 
-import org.cloudbus.cloudsim.VmStateHistoryEntry;
+import org.cloudbus.cloudsim.vms.VmStateHistoryEntry;
 
 /**
  * @author Ahmad Siavashi

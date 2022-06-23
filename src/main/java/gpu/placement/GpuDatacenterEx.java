@@ -8,12 +8,12 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.core.predicates.PredicateType;
-import org.cloudbus.cloudsim.gpu.GpuVm;
-import org.cloudbus.cloudsim.gpu.GpuVmAllocationPolicy;
-import org.cloudbus.cloudsim.gpu.Vgpu;
-import org.cloudbus.cloudsim.gpu.VideoCard;
-import org.cloudbus.cloudsim.gpu.core.GpuCloudSimTags;
-import org.cloudbus.cloudsim.gpu.power.PowerGpuDatacenter;
+import gpu.GpuVm;
+import gpu.GpuVmAllocationPolicy;
+import gpu.Vgpu;
+import gpu.VideoCard;
+import gpu.core.GpuCloudSimTags;
+import gpu.power.PowerGpuDatacenter;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;

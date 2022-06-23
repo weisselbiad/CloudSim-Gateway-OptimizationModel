@@ -1,8 +1,12 @@
 package gpu;
 
-import org.cloudbus.cloudsim.Pe;
-import org.cloudbus.cloudsim.Vm;
-import org.cloudbus.cloudsim.VmSchedulerSpaceShared;
+import org.cloudbus.cloudsim.resources.Pe;
+import org.cloudbus.cloudsim.resources.PeSimple;
+
+import org.cloudbus.cloudsim.vms.Vm;
+import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerSpaceShared;
+import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
 
 import java.util.ArrayList;
 import java.util.Iterator;

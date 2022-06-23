@@ -5,13 +5,13 @@ import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEvent;
-import org.cloudbus.cloudsim.gpu.BusTags;
-import org.cloudbus.cloudsim.gpu.GpuCloudlet;
-import org.cloudbus.cloudsim.gpu.GpuTask;
-import org.cloudbus.cloudsim.gpu.GpuVm;
-import org.cloudbus.cloudsim.gpu.core.GpuCloudSimTags;
-import org.cloudbus.cloudsim.gpu.placement.GpuDatacenterBrokerEx;
-import org.cloudbus.cloudsim.gpu.placement.GpuDatacenterEx;
+import gpu.BusTags;
+import gpu.GpuCloudlet;
+import gpu.GpuTask;
+import gpu.GpuVm;
+import gpu.core.GpuCloudSimTags;
+import gpu.placement.GpuDatacenterBrokerEx;
+import gpu.placement.GpuDatacenterEx;
 
 import java.util.List;
 

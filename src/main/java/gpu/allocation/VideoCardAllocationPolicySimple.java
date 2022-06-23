@@ -1,7 +1,7 @@
 package gpu.allocation;
 
-import org.cloudbus.cloudsim.gpu.Vgpu;
-import org.cloudbus.cloudsim.gpu.VideoCard;
+import gpu.Vgpu;
+import gpu.VideoCard;
 
 import java.util.List;
 

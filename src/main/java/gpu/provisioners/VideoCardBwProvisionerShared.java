@@ -1,6 +1,6 @@
 package gpu.provisioners;
 
-import org.cloudbus.cloudsim.gpu.Pgpu;
+import gpu.Pgpu;
 
 /**
  * VideoCardBwProvisionerShared is an extension of
@@ -26,8 +26,8 @@ public class VideoCardBwProvisionerShared extends VideoCardBwProvisioner {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.cloudbus.cloudsim.gpu.provisioners.VideoCardBwProvisioner#
-	 * allocateBwForPgpu(org.cloudbus.cloudsim.gpu.Pgpu, long)
+	 * @see gpu.provisioners.VideoCardBwProvisioner#
+	 * allocateBwForPgpu(gpu.Pgpu, long)
 	 */
 	@Override
 	public boolean allocateBwForPgpu(Pgpu pgpu, long bw) {
@@ -72,7 +72,7 @@ public class VideoCardBwProvisionerShared extends VideoCardBwProvisioner {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.cloudbus.cloudsim.gpu.provisioners.VideoCardBwProvisioner#getAvailableBw(
+	 * gpu.provisioners.VideoCardBwProvisioner#getAvailableBw(
 	 * )
 	 */
 	@Override

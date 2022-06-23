@@ -1,11 +1,12 @@
 package gpu.hardware_assisted;
 
-import org.cloudbus.cloudsim.Host;
-import org.cloudbus.cloudsim.gpu.GpuVm;
-import org.cloudbus.cloudsim.gpu.allocation.VideoCardAllocationPolicy;
-import org.cloudbus.cloudsim.gpu.allocation.VideoCardAllocationPolicyNull;
-import org.cloudbus.cloudsim.gpu.selection.PgpuSelectionPolicy;
-import org.cloudbus.cloudsim.gpu.selection.PgpuSelectionPolicyNull;
+import org.cloudbus.cloudsim.hosts.Host;
+import org.cloudbus.cloudsim.hosts.HostSimple;
+import gpu.GpuVm;
+import gpu.allocation.VideoCardAllocationPolicy;
+import gpu.allocation.VideoCardAllocationPolicyNull;
+import gpu.selection.PgpuSelectionPolicy;
+import gpu.selection.PgpuSelectionPolicyNull;
 
 import java.util.Collections;
 import java.util.Comparator;

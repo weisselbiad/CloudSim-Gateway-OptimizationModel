@@ -3,9 +3,9 @@
  */
 package gpu.performance.models;
 
-import org.cloudbus.cloudsim.gpu.Pgpu;
-import org.cloudbus.cloudsim.gpu.Vgpu;
-import org.cloudbus.cloudsim.gpu.VgpuScheduler;
+import gpu.Pgpu;
+import gpu.Vgpu;
+import gpu.VgpuScheduler;
 
 import java.util.ArrayList;
 import java.util.Collections;

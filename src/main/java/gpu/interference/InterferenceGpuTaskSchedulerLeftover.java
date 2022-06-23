@@ -3,9 +3,9 @@
  */
 package gpu.interference;
 
-import org.cloudbus.cloudsim.gpu.GpuTaskSchedulerLeftover;
-import org.cloudbus.cloudsim.gpu.ResGpuTask;
-import org.cloudbus.cloudsim.gpu.interference.models.InterferenceModel;
+import gpu.GpuTaskSchedulerLeftover;
+import gpu.ResGpuTask;
+import gpu.interference.models.InterferenceModel;
 import org.cloudbus.cloudsim.util.MathUtil;
 
 import java.util.List;

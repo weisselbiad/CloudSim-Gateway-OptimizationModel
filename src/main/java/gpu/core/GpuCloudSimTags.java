@@ -26,7 +26,7 @@ public class GpuCloudSimTags {
 
 	/**
 	 * Denotes an event to evaluate the power consumption of a
-	 * {@link org.cloudbus.cloudsim.gpu.power.PowerGpuDatacenter
+	 * {@link gpu.power.PowerGpuDatacenter
 	 * PowerGpuDatacenter}.
 	 */
 	public final static int GPU_VM_DATACENTER_POWER_EVENT = 51;

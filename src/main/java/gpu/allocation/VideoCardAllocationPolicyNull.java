@@ -1,8 +1,8 @@
 package gpu.allocation;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.cloudbus.cloudsim.gpu.Vgpu;
-import org.cloudbus.cloudsim.gpu.VideoCard;
+import gpu.Vgpu;
+import gpu.VideoCard;
 
 import java.util.List;
 

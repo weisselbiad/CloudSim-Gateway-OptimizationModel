@@ -1,8 +1,11 @@
 package gpu;
 
-import org.cloudbus.cloudsim.Host;
-import org.cloudbus.cloudsim.Vm;
-import org.cloudbus.cloudsim.VmAllocationPolicy;
+import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicyAbstract;
+import org.cloudbus.cloudsim.hosts.Host;
+import org.cloudbus.cloudsim.hosts.HostSimple;
+import org.cloudbus.cloudsim.vms.Vm;
+import org.cloudbus.cloudsim.vms.VmSimple;
+import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +19,7 @@ import java.util.Map;
  * @author Ahmad Siavashi
  *
  */
-public abstract class GpuVmAllocationPolicy extends VmAllocationPolicy {
+public abstract class GpuVmAllocationPolicy extends VmAllocationPolicyAbstract implements VmAllocationPolicy {
 
 	/**
 	 * The map between each VM and its allocated host. The map key is a VM UID and

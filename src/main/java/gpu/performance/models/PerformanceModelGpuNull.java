@@ -3,8 +3,8 @@
  */
 package gpu.performance.models;
 
-import org.cloudbus.cloudsim.gpu.Vgpu;
-import org.cloudbus.cloudsim.gpu.VgpuScheduler;
+import gpu.Vgpu;
+import gpu.VgpuScheduler;
 
 import java.util.List;
 
@@ -26,8 +26,8 @@ public class PerformanceModelGpuNull implements PerformanceModel<VgpuScheduler, 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.cloudbus.cloudsim.gpu.interference.models.PerformanceModel#
-	 * getAvailableMips(org.cloudbus.cloudsim.gpu.GpuHost, java.util.List)
+	 * @see gpu.interference.models.PerformanceModel#
+	 * getAvailableMips(gpu.GpuHost, java.util.List)
 	 */
 	@Override
 	public List<Double> getAvailableMips(VgpuScheduler scheduler, Vgpu vgpu, List<Vgpu> vgpus) {

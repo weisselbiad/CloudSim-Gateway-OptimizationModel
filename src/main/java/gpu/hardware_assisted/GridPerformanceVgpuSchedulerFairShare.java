@@ -1,19 +1,19 @@
 package gpu.hardware_assisted;
 
-import org.cloudbus.cloudsim.gpu.Pgpu;
-import org.cloudbus.cloudsim.gpu.Vgpu;
-import org.cloudbus.cloudsim.gpu.VgpuScheduler;
-import org.cloudbus.cloudsim.gpu.performance.PerformanceScheduler;
-import org.cloudbus.cloudsim.gpu.performance.models.PerformanceModel;
-import org.cloudbus.cloudsim.gpu.selection.PgpuSelectionPolicy;
+import gpu.Pgpu;
+import gpu.Vgpu;
+import gpu.VgpuScheduler;
+import gpu.performance.PerformanceScheduler;
+import gpu.performance.models.PerformanceModel;
+import gpu.selection.PgpuSelectionPolicy;
 
 import java.util.List;
 
 /**
  * * {@link GridPerformanceVgpuSchedulerFairShare} extends
- * {@link org.cloudbus.cloudsim.gpu.VgpuSchedulerFairShare VgpuSchedulerFairShare}
+ * {@link gpu.VgpuSchedulerFairShare VgpuSchedulerFairShare}
  * to add support for
- * {@link org.cloudbus.cloudsim.gpu.performance.models.PerformanceModel
+ * {@link gpu.performance.models.PerformanceModel
  * PerformanceModels}.
  * 
  * @author Ahmad Siavashi
@@ -24,7 +24,7 @@ public class GridPerformanceVgpuSchedulerFairShare extends GridVgpuSchedulerFair
 	private PerformanceModel<VgpuScheduler, Vgpu> performanceModel;
 
 	/**
-	 * @see org.cloudbus.cloudsim.gpu.VgpuSchedulerFairShare#VgpuSchedulerFairShare(int,
+	 * @see gpu.VgpuSchedulerFairShare#VgpuSchedulerFairShare(int,
 	 *      List, PgpuSelectionPolicy) VgpuSchedulerFairShare(int, List,
 	 *      PgpuSelectionPolicy)
 	 * 

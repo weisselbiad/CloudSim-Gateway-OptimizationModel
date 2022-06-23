@@ -2,6 +2,7 @@ package gpu;
 
 import gpu.Consts;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.core.Simulation;
 import org.cloudbus.cloudsim.util.MathUtil;
 
 import java.util.ArrayList;
@@ -335,10 +336,10 @@ public class GpuTaskSchedulerLeftover extends GpuTaskScheduler {
 	}
 
 	@Override
-	public List<Double> getCurrentRequestedMips() {
+	public List<Double> getCurrentRequestedMips(Simulation sim) {
 		List<Double> mipsShare = new ArrayList<Double>();
 		if (getCurrentMipsShare() != null) {
-			double totalGpuUtilization = getTotalUtilizationOfGpu(CloudSim.clock());
+			double totalGpuUtilization = getTotalUtilizationOfGpu(sim.clock());
 			for (Double mips : getCurrentMipsShare()) {
 				mipsShare.add(mips * totalGpuUtilization);
 			}
@@ -379,10 +380,10 @@ public class GpuTaskSchedulerLeftover extends GpuTaskScheduler {
 	}
 
 	@Override
-	public double getCurrentRequestedUtilizationOfGddram() {
+	public double getCurrentRequestedUtilizationOfGddram(Simulation sim) {
 		double totalUtilization = 0;
 		for (ResGpuTask gl : getTaskExecList()) {
-			totalUtilization += gl.getGpuTask().getUtilizationOfGddram(CloudSim.clock());
+			totalUtilization += gl.getGpuTask().getUtilizationOfGddram(sim.clock());
 		}
 		if (totalUtilization > 1) {
 			totalUtilization = 1;
@@ -391,10 +392,10 @@ public class GpuTaskSchedulerLeftover extends GpuTaskScheduler {
 	}
 
 	@Override
-	public double getCurrentRequestedUtilizationOfBw() {
+	public double getCurrentRequestedUtilizationOfBw(Simulation sim) {
 		double totalUtilization = 0;
 		for (ResGpuTask gl : getTaskExecList()) {
-			totalUtilization += gl.getGpuTask().getUtilizationOfBw(CloudSim.clock());
+			totalUtilization += gl.getGpuTask().getUtilizationOfBw(sim.clock());
 		}
 		if (totalUtilization > 1) {
 			totalUtilization = 1;

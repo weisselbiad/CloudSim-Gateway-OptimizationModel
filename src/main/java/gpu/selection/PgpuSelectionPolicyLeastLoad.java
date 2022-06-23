@@ -1,8 +1,8 @@
 package gpu.selection;
 
-import org.cloudbus.cloudsim.gpu.Pgpu;
-import org.cloudbus.cloudsim.gpu.Vgpu;
-import org.cloudbus.cloudsim.gpu.VgpuScheduler;
+import gpu.Pgpu;
+import gpu.Vgpu;
+import gpu.VgpuScheduler;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,7 +24,7 @@ public class PgpuSelectionPolicyLeastLoad implements PgpuSelectionPolicy {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.cloudbus.cloudsim.gpu.selection.PgpuSelectionPolicy#selectPgpu(org.
+	 * @see gpu.selection.PgpuSelectionPolicy#selectPgpu(org.
 	 * cloudbus.cloudsim.gpu.VgpuScheduler, java.util.List)
 	 */
 	@Override

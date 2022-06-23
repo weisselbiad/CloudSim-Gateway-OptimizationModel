@@ -1,6 +1,6 @@
 package gpu.remote;
 
-import org.cloudbus.cloudsim.gpu.Vgpu;
+import gpu.Vgpu;
 
 /**
  * 

@@ -1,13 +1,13 @@
 package gpu.remote;
 
-import org.cloudbus.cloudsim.gpu.Pgpu;
-import org.cloudbus.cloudsim.gpu.Vgpu;
-import org.cloudbus.cloudsim.gpu.VgpuScheduler;
-import org.cloudbus.cloudsim.gpu.VgpuSchedulerFairShareEx;
-import org.cloudbus.cloudsim.gpu.performance.PerformanceScheduler;
-import org.cloudbus.cloudsim.gpu.performance.PerformanceVgpuSchedulerFairShareEx;
-import org.cloudbus.cloudsim.gpu.performance.models.PerformanceModel;
-import org.cloudbus.cloudsim.gpu.selection.PgpuSelectionPolicy;
+import gpu.Pgpu;
+import gpu.Vgpu;
+import gpu.VgpuScheduler;
+import gpu.VgpuSchedulerFairShareEx;
+import gpu.performance.PerformanceScheduler;
+import gpu.performance.PerformanceVgpuSchedulerFairShareEx;
+import gpu.performance.models.PerformanceModel;
+import gpu.selection.PgpuSelectionPolicy;
 
 import java.util.List;
 

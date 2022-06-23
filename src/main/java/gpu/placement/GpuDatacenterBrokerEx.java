@@ -1,9 +1,9 @@
 package gpu.placement;
 
 import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.core.predicates.PredicateType;
-import org.cloudbus.cloudsim.gpu.core.GpuCloudSimTags;
-import org.cloudbus.cloudsim.gpu.power.PowerGpuDatacenterBroker;
+import org.cloudbus.cloudsim.core.events.PredicateType;
+import gpu.core.GpuCloudSimTags;
+import gpu.power.PowerGpuDatacenterBroker;
 
 /**
  * 

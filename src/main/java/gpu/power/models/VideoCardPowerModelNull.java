@@ -1,6 +1,6 @@
 package gpu.power.models;
 
-import org.cloudbus.cloudsim.gpu.Pgpu;
+import gpu.Pgpu;
 
 import java.util.Map;
 

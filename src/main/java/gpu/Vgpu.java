@@ -129,7 +129,8 @@ public class Vgpu {
 	 * @return the current requested mips
 	 */
 	public List<Double> getCurrentRequestedMips() {
-		List<Double> currentRequestedMips = getGpuTaskScheduler().getCurrentRequestedMips();
+
+		List<Double> currentRequestedMips = getGpuTaskScheduler().getCurrentRequestedMips(getVm().getHost().getSimulation());
 		if (isBeingInstantiated()) {
 			currentRequestedMips = new ArrayList<Double>(Collections.nCopies(getNumberOfPes(), getPeMips()));
 		}
@@ -163,7 +164,7 @@ public class Vgpu {
 		if (isBeingInstantiated()) {
 			return getBw();
 		}
-		return (long) (getGpuTaskScheduler().getCurrentRequestedUtilizationOfBw() * getBw());
+		return (long) (getGpuTaskScheduler().getCurrentRequestedUtilizationOfBw(getVm().getHost().getSimulation()) * getBw());
 	}
 
 	/**
@@ -175,7 +176,7 @@ public class Vgpu {
 		if (isBeingInstantiated()) {
 			return getGddram();
 		}
-		return (int) (getGpuTaskScheduler().getCurrentRequestedUtilizationOfGddram() * getGddram());
+		return (int) (getGpuTaskScheduler().getCurrentRequestedUtilizationOfGddram(getVm().getHost().getSimulation()) * getGddram());
 	}
 
 	/**
@@ -198,7 +199,7 @@ public class Vgpu {
 	public List<Double> getCurrentUtilizationOfGddram() {
 		List<Double> gddramUtilization = new ArrayList<Double>();
 		for (ResGpuTask rcl : getGpuTaskScheduler().getTaskExecList()) {
-			gddramUtilization.add(rcl.getGpuTask().getUtilizationOfGddram(CloudSim.clock()));
+			gddramUtilization.add(rcl.getGpuTask().getUtilizationOfGddram(getVm().getHost().getSimulation().clock()));
 		}
 		return gddramUtilization;
 	}
@@ -409,7 +410,6 @@ public class Vgpu {
 	/**
 	 * Sets the current allocated gddram.
 	 * 
-	 * @param currentAllocatedRam the new current allocated gddram
 	 */
 	public void setCurrentAllocatedGddram(int currentAllocatedGDDRam) {
 		this.currentAllocatedGDDRam = currentAllocatedGDDRam;

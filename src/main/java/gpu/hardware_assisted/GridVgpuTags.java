@@ -1,10 +1,10 @@
 package gpu.hardware_assisted;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.cloudbus.cloudsim.gpu.BusTags;
-import org.cloudbus.cloudsim.gpu.GpuTaskScheduler;
-import org.cloudbus.cloudsim.gpu.Pgpu;
-import org.cloudbus.cloudsim.gpu.Vgpu;
+import gpu.BusTags;
+import gpu.GpuTaskScheduler;
+import gpu.Pgpu;
+import gpu.Vgpu;
 
 import java.util.List;
 import java.util.Map.Entry;

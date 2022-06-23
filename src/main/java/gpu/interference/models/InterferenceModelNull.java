@@ -3,7 +3,7 @@
  */
 package gpu.interference.models;
 
-import org.cloudbus.cloudsim.gpu.ResGpuTask;
+import gpu.ResGpuTask;
 
 import java.util.ArrayList;
 import java.util.Collections;

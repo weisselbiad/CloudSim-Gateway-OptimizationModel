@@ -1,7 +1,7 @@
 package gpu.hardware_assisted;
 
-import org.cloudbus.cloudsim.gpu.Pgpu;
-import org.cloudbus.cloudsim.gpu.power.models.VideoCardPowerModel;
+import gpu.Pgpu;
+import gpu.power.models.VideoCardPowerModel;
 
 import java.util.HashMap;
 import java.util.Map;

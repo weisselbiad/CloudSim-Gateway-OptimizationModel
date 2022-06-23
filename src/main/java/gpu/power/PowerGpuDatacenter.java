@@ -39,7 +39,7 @@ public class PowerGpuDatacenter extends GpuDatacenter {
 	private boolean powerSavingMode;
 
 	/**
-	 * @see org.cloudbus.cloudsim.gpu.GpuDatacenter#GpuDatacenter(String,
+	 * @see gpu.GpuDatacenter#GpuDatacenter(String,
 	 *      DatacenterCharacteristics, VmAllocationPolicy, List, double)
 	 *      GpuDatacenter(String, DatacenterCharacteristics, VmAllocationPolicy,
 	 *      List, double)

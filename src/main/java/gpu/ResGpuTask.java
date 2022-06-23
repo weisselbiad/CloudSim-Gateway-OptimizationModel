@@ -1,7 +1,8 @@
 package gpu;
 
-import org.cloudbus.cloudsim.Cloudlet;
-import org.cloudbus.cloudsim.Consts;
+import org.cloudbus.cloudsim.cloudlets.Cloudlet;
+import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
+import gpu.Consts;
 import org.cloudbus.cloudsim.core.CloudSim;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package gpu.provisioners;
 
-import org.cloudbus.cloudsim.gpu.Pgpu;
+import gpu.Pgpu;
 
 import java.util.HashMap;
 import java.util.Map;

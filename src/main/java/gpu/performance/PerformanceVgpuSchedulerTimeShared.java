@@ -1,11 +1,11 @@
 package gpu.performance;
 
-import org.cloudbus.cloudsim.gpu.Pgpu;
-import org.cloudbus.cloudsim.gpu.Vgpu;
-import org.cloudbus.cloudsim.gpu.VgpuScheduler;
-import org.cloudbus.cloudsim.gpu.VgpuSchedulerTimeShared;
-import org.cloudbus.cloudsim.gpu.performance.models.PerformanceModel;
-import org.cloudbus.cloudsim.gpu.selection.PgpuSelectionPolicy;
+import gpu.Pgpu;
+import gpu.Vgpu;
+import gpu.VgpuScheduler;
+import gpu.VgpuSchedulerTimeShared;
+import gpu.performance.models.PerformanceModel;
+import gpu.selection.PgpuSelectionPolicy;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
  * {@link PerformanceVgpuSchedulerTimeShared} extends
  * {@link VgpuSchedulerTimeShared
  * VgpuSchedulerTimeShared} to add support for
- * {@link org.cloudbus.cloudsim.gpu.performance.models.PerformanceModel
+ * {@link gpu.performance.models.PerformanceModel
  * PerformanceModels}.
  * 
  * @author Ahmad Siavashi

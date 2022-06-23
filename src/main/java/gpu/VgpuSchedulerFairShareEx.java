@@ -1,7 +1,8 @@
 package gpu;
 
-import org.cloudbus.cloudsim.Pe;
-import org.cloudbus.cloudsim.gpu.selection.PgpuSelectionPolicy;
+import org.cloudbus.cloudsim.resources.Pe;
+import org.cloudbus.cloudsim.resources.PeSimple;
+import gpu.selection.PgpuSelectionPolicy;
 import org.cloudbus.cloudsim.util.MathUtil;
 
 import java.util.ArrayList;

@@ -1,10 +1,10 @@
 package gpu.remote;
 
 import org.cloudbus.cloudsim.Host;
-import org.cloudbus.cloudsim.gpu.GpuHost;
-import org.cloudbus.cloudsim.gpu.GpuVm;
-import org.cloudbus.cloudsim.gpu.GpuVmAllocationPolicy;
-import org.cloudbus.cloudsim.gpu.Vgpu;
+import gpu.GpuHost;
+import gpu.GpuVm;
+import gpu.GpuVmAllocationPolicy;
+import gpu.Vgpu;
 
 import java.util.List;
 

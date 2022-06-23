@@ -1,5 +1,8 @@
 package gpu;
 
+import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.core.Simulation;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +58,7 @@ public abstract class GpuTaskScheduler {
 		taskFinishedList = new ArrayList<ResGpuTask>();
 		taskFailedList = new ArrayList<ResGpuTask>();
 	}
+
 
 	/**
 	 * Updates the processing of {@link GpuTask}s running under management of this
@@ -208,7 +212,7 @@ public abstract class GpuTaskScheduler {
 	 * 
 	 * @return the current mips
 	 */
-	public abstract List<Double> getCurrentRequestedMips();
+	public abstract List<Double> getCurrentRequestedMips(Simulation simulation);
 
 	/**
 	 * Gets the total current available mips for the {@link GpuTask}.
@@ -251,14 +255,14 @@ public abstract class GpuTaskScheduler {
 	 * 
 	 * @return the current requested GDDRam
 	 */
-	public abstract double getCurrentRequestedUtilizationOfGddram();
+	public abstract double getCurrentRequestedUtilizationOfGddram( Simulation sim);
 
 	/**
 	 * Gets the current requested GDDRAM bw.
 	 * 
 	 * @return the current requested GDDRAM bw
 	 */
-	public abstract double getCurrentRequestedUtilizationOfBw();
+	public abstract double getCurrentRequestedUtilizationOfBw(Simulation sim);
 
 	/**
 	 * Gets the previous time.

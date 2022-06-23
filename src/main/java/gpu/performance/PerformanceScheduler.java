@@ -4,10 +4,10 @@ import java.util.List;
 
 /**
  * Schedulers implement this interface to add support for
- * {@link org.cloudbus.cloudsim.gpu.performance.models.PerformanceModel
+ * {@link gpu.performance.models.PerformanceModel
  * PerformanceModel}.
  * 
- * @see org.cloudbus.cloudsim.gpu.performance.models.PerformanceModel
+ * @see gpu.performance.models.PerformanceModel
  *      PerformanceModel
  * @see PerformanceGpuHost
  * 

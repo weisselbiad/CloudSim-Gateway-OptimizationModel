@@ -1,6 +1,6 @@
 package gpu.hardware_assisted;
 
-import org.cloudbus.cloudsim.gpu.VideoCard;
+import gpu.VideoCard;
 
 /**
  * 
