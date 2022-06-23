@@ -4,8 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="17.06">
+    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="20.06">
+      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/Consts.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/BrokerAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/BrokerAbstract.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenterBroker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenterBroker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuHostTags.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuHostTags.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuTaskSchedulerLeftover.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuTaskSchedulerLeftover.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/power/PowerGpuDatacenterBroker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/power/PowerGpuDatacenterBroker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBroker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBroker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBrokerAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBrokerAbstract.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBrokerNull.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBrokerNull.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBrokerSimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBrokerSimple.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/CloudInformationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/CloudInformationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/CloudSim.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/CloudSim.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -389,7 +402,14 @@
       <option name="project" value="LOCAL" />
       <updated>1655303905673</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="20.06">
+      <created>1655977686727</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1655977686727</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -416,7 +436,8 @@
     <MESSAGE value="07.06" />
     <MESSAGE value="08.06" />
     <MESSAGE value="15.06" />
-    <option name="LAST_COMMIT_MESSAGE" value="15.06" />
+    <MESSAGE value="20.06" />
+    <option name="LAST_COMMIT_MESSAGE" value="20.06" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

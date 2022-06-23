@@ -1,9 +1,9 @@
 package gpu.power;
 
+import gpu.GpuDatacenterBroker;
 import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.core.predicates.PredicateType;
-import org.cloudbus.cloudsim.gpu.GpuDatacenterBroker;
-import org.cloudbus.cloudsim.gpu.core.GpuCloudSimTags;
+import org.cloudbus.cloudsim.core.CloudSimTag;
+import org.cloudbus.cloudsim.core.events.PredicateType;
 
 /**
  * {@link PowerGpuDatacenterBroker} extends {@link GpuDatacenterBroker} to
@@ -13,19 +13,19 @@ import org.cloudbus.cloudsim.gpu.core.GpuCloudSimTags;
  * 
  */
 public class PowerGpuDatacenterBroker extends GpuDatacenterBroker {
+	public CloudSim simulation;
 
 	/**
-	 * @see GpuDatacenterBroker#GpuDatacenterBroker(String)
 	 */
-	public PowerGpuDatacenterBroker(String name) throws Exception {
-		super(name);
+	public PowerGpuDatacenterBroker(CloudSim simulation, String name) throws Exception {
+		super(simulation, name);
 	}
 
 	@Override
 	protected void finishExecution() {
 		for (Integer datacenterId : getDatacenterIdsList()) {
-			CloudSim.cancelAll(datacenterId.intValue(),
-					new PredicateType(GpuCloudSimTags.GPU_VM_DATACENTER_POWER_EVENT));
+			simulation.cancelAll(getDatacenterList().get(datacenterId.intValue()),
+					new PredicateType(CloudSimTag.GPU_VM_DATACENTER_POWER_EVENT));
 		}
 		super.finishExecution();
 	}

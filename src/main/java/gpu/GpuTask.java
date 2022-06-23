@@ -584,7 +584,7 @@ public class GpuTask {
 		final Resource res = new Resource();
 		res.resourceId = resourceID;
 		res.costPerSec = cost;
-		res.resourceName = CloudSim.getEntityName(resourceID);
+		res.resourceName = getResourceName(resourceID);
 
 		// add into a list if moving to a new grid resource
 		resList.add(res);
@@ -716,7 +716,7 @@ public class GpuTask {
 		}
 
 		if (newStatus == GpuTask.SUCCESS) {
-			finishTime = CloudSim.clock();
+			finishTime = getCloudlet().getSimulation().clock();
 		}
 
 		if (record) {
@@ -1066,12 +1066,12 @@ public class GpuTask {
 			history.append(System.getProperty("line.separator"));
 			history.append("------------------------------------------");
 			history.append(System.getProperty("line.separator"));
-			history.append(num.format(CloudSim.clock()));
+			history.append(num.format(getCloudlet().getSimulation().clock()));
 			history.append("   Creates task ID #" + taskId);
 			history.append(System.getProperty("line.separator"));
 		}
 
-		history.append(num.format(CloudSim.clock()));
+		history.append(num.format(getCloudlet().getSimulation().clock()));
 		history.append("   " + str + newline);
 	}
 
@@ -1133,7 +1133,6 @@ public class GpuTask {
 	 * the user or owner of this task.
 	 * 
 	 * @param resourceID the CloudResource ID
-	 * @param costPerCPU the cost per second of running this task
 	 * @param costPerBw  the cost per byte of data transfer to the GPU
 	 * 
 	 * @pre resourceID >= 0
@@ -1156,7 +1155,6 @@ public class GpuTask {
 	/**
 	 * Sets the utilization model of gpu.
 	 * 
-	 * @param utilizationModelCpu the new utilization model of gpu
 	 */
 	public void setUtilizationModelGpu(final UtilizationModel utilizationModelGpu) {
 		this.utilizationModelGpu = utilizationModelGpu;
@@ -1174,7 +1172,6 @@ public class GpuTask {
 	/**
 	 * Sets the utilization model of GDDRAM.
 	 * 
-	 * @param utilizationModelCpu the new utilization model of gddram
 	 */
 	public void setUtilizationModelGddram(final UtilizationModel utilizationModelGddram) {
 		this.utilizationModelGddram = utilizationModelGddram;

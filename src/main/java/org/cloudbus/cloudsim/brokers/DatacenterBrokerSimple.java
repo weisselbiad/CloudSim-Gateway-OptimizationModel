@@ -12,6 +12,8 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.vms.Vm;
 
+import java.util.List;
+
 /**
  * A simple implementation of {@link DatacenterBroker} that try to host customer's VMs
  * at the first Datacenter found. If there isn't capacity in that one,
@@ -128,5 +130,15 @@ public class DatacenterBrokerSimple extends DatacenterBrokerAbstract {
         cyclically selects the next VM on the list of created VMs.*/
         lastSelectedVmIndex = ++lastSelectedVmIndex % getVmExecList().size();
         return getVmFromCreatedList(lastSelectedVmIndex);
+    }
+
+    @Override
+    public List<? extends Cloudlet> getCloudletSubmittedList() {
+        return cloudletSubmittedList;
+    }
+
+    @Override
+    public void bindgpuCloudletToVm() {
+
     }
 }

@@ -1243,7 +1243,7 @@ public abstract class BrokerAbstract extends CloudSimEntity implements Datacente
     }
 
     @Override
-    public List<Cloudlet> getCloudletSubmittedList() {
+    public List<? extends Cloudlet> getCloudletSubmittedList() {
         return cloudletSubmittedList;
     }
 

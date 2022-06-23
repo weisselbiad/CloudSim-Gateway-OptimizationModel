@@ -108,4 +108,13 @@ public class CloudInformationService extends CloudSimEntity {
         list.forEach(entity -> super.send(entity, 0L, CloudSimTag.SIMULATION_END));
     }
 
+    public List<Integer> getcisList(){
+        List<Integer> cisIntList= new ArrayList<>();
+        for (CloudInformationService  Entity : cisList ){
+            int x = (int)Entity.getId();
+            cisIntList.add(x);
+        }
+        return cisIntList;
+    }
+
 }

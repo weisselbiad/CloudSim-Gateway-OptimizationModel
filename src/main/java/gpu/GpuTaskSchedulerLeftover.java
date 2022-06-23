@@ -1,6 +1,6 @@
 package gpu;
 
-import org.cloudbus.cloudsim.Consts;
+import gpu.Consts;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.util.MathUtil;
 

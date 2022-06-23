@@ -7,6 +7,7 @@
  */
 package org.cloudbus.cloudsim.brokers;
 
+import gpu.GpuCloudlet;
 import gpu.GpuDatacenter;
 import gpu.core.CloudSimTags;
 import gpu.core.CloudletList;
@@ -98,7 +99,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
     private  List<Cloudlet> cloudletWaitingList;
 
     /** @see #getCloudletSubmittedList() */
-    private  List<Cloudlet> cloudletSubmittedList;
+    public  List<Cloudlet> cloudletSubmittedList;
 
     /** @see #getCloudletFinishedList() */
     private  List<Cloudlet> cloudletsFinishedList;
@@ -199,7 +200,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
     protected List<? extends Cloudlet> cloudletList;
 
     /** The list of submitted cloudlets. */
-    protected List<? extends Cloudlet> gpucloudletSubmittedList;
+    protected List<GpuCloudlet> gpucloudletSubmittedList;
 
     /** The list of received cloudlet. */
     protected List<? extends Cloudlet> cloudletReceivedList;
@@ -230,17 +231,15 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
     /** The datacenter characteristics map where each key
      * is a datacenter id and each value is its characteristics.. */
     protected Map<Integer, DatacenterCharacteristics> datacenterCharacteristicsList;
+    public CloudSim simulation ;
 
-    public DatacenterBrokerAbstract(final String name) throws Exception {
-        super();
-        if(!name.isEmpty()) {
-            setName(name);
-        }
+    public DatacenterBrokerAbstract(final CloudSim simulation) throws Exception {
+        super(simulation);
 
         setgpuVmList(new ArrayList<Vm>());
         setgpuVmsCreatedList(new ArrayList<Vm>());
         setgpuCloudletList(new ArrayList<Cloudlet>());
-        setgpuCloudletSubmittedList(new ArrayList<Cloudlet>());
+        setgpuCloudletSubmittedList(new ArrayList<GpuCloudlet>());
         setgpuCloudletReceivedList(new ArrayList<Cloudlet>());
 
         cloudletsSubmitted = 0;
@@ -252,6 +251,8 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
         setDatacenterRequestedIdsList(new ArrayList<Integer>());
         setVmsToDatacentersMap(new HashMap<Integer, Integer>());
         setDatacenterCharacteristicsList(new HashMap<Integer, DatacenterCharacteristics>());
+
+        this.simulation = simulation;
     }
 
 
@@ -417,7 +418,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
         sortCloudletsIfComparatorIsSet(list);
         configureEntities(list);
         lastSubmittedCloudlet = setIdForEntitiesWithoutOne(list, lastSubmittedCloudlet);
-        gpucloudletSubmittedList.addAll(list);
+        gpucloudletSubmittedList.addAll((List< GpuCloudlet >)list);
         setSimulationForCloudletUtilizationModels(list);
         cloudletWaitingList.addAll(list);
         wereThereWaitingCloudlets = true;
@@ -1423,7 +1424,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
     }
 
     /***
-     * Methodes for GPU Dataceter*******************************************************************************************************************
+     * Methodes for GPU Dataceter**************************************************************************************************************************************************************************************
      * GPU
      */
     /**
@@ -1452,7 +1453,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
      * The method {@link #submitVmList(java.util.List)} may have
      * be checked too.
      */
-    public void submitgpuCloudletList(List<? extends Cloudlet> list) {
+    public void submitgpuCloudletList(List<? extends GpuCloudlet> list) {
         getgpuCloudletList().addAll(list);
     }
 
@@ -1465,7 +1466,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
      * @pre id > 0
      * @post $none
      */
-    public void bindCloudletToVm(int cloudletId, int vmId) {
+    public void bindgpuCloudletToVm(int cloudletId, int vmId) {
         CloudletList.getById(getgpuCloudletList(), cloudletId).setVm(getVmFromCreatedList(vmId));
     }
 
@@ -1495,7 +1496,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
      * @post $none
      */
     protected void processResourceCharacteristicsRequest(SimEvent ev) {
-        setDatacenterIdsList(getSimulation().getEntityList());
+        setDatacenterIdsList(getSimulation().getCloudInfoService().getcisList());
         setDatacenterCharacteristicsList(new HashMap<Integer, DatacenterCharacteristics>());
 
         Log.printConcatLine(getSimulation().clock(), ": ", getName(), ": Cloud Resource List received with ",
@@ -1534,7 +1535,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
 
         // all the requested VMs have been created
         if (getVmCreatedList().size() == getgpuVmList().size() - getVmsDestroyed()) {
-            submitCloudlets();
+            submitgpuCloudlets();
         } else {
             // all the acks received, but some VMs were not created
             if (getgpuVmsRequested() == getVmsAcks()) {
@@ -1548,7 +1549,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
 
                 // all datacenters already queried
                 if (getVmCreatedList().size() > 0) { // if some vm were created
-                    submitCloudlets();
+                    submitgpuCloudlets();
                 } else { // no vms created. abort
                     Log.printLine(getSimulation().clock() + ": " + getName()
                             + ": none of the required VMs could be created. Aborting");
@@ -1588,7 +1589,6 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
 
     /**
      * Process non-default received events that aren't processed by
-     * the {@link #processEvent(org.cloudbus.cloudsim.core.SimEvent)} method.
      * This method should be overridden by subclasses in other to process
      * new defined events.
      *
@@ -1618,19 +1618,19 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
     protected void createVmsInDatacenter(int datacenterId) {
         // send as much vms as possible for this datacenter before trying the next one
         int requestedVms = 0;
-        String datacenterName = getSimulation().getEntityName(datacenterId);
+
         for (Vm vm : getgpuVmList()) {
             if (!getVmsToDatacentersMap().containsKey(vm.getId())) {
-                Log.printLine(CloudSim.clock() + ": " + getName() + ": Trying to Create VM #" + vm.getId()
-                        + " in " + datacenterName);
-                sendNow(datacenterId, CloudSimTags.VM_CREATE_ACK, vm);
+                Log.printLine(getSimulation().clock() + ": " + getName() + ": Trying to Create VM #" + vm.getId()
+                        + " in " + getSimulation().getEntityId(getDatacenter(vm).getName()));
+                sendNow(getDatacenterList().get(datacenterId), CloudSimTag.VM_CREATE_ACK, vm);
                 requestedVms++;
             }
         }
 
         getDatacenterRequestedIdsList().add(datacenterId);
 
-        setVmsRequested(requestedVms);
+        setgpuVmsRequested(requestedVms);
         setVmsAcks(0);
     }
 
@@ -1641,40 +1641,40 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
      * @post $none
      * @see #submitCloudletList(java.util.List)
      */
-    protected void submitCloudlets() {
+    protected void submitgpuCloudlets() {
         int vmIndex = 0;
         List<Cloudlet> successfullySubmitted = new ArrayList<Cloudlet>();
-        for (Cloudlet cloudlet : getCloudletList()) {
+        for (GpuCloudlet cloudlet : getgpuCloudletList()) {
             Vm vm;
             // if user didn't bind this cloudlet and it has not been executed yet
-            if (cloudlet.getVmId() == -1) {
-                vm = getVmsCreatedList().get(vmIndex);
+            if (cloudlet.getVm().getId() == -1) {
+                vm = getgpuVmsCreatedList().get(vmIndex);
             } else { // submit to the specific vm
-                vm = VmList.getById(getVmsCreatedList(), cloudlet.getVmId());
+                vm = VmList.getById((List<Vm>)getgpuVmsCreatedList(),(int) cloudlet.getVm().getId());
                 if (vm == null) { // vm was not created
                     if(!Log.isDisabled()) {
-                        Log.printConcatLine(CloudSim.clock(), ": ", getName(), ": Postponing execution of cloudlet ",
-                                cloudlet.getCloudletId(), ": bount VM not available");
+                        Log.printConcatLine(getSimulation().clock(), ": ", getName(), ": Postponing execution of cloudlet ",
+                                cloudlet.getId(), ": bount VM not available");
                     }
                     continue;
                 }
             }
 
             if (!Log.isDisabled()) {
-                Log.printConcatLine(CloudSim.clock(), ": ", getName(), ": Sending cloudlet ",
-                        cloudlet.getCloudletId(), " to VM #", vm.getId());
+                Log.printConcatLine(getSimulation().clock(), ": ", getName(), ": Sending cloudlet ",
+                        cloudlet.getId(), " to VM #", vm.getId());
             }
 
-            cloudlet.setVmId(vm.getId());
-            sendNow(getVmsToDatacentersMap().get(vm.getId()), CloudSimTags.CLOUDLET_SUBMIT, cloudlet);
+            cloudlet.getVm().setId(vmIndex);
+            sendNow(getVmFromCreatedList((int)vm.getId()).getSimulation().getEntityId(vm.toString()), CloudSimTag.CLOUDLET_SUBMIT, cloudlet);
             cloudletsSubmitted++;
-            vmIndex = (vmIndex + 1) % getVmsCreatedList().size();
-            getCloudletSubmittedList().add(cloudlet);
+            vmIndex = (vmIndex + 1) % getgpuVmsCreatedList().size();
+            getgpuCloudletSubmittedList().add(cloudlet);
             successfullySubmitted.add(cloudlet);
         }
 
         // remove submitted cloudlets from waiting list
-        getCloudletList().removeAll(successfullySubmitted);
+        getgpuCloudletList().removeAll(successfullySubmitted);
     }
 
     /**
@@ -1684,12 +1684,12 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
      * @post $none
      */
     protected void clearDatacenters() {
-        for (Vm vm : getVmsCreatedList()) {
-            Log.printConcatLine(CloudSim.clock(), ": " + getName(), ": Destroying VM #", vm.getId());
-            sendNow(getVmsToDatacentersMap().get(vm.getId()), CloudSimTags.VM_DESTROY, vm);
+        for (Vm vm : getgpuVmsCreatedList()) {
+            Log.printConcatLine(getSimulation().clock(), ": " + getName(), ": Destroying VM #", vm.getId());
+            sendNow(getVmFromCreatedList((int)vm.getId()).getSimulation().getEntityId(vm.toString()), CloudSimTag.VM_DESTROY, vm);
         }
 
-        getVmsCreatedList().clear();
+        getgpuVmsCreatedList().clear();
     }
 
     /**
@@ -1699,18 +1699,17 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
      * @post $none
      */
     protected void finishExecution() {
-        sendNow(getId(), CloudSimTags.END_OF_SIMULATION);
+        sendNow(getSimulation().getEntityId(getName()), CloudSimTag.END_OF_SIMULATION);
     }
 
-    @Override
     public void shutdownEntity() {
         Log.printConcatLine(getName(), " is shutting down...");
     }
 
-    @Override
+
     public void startEntity() {
         Log.printConcatLine(getName(), " is starting...");
-        schedule(getId(), 0, CloudSimTags.RESOURCE_CHARACTERISTICS_REQUEST);
+        schedule(getSimulation().getEntityId(getName()), 0, CloudSimTag.RESOURCE_CHARACTERISTICS_REQUEST);
     }
 
     /**
@@ -1741,7 +1740,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
      * @return the cloudlet list
      */
     @SuppressWarnings("unchecked")
-    public <T extends Cloudlet> List<T> getgpuCloudletList() {
+    public <T extends GpuCloudlet> List<T> getgpuCloudletList() {
         return (List<T>) cloudletList;
     }
 
@@ -1758,21 +1757,19 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
     /**
      * Gets the cloudlet submitted list.
      *
-     * @param <T> the generic type
-     * @return the cloudlet submitted list
+     *   * @return the cloudlet submitted list
      */
     @SuppressWarnings("unchecked")
-    public <T extends Cloudlet> List<T> getgpuCloudletSubmittedList() {
-        return (List<T>) gpucloudletSubmittedList;
+    public  List<GpuCloudlet> getgpuCloudletSubmittedList() {
+        return  gpucloudletSubmittedList;
     }
 
     /**
      * Sets the cloudlet submitted list.
      *
      * @param <T> the generic type
-     * @param cloudletSubmittedList the new cloudlet submitted list
      */
-    protected <T extends Cloudlet> void setgpuCloudletSubmittedList(List<Cloudlet> cloudletSubmittedList) {
+    protected <T extends Cloudlet> void setgpuCloudletSubmittedList(List<GpuCloudlet> gpucloudletSubmittedList) {
         this.gpucloudletSubmittedList = gpucloudletSubmittedList;
     }
 

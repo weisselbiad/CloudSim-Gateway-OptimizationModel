@@ -6,6 +6,7 @@
  */
 package org.cloudbus.cloudsim.brokers;
 
+import gpu.GpuCloudlet;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
@@ -440,7 +441,10 @@ public interface DatacenterBroker extends SimEntity {
      */
     DatacenterBroker setVmDestructionDelayFunction(Function<Vm, Double> function);
 
-    List<Cloudlet> getCloudletSubmittedList();
+    List<? extends Cloudlet> getCloudletSubmittedList();
+    List<GpuCloudlet> getgpuCloudletSubmittedList();
+
+    void bindgpuCloudletToVm();
 
     /**
      * Gets a List of VMs submitted to the broker that have failed to be created inside
