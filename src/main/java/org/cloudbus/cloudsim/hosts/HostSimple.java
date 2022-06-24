@@ -422,6 +422,11 @@ public class HostSimple implements Host {
     }
 
     @Override
+    public boolean vmCreate(Vm vm) {
+        return false;
+    }
+
+    @Override
     public HostSuitability createTemporaryVm(final Vm vm) {
         return createVmInternal(vm);
     }

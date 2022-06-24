@@ -3,6 +3,7 @@ package gpu;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicyAbstract;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
+import org.cloudbus.cloudsim.hosts.HostSuitability;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
@@ -19,7 +20,7 @@ import java.util.Map;
  * @author Ahmad Siavashi
  *
  */
-public abstract class GpuVmAllocationPolicy extends VmAllocationPolicyAbstract implements VmAllocationPolicy {
+public abstract class GpuVmAllocationPolicy extends GpuVmAllocationPolicyAbstract {
 
 	/**
 	 * The map between each VM and its allocated host. The map key is a VM UID and
@@ -54,7 +55,8 @@ public abstract class GpuVmAllocationPolicy extends VmAllocationPolicyAbstract i
 
 	@Override
 	public void deallocateHostForVm(Vm vm) {
-		getVmTable().remove(vm.getUid()).vmDestroy(vm);
+		//getVmTable().remove(vm.getUid()).vmDestroy(vm);
+		vm.getHost().destroyVm(vm);
 	}
 
 	protected void deallocateGpuForVgpu(Vgpu vgpu) {
@@ -108,8 +110,7 @@ public abstract class GpuVmAllocationPolicy extends VmAllocationPolicyAbstract i
 
 	/**
 	 * Allocates Hosts for a set of {@link GpuVm}s.
-	 * 
-	 * @param set of VMs
+	 *
 	 * @return a list of vm-result pairs
 	 */
 	public Map<GpuVm, Boolean> allocateHostForVms(List<GpuVm> vms) {
@@ -152,8 +153,7 @@ public abstract class GpuVmAllocationPolicy extends VmAllocationPolicyAbstract i
 	protected void setGpuHostList(List<GpuHost> gpuHostList) {
 		this.gpuHostList = new ArrayList<GpuHost>();
 		for (GpuHost host : gpuHostList) {
-			if (host.getVideoCardAllocationPolicy() != null
-					&& !host.getVideoCardAllocationPolicy().getVideoCards().isEmpty()) {
+			if (host.isGpuEquipped()) {
 				getGpuHostList().add(host);
 			}
 		}

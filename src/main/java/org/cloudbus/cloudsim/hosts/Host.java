@@ -498,6 +498,7 @@ public interface Host extends Machine, Comparable<Host>, PowerAware<PowerModelHo
      * (if the Host doesn't have enough resources to allocate the Vm)
      */
     HostSuitability createVm(Vm vm);
+    boolean vmCreate(Vm vm);
 
     /**
      * Destroys a VM running in the host and removes it from the {@link #getVmList()}.

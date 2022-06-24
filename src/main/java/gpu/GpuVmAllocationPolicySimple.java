@@ -39,4 +39,9 @@ public class GpuVmAllocationPolicySimple extends GpuVmAllocationPolicy {
 		}
 		return false;
 	}
+
+	@Override
+	public Host getHost(int vmId, int userId) {
+		return null;
+	}
 }

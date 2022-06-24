@@ -80,7 +80,7 @@ public class GpuCloudletSchedulerSpaceShared extends CloudletSchedulerSpaceShare
 	}
 
 	@Override
-	public void cloudletFinish(CloudletExecution rcl) {
+	public void cloudletFinish(ResCloudlet rcl) {
 		ResGpuCloudlet rgcl = (ResGpuCloudlet) rcl;
 		if (!rgcl.hasGpuTask()) {
 			super.cloudletFinish(rcl);

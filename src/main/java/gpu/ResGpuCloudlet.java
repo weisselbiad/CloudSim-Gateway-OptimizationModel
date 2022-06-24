@@ -6,7 +6,7 @@ import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import org.cloudbus.cloudsim.cloudlets.CloudletExecution;
 import org.cloudbus.cloudsim.core.CloudSim;
 
-public class ResGpuCloudlet extends CloudletExecution {
+public class ResGpuCloudlet extends ResCloudlet {
 
 
 	/** The Cloudlet arrival time for the first time. */

@@ -57,12 +57,12 @@ public abstract class VmAllocationPolicyAbstract implements VmAllocationPolicy {
     /**@see #getHostCountForParallelSearch() */
     private int hostCountForParallelSearch;
 
+    private List<? extends Host> hostList;
+
     /**
      * Creates a VmAllocationPolicy.
      */
-    public VmAllocationPolicyAbstract() {
-        this(null);
-    }
+   // public VmAllocationPolicyAbstract() {        this(null);    }
 
     /**
      * Creates a VmAllocationPolicy, changing the {@link BiFunction} to select a Host for a Vm.
@@ -76,6 +76,10 @@ public abstract class VmAllocationPolicyAbstract implements VmAllocationPolicy {
         this.hostCountForParallelSearch = DEF_HOST_COUNT_PARALLEL_SEARCH;
     }
 
+    public VmAllocationPolicyAbstract(List<? extends Host> list) {
+        setgpuHostList(list);
+    }
+
     @Override
     public final <T extends Host> List<T> getHostList() {
         return datacenter.getHostList();
@@ -84,6 +88,8 @@ public abstract class VmAllocationPolicyAbstract implements VmAllocationPolicy {
     public final <T extends Host> List<T>getSimpleHostList(){
         return datacenter.getSimpleHostList();
     }
+
+    //methode used just in cloudsimMixedPeEnv
     public final <T extends Host> List<T>getGpuHostList(){
         return datacenter.getGpuHostList();
     }
@@ -300,7 +306,7 @@ public abstract class VmAllocationPolicyAbstract implements VmAllocationPolicy {
         return hostSuitabilityForVmGroup;
     }
 
-    private HostSuitability createVm(final Vm vm, final Host host) {
+    public HostSuitability createVm(final Vm vm, final Host host) {
         final var suitability = host.createVm(vm);
         if (suitability.fully()) {
             LOGGER.info(
@@ -384,5 +390,93 @@ final var optionalHost = findHostForVmFunction == null ? GpuFindHostForVm(vm) : 
     public boolean isVmMigrationSupported() {
         return false;
     }
+
+
+    /**
+     * Allocates a host for a given VM.
+     *
+     * @param vm the VM to allocate a host to
+     * @return $true if the host could be allocated; $false otherwise
+     * @pre $none
+     * @post $none
+     */
+ //   public abstract boolean allocateHostForVm(Vm vm);
+
+    /**
+     * Allocates a specified host for a given VM.
+     *
+     * @param vm virtual machine which the host is reserved to
+     * @param host host to allocate the the given VM
+     * @return $true if the host could be allocated; $false otherwise
+     * @pre $none
+     * @post $none
+     */
+//    public abstract boolean allocateHostForVm(Vm vm, Host host);
+
+    /**
+     * Optimize allocation of the VMs according to current utilization.
+     *
+     * @param vmList the vm list
+     * @return the array list< hash map< string, object>>
+     *
+     * @todo It returns a list of maps, where each map key is a string
+     * and stores an object. What in fact are the keys and values of this
+     * Map? Neither this class or its subclasses implement the method
+     * or have clear documentation. The only sublcass is the {@link VmAllocationPolicySimple}.
+     *
+     */
+    public abstract List<Map<String, Object>> optimizeAllocation(List<? extends Vm> vmList);
+
+    /**
+     * Releases the host used by a VM.
+     *
+     * @param vm the vm to get its host released
+     * @pre $none
+     * @post $none
+     */
+//    public abstract void deallocateHostForVm(Vm vm);
+
+    /**
+     * Get the host that is executing the given VM.
+     *
+     * @param vm the vm
+     * @return the Host with the given vmID; $null if not found
+     *
+     * @pre $none
+     * @post $none
+     */
+    public abstract Host getHost(Vm vm);
+
+    /**
+     * Get the host that is executing the given VM belonging to the given user.
+     *
+     * @param vmId the vm id
+     * @param userId the user id
+     * @return the Host with the given vmID and userID; $null if not found
+     * @pre $none
+     * @post $none
+     */
+    public abstract Host getHost(int vmId, int userId);
+
+    /**
+     * Sets the host list.
+     *
+     * @param hostList the new host list
+     */
+    protected void setgpuHostList(List<? extends Host> hostList) {
+        this.hostList = hostList;
+    }
+
+    /**
+     * Gets the host list.
+     *
+     * @return the host list
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Host> List<T> getgpuHostList() {
+        return (List<T>) hostList;
+    }
+
+
 }
 

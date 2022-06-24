@@ -1,13 +1,13 @@
 package gpu;
 
+import gpu.allocation.VideoCardAllocationPolicy;
+import gpu.core.Log;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.provisioners.ResourceProvisioner;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
-import gpu.allocation.VideoCardAllocationPolicy;
-import gpu.provisioners.BwProvisioner;
-import gpu.provisioners.RamProvisioner;
+import org.cloudbus.cloudsim.vms.Vm;
 
 import java.util.List;
 import java.util.Set;
@@ -176,4 +176,45 @@ public class GpuHost extends HostSimple implements Host{
 
 		return true;
 	}
+
+	public boolean isGpuEquipped() {
+		return getVideoCardAllocationPolicy() != null && !getVideoCardAllocationPolicy().getVideoCards().isEmpty();
+	}
+
+
+	public boolean vmCreate(Vm vm) {
+		if (getStorage().getAvailableResource() < vm.getStorage().getCapacity()) {
+			Log.printConcatLine("[VmScheduler.vmCreate] Allocation of VM #", vm.getId(), " to Host #", getId(),
+					" failed by storage");
+			return false;
+		}
+
+		if (!getRamProvisioner().allocateResourceForVm(vm, vm.getCurrentRequestedRam())) {
+			Log.printConcatLine("[VmScheduler.vmCreate] Allocation of VM #", vm.getId(), " to Host #", getId(),
+					" failed by RAM");
+			return false;
+		}
+
+		if (!getBwProvisioner().allocateResourceForVm(vm, vm.getCurrentRequestedBw())) {
+			Log.printConcatLine("[VmScheduler.vmCreate] Allocation of VM #", vm.getId(), " to Host #", getId(),
+					" failed by BW");
+			getRamProvisioner().deallocateResourceForVm(vm);
+			return false;
+		}
+
+		if (!getVmScheduler().allocatePesForVm(vm, vm.getCurrentRequestedMips())) {
+			Log.printConcatLine("[VmScheduler.vmCreate] Allocation of VM #", vm.getId(), " to Host #", getId(),
+					" failed by MIPS");
+			getRamProvisioner().deallocateResourceForVm(vm);
+			getBwProvisioner().deallocateResourceForVm(vm);
+			return false;
+		}
+
+		setDefaultStorageCapacity(getStorage().getAvailableResource() - vm.getStorage().getCapacity());
+		getVmList().add(vm);
+		vm.setHost(this);
+		return true;
+	}
+
+
 }

@@ -8,6 +8,8 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import java.util.ArrayList;
 import java.util.List;
 
+import static gpu.GpuTask.*;
+
 /**
  * ResGpuTask represents a Task submitted to CloudResource (i.e. Vgpu) for
  * processing. This class keeps track the time for all activities in the
@@ -70,7 +72,6 @@ public class ResGpuTask {
 	/**
 	 * Allocates a new ResGpuTask object upon the arrival of a Task object.
 	 * 
-	 * @param gpu task a gpu task object
 	 */
 	public ResGpuTask(GpuTask task) {
 		this.task = task;
@@ -258,21 +259,21 @@ public class ResGpuTask {
 			// if a previous GpuTask status is INEXEC
 			if (prevStatus == GpuTask.INEXEC) {
 				// and current status is either CANCELED, PAUSED or SUCCESS
-				if (status == GpuTask.CANCELED || status == GpuTask.PAUSED || status == GpuTask.SUCCESS) {
+				if (status == GpuTask.CANCELED || status == PAUSED || status == SUCCESS) {
 					// then update the GpuTask completion time
 					totalCompletionTime += (clock - startExecTime);
 					return true;
 				}
 			}
 
-			if (prevStatus == Cloudlet.RESUMED && status == Cloudlet.SUCCESS) {
+			if (prevStatus == RESUMED && status == SUCCESS) {
 				// then update the GpuTask completion time
 				totalCompletionTime += (clock - startExecTime);
 				return true;
 			}
 
 			// if a GpuTask is now in execution
-			if (status == Cloudlet.INEXEC || (prevStatus == Cloudlet.PAUSED && status == Cloudlet.RESUMED)) {
+			if (status == INEXEC || (prevStatus == PAUSED && status == RESUMED)) {
 				startExecTime = clock;
 				task.setExecStartTime(startExecTime);
 			}
@@ -369,7 +370,7 @@ public class ResGpuTask {
 	 */
 	public void finalizeTask() {
 		// Sets the wall clock time and actual GPU time
-		double wallClockTime = CloudSim.clock() - arrivalTime;
+		double wallClockTime = .clock() - arrivalTime;
 		task.setExecParam(wallClockTime, totalCompletionTime);
 
 		long finished = taskFinishedSoFar > getTaskTotalLength() * Consts.MILLION ? getTaskTotalLength()

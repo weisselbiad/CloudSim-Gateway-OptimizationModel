@@ -52,6 +52,10 @@ public interface Vm extends AbstractMachine<Resource>, UniquelyIdentifiable, Com
      */
     Vm NULL = new VmNull();
 
+    static String getUid(long userId, long vmId) {
+        return userId + "-" + vmId;
+    }
+
     /**
      * Gets the Vm description, which is an optional text
      * which one can use to provide details about this of this VM.
