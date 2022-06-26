@@ -2,6 +2,7 @@ package cloudsimMixedPeEnv;
 
 
 
+import gpu.GpuCloudlet;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletExecution;
 import cloudsimMixedPeEnv.CloudletSchedulerAbstract;
@@ -90,6 +91,31 @@ public class CloudletSchedulerTimeShared extends CloudletSchedulerAbstract {
     public List<CloudletExecution> getCloudletWaitingList() {
         //The method was overridden here just to extend its JavaDoc.
         return super.getCloudletWaitingList();
+    }
+
+    @Override
+    public double updategpuVmProcessing(double currentTime, List<Double> mipsShare) {
+        return 0;
+    }
+
+    @Override
+    public double gpucloudletSubmit(GpuCloudlet cl, double fileTransferTime) {
+        return 0;
+    }
+
+    @Override
+    public Cloudlet gpucloudletCancel(int cloudlet) {
+        return null;
+    }
+
+    @Override
+    public boolean gpucloudletPause(int cloudlet) {
+        return false;
+    }
+
+    @Override
+    public double gpucloudletResume(int cloudlet) {
+        return 0;
     }
 
     /**

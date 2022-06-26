@@ -1,7 +1,9 @@
 package gpu.remote;
 
-import org.cloudbus.cloudsim.Host;
-import org.cloudbus.cloudsim.Vm;
+import org.cloudbus.cloudsim.hosts.Host;
+import org.cloudbus.cloudsim.hosts.HostSimple;
+import org.cloudbus.cloudsim.vms.Vm;
+import org.cloudbus.cloudsim.vms.VmSimple;
 import gpu.GpuHost;
 import gpu.GpuVm;
 import gpu.Pgpu;
@@ -15,8 +17,7 @@ import java.util.Map.Entry;
  * GPU-enabled VMs on GPU hosts with least loaded (i.t.o. allocated memory)
  * pGPUs.
  * 
- * @see S. Iserte, R. Peña-Ortiz, J. Gutiérrez-Aguado, J. M. Claver and R. Mayo, "GSaaS: A Service to Cloudify and Schedule GPUs," in IEEE Access, vol. 6, pp. 39762-39774, 2018, doi: 10.1109/ACCESS.2018.2855261.
- * 
+ *
  * @author Ahmad Siavashi
  *
  */

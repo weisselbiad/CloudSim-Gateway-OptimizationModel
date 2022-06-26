@@ -1,5 +1,6 @@
 package gpu;
 
+import org.cloudbus.cloudsim.core.Simulation;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.core.CloudSim;
 
@@ -193,6 +194,7 @@ public class GpuTask {
 	 * bandwidth.
 	 */
 	private UtilizationModel utilizationModelBw;
+	public Simulation simulation;
 
 	/**
 	 * Allocates a new task object. The task length, input and output sizes should
@@ -215,12 +217,13 @@ public class GpuTask {
 	 * @pre taskOutputSize >= 1
 	 * @post $none
 	 */
-	public GpuTask(final int taskId, final long blockLength, final int numberOfBlocks, final long inputSize,
+	public GpuTask(final Simulation simulation ,final int taskId, final long blockLength, final int numberOfBlocks, final long inputSize,
 			final long outputSize, final long requestedGddramSize, final float communicationOverhead,
 			final UtilizationModel utilizationModelGpu, final UtilizationModel utilizationModelGddram,
 			final UtilizationModel utilizationModelBw) {
-		this(taskId, blockLength, numberOfBlocks, inputSize, outputSize, requestedGddramSize, communicationOverhead,
+		this(simulation,taskId, blockLength, numberOfBlocks, inputSize, outputSize, requestedGddramSize, communicationOverhead,
 				utilizationModelGpu, utilizationModelGddram, utilizationModelBw, false);
+		this.simulation = simulation;
 	}
 
 	/**
@@ -244,7 +247,7 @@ public class GpuTask {
 	 * @pre taskOutputSize >= 1
 	 * @post $none
 	 */
-	public GpuTask(final int taskId, final long blockLength, final int numberOfBlocks, final long inputSize,
+	public GpuTask(final Simulation simulation,final int taskId, final long blockLength, final int numberOfBlocks, final long inputSize,
 			final long outputSize, final long requestedGddramSize, final float communicationOverhead,
 			final UtilizationModel utilizationModelGpu, final UtilizationModel utilizationModelGddram,
 			final UtilizationModel utilizationModelBw, final boolean record) {
@@ -269,7 +272,7 @@ public class GpuTask {
 		resList = new ArrayList<Resource>(2);
 		index = -1;
 		this.record = record;
-
+		this.simulation = simulation;
 		setUtilizationModelGpu(utilizationModelGpu);
 		setUtilizationModelGddram(utilizationModelGddram);
 		setUtilizationModelBw(utilizationModelBw);
@@ -1231,5 +1234,7 @@ public class GpuTask {
 	public long getRequestedGddramSize() {
 		return requestedGddramSize;
 	}
-
+	public Simulation getSimulation(){
+		return this.simulation;
+	}
 }

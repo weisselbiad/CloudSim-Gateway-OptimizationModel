@@ -529,6 +529,8 @@ public interface Vm extends AbstractMachine<Resource>, UniquelyIdentifiable, Com
      */
     double updateProcessing(double currentTime, MipsShare mipsShare);
 
+    double updategpuVmProcessing(double currentTime, List<Double> mipsShare);
+
     /**
      * Updates the processing of cloudlets running on this VM at the current simulation time.
      *

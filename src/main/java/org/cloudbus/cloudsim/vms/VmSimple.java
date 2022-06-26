@@ -304,6 +304,11 @@ public class VmSimple extends CustomerEntityAbstract implements Vm {
     }
 
     @Override
+    public double updategpuVmProcessing(double currentTime, List<Double> mipsShare) {
+        return 0;
+    }
+
+    @Override
     public long getFreePesNumber() {
         return freePesNumber;
     }

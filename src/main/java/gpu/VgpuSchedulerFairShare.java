@@ -28,8 +28,7 @@ public class VgpuSchedulerFairShare extends VgpuSchedulerTimeShared {
 	/**
 	 * Instantiates a new fair-share vgpu scheduler.
 	 * 
-	 * @param pgpulist the list of gpu PEs of the video card where the VgpuScheduler
-	 *                 is associated to.
+ *                 is associated to.
 	 */
 	public VgpuSchedulerFairShare(String videoCardType, List<Pgpu> pgpuList, PgpuSelectionPolicy pgpuSelectionPolicy) {
 		super(videoCardType, pgpuList, pgpuSelectionPolicy);
@@ -64,7 +63,7 @@ public class VgpuSchedulerFairShare extends VgpuSchedulerTimeShared {
 		final double totalPgpuMips = PeList.getTotalMips(pgpu.getPeList());
 		double pgpuAvailableMips = 0.0;
 		for (Pe pe : pgpu.getPeList()) {
-			pgpuAvailableMips += pe.getPeProvisioner().getAvailableMips();
+			pgpuAvailableMips += pe.getPeProvisioner().getAvailableResource();
 		}
 		final double totalRequestedMipsFromPgpu = mipsChange + (totalPgpuMips - pgpuAvailableMips);
 		final double scaleFactor = totalPgpuMips / totalRequestedMipsFromPgpu;
@@ -73,7 +72,7 @@ public class VgpuSchedulerFairShare extends VgpuSchedulerTimeShared {
 		// deallocate
 		for (Vgpu vgpu : pgpuVgpus) {
 			for (Pe pe : getVgpuPeMap().get(vgpu)) {
-				pe.getPeProvisioner().deallocateMipsForVm(vgpu.getVm());
+				pe.getPeProvisioner().deallocateResourceForVm(vgpu.getVm());
 			}
 		}
 		for (Vgpu vgpu : pgpuVgpus) {
@@ -94,15 +93,15 @@ public class VgpuSchedulerFairShare extends VgpuSchedulerTimeShared {
 			// reallocate
 			Collections.sort(pgpu.getPeList(), Collections.reverseOrder(new Comparator<Pe>() {
 				public int compare(Pe pe1, Pe pe2) {
-					return Double.compare(pe1.getPeProvisioner().getAvailableMips(),
-							pe2.getPeProvisioner().getAvailableMips());
+					return Double.compare(pe1.getPeProvisioner().getAvailableResource(),
+							pe2.getPeProvisioner().getAvailableResource());
 				}
 			}));
 			getVgpuPeMap().get(vgpu).clear();
 			// No two Vgpu PEs are mapped to one Pgpu PE
 			for (int i = 0; i < scaledVmMips.size(); i++) {
 				Pe pe = pgpu.getPeList().get(i);
-				pe.getPeProvisioner().allocateMipsForVm(vgpu.getVm(), scaledVmMips.get(i));
+				pe.getPeProvisioner().allocateResourceForVm(vgpu.getVm(), scaledVmMips.get(i));
 				getVgpuPeMap().get(vgpu).add(pe);
 			}
 		}
@@ -116,8 +115,8 @@ public class VgpuSchedulerFairShare extends VgpuSchedulerTimeShared {
 		double totalMipsChange = 0.0;
 		getPgpuVgpuMap().get(pgpu).remove(vgpu);
 		for (Pe pe : getVgpuPeMap().get(vgpu)) {
-			double allocatedMipsForVm = pe.getPeProvisioner().getTotalAllocatedMipsForVm(vgpu.getVm());
-			pe.getPeProvisioner().deallocateMipsForVm(vgpu.getVm());
+			double allocatedMipsForVm = pe.getPeProvisioner().getAllocatedResourceForVm(vgpu.getVm());
+			pe.getPeProvisioner().deallocateResourceForVm(vgpu.getVm());
 			totalMipsChange += allocatedMipsForVm;
 		}
 		getVgpuPeMap().remove(vgpu);

@@ -3,6 +3,8 @@ package gpu.core;
 
 import java.util.List;
 
+import gpu.GpuPe;
+import gpu.GpuVm;
 import gpu.core.Log;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
@@ -27,12 +29,12 @@ public class PeList {
      * @pre id >= 0
      * @post $none
      */
-    public static <T extends Pe> Pe getById(List<T> peList, int id) {
+    public static <T extends GpuPe> GpuPe getById(List<T> peList, int id) {
                 /*@todo such kind of search would be made using a HashMap
                 (to avoid always iterating over the list),
                 where the key is the id of the object and the value the object
                 itself. The same occurs for lists of hosts and VMs.*/
-        for (Pe pe : peList) {
+        for (GpuPe pe : peList) {
             if (pe.getId() == id) {
                 return pe;
             }
@@ -49,10 +51,10 @@ public class PeList {
      * @pre id >= 0
      * @post $none
      */
-    public static <T extends Pe> int getMips(List<T> peList, int id) {
-        Pe pe = getById(peList, id);
+    public static <T extends GpuPe> int getMips(List<T> peList, int id) {
+        GpuPe pe = getById(peList, id);
         if (pe != null) {
-            return (int)pe.getCapacity();
+            return (int)pe.getMips();
         }
         return -1;
     }
@@ -65,10 +67,10 @@ public class PeList {
      * @pre $none
      * @post $none
      */
-    public static <T extends Pe> int getTotalMips(List<T> peList) {
+    public static <T extends GpuPe> int getTotalMips(List<T> peList) {
         int totalMips = 0;
-        for (Pe pe : peList) {
-            totalMips += pe.getCapacity();
+        for (GpuPe pe : peList) {
+            totalMips += pe.getMips();
         }
         return totalMips;
     }
@@ -79,9 +81,9 @@ public class PeList {
      * @param peList the pe list
      * @return the max utilization percentage
      */
-    public static <T extends Pe> double getMaxUtilization(List<T> peList) {
+    public static <T extends GpuPe> double getMaxUtilization(List<T> peList) {
         double maxUtilization = 0;
-        for (Pe pe : peList) {
+        for (GpuPe pe : peList) {
             double utilization = pe.getPeProvisioner().getUtilization();
             if (utilization > maxUtilization) {
                 maxUtilization = utilization;
@@ -97,10 +99,10 @@ public class PeList {
      * @param peList the pe list
      * @return the max utilization percentage
      */
-    public static <T extends Pe> double getMaxUtilizationAmongVmsPes(List<T> peList, Vm vm) {
+    public static <T extends GpuPe> double getMaxUtilizationAmongVmsPes(List<T> peList, GpuVm vm) {
         double maxUtilization = 0;
-        for (Pe pe : peList) {
-            if (pe.getPeProvisioner().getAllocatedResourceForVm(vm) == 0) {
+        for (GpuPe pe : peList) {
+            if (pe.getPeProvisioner().getAllocatedMipsForVm(vm).isEmpty()) {
                 continue;
             }
             double utilization = pe.getPeProvisioner().getUtilization();
@@ -119,9 +121,9 @@ public class PeList {
      * @pre $none
      * @post $none
      */
-    public static <T extends Pe> Pe getFreePe(List<T> peList) {
-        for (Pe pe : peList) {
-            if (pe.getStatus() == Pe.Status.FREE) {
+    public static <T extends GpuPe> GpuPe getFreePe(List<T> peList) {
+        for (GpuPe pe : peList) {
+            if (pe.getStatus() == GpuPe.FREE) {
                 return pe;
             }
         }
@@ -136,10 +138,10 @@ public class PeList {
      * @pre $none
      * @post $result >= 0
      */
-    public static <T extends Pe> int getNumberOfFreePes(List<T> peList) {
+    public static <T extends GpuPe> int getNumberOfFreePes(List<T> peList) {
         int cnt = 0;
-        for (Pe pe : peList) {
-            if (pe.getStatus() == Pe.Status.FREE) {
+        for (GpuPe pe : peList) {
+            if (pe.getStatus() == GpuPe.FREE) {
                 cnt++;
             }
         }
@@ -157,8 +159,8 @@ public class PeList {
      * @pre peID >= 0
      * @post $none
      */
-    public static <T extends Pe> boolean setPeStatus(List<T> peList, int id, Pe.Status status) {
-        Pe pe = getById(peList, id);
+    public static <T extends GpuPe> boolean setPeStatus(List<T> peList, int id, int status) {
+        GpuPe pe = getById(peList, id);
         if (pe != null) {
             pe.setStatus(status);
             return true;
@@ -174,10 +176,10 @@ public class PeList {
      * @pre $none
      * @post $result >= 0
      */
-    public static <T extends Pe> int getNumberOfBusyPes(List<T> peList) {
+    public static <T extends GpuPe> int getNumberOfBusyPes(List<T> peList) {
         int cnt = 0;
-        for (Pe pe : peList) {
-            if (pe.getStatus() == Pe.Status.BUSY) {
+        for (GpuPe pe : peList) {
+            if (pe.getStatus() == GpuPe.BUSY) {
                 cnt++;
             }
         }
@@ -196,7 +198,7 @@ public class PeList {
      * if they have to be set as FREE.
      * @see #setStatusFailed(java.util.List, boolean)
      */
-    public static <T extends Pe> void setStatusFailed(
+    public static <T extends GpuPe> void setStatusFailed(
             List<T> peList,
             String resName,
             int hostId,
@@ -220,13 +222,13 @@ public class PeList {
      * @param failed true if the host's PEs have to be set as FAILED, false
      * if they have to be set as FREE.
      */
-    public static <T extends Pe> void setStatusFailed(List<T> peList, boolean failed) {
+    public static <T extends GpuPe> void setStatusFailed(List<T> peList, boolean failed) {
         // a loop to set the status of all the PEs in this machine
-        for (Pe pe : peList) {
+        for (GpuPe pe : peList) {
             if (failed) {
-                pe.setStatus(Pe.Status.FAILED);
+                pe.setStatus(GpuPe.FAILED);
             } else {
-                pe.setStatus(Pe.Status.FREE);
+                pe.setStatus(GpuPe.FREE);
             }
         }
     }

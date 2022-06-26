@@ -8,10 +8,13 @@
 
 package org.cloudbus.cloudsim.provisioners;
 
+import gpu.GpuVm;
+import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristics;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.resources.ResourceManageable;
 import org.cloudbus.cloudsim.vms.Vm;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -94,4 +97,8 @@ public abstract class ResourceProvisionerAbstract implements ResourceProvisioner
     protected Function<Vm, ResourceManageable> getVmResourceFunction() {
         return vmResourceFunction;
     }
+    /** The total mips capacity of the PE that the provisioner can allocate to VMs. */
+
+
+
 }

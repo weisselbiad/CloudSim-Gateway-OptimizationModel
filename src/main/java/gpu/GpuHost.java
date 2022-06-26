@@ -2,9 +2,11 @@ package gpu;
 
 import gpu.allocation.VideoCardAllocationPolicy;
 import gpu.core.Log;
+import gpu.core.PeList;
+import gpu.provisioners.BwProvisioner;
+import gpu.provisioners.RamProvisioner;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.provisioners.ResourceProvisioner;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -22,6 +24,7 @@ import java.util.Set;
  */
 public class GpuHost extends HostSimple implements Host{
 
+	private List<? extends GpuPe> peList;
 	/**
 	 * type of the host
 	 */
@@ -29,7 +32,7 @@ public class GpuHost extends HostSimple implements Host{
 
 	/** video card allocation policy */
 	private VideoCardAllocationPolicy videoCardAllocationPolicy;
-
+	private boolean failed;
 	/**
 	 * 
 	 * See {@link}
@@ -39,13 +42,14 @@ public class GpuHost extends HostSimple implements Host{
 	 * @param videoCardAllocationPolicy the policy in which the host allocates video
 	 *                                  cards to vms
 	 */
-	public GpuHost(int id, String type, ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner, long storage,
-				   List<Pe> peList, VmScheduler vmScheduler, VideoCardAllocationPolicy videoCardAllocationPolicy) {
-		super( ramProvisioner, bwProvisioner, storage, peList, vmScheduler);
-
+	public GpuHost(int id, String type, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner, long storage,
+				   List<GpuPe> peList, VmScheduler vmScheduler, VideoCardAllocationPolicy videoCardAllocationPolicy) {
+		super( ramProvisioner, bwProvisioner, storage,  vmScheduler);
+		setGpuPeList(peList);
 		setId(id);
 		setType(type);
 		setVideoCardAllocationPolicy(videoCardAllocationPolicy);
+		setGpuHostFailed(false);
 	}
 
 	/**
@@ -54,13 +58,41 @@ public class GpuHost extends HostSimple implements Host{
 	 * 
 	 * @param type type of the host which is specified in {@link GpuHostTags}.
 	 */
-	public GpuHost(int id, String type, ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner, long storage,
-			List<Pe> peList, VmScheduler vmScheduler) {
-		super(ramProvisioner, bwProvisioner, storage, peList, vmScheduler);
+	public GpuHost(int id, String type, RamProvisioner ramProvisioner, RamProvisioner bwProvisioner, long storage,
+			 VmScheduler vmScheduler) {
+		super(ramProvisioner, bwProvisioner, storage,  vmScheduler);
 		setId(id);
 		setType(type);
 		setVideoCardAllocationPolicy(null);
+		setGpuHostFailed(false);
 	}
+	public int getNumberOfGpuPes() {
+		return getPeList().size();
+	}
+	public int getNumberOfFreePes() {
+		return PeList.getNumberOfFreePes(getGpuPeList());
+	}
+	public int getTotalMips() {
+		return PeList.getTotalMips(getGpuPeList());
+	}
+	public <T extends GpuPe> List<T> getGpuPeList() {
+		return (List<T>) peList;
+	}
+	protected <T extends GpuPe> void setGpuPeList(List<T> peList) {
+		this.peList = peList;
+	}
+
+	public boolean setGpuHostFailed(boolean failed) {
+		// all the PEs are failed (or recovered, depending on fail)
+		this.failed = failed;
+		PeList.setStatusFailed(getGpuPeList(), failed);
+		return true;
+	}
+
+	public boolean setPeStatus(int peId, int status) {
+		return PeList.setPeStatus(getGpuPeList(), peId, status);
+	}
+
 
 	public double updateVgpusProcessing(double currentTime) {
 		double smallerTime = Double.MAX_VALUE;

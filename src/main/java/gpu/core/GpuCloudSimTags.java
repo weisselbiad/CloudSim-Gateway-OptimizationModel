@@ -1,7 +1,6 @@
 package gpu.core;
 
 import gpu.GpuVm;
-import gpu.remote.RemoteGpuDatacenterEx;
 
 /**
  * Contains Gpu-related events in the simulator.

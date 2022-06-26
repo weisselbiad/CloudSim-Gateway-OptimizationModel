@@ -203,6 +203,7 @@ public interface Cloudlet extends UniquelyIdentifiable, Comparable<Cloudlet>, Cu
      * @return the Cloudlet status
      */
     Status getStatus();
+    int getgpuStatus();
 
     /**
      * {@inheritDoc}

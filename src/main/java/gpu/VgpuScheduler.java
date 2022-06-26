@@ -152,6 +152,7 @@ public abstract class VgpuScheduler {
 		getVgpuPeMap().clear();
 		for (Pgpu pgpu : getPgpuList()) {
 			for (Pe pe : pgpu.getPeList()) {
+
 				pe.getPeProvisioner().deallocateMipsForAllVms();
 			}
 		}

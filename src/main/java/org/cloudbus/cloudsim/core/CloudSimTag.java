@@ -8,7 +8,6 @@
 package org.cloudbus.cloudsim.core;
 
 import gpu.GpuVm;
-import gpu.remote.RemoteGpuDatacenterEx;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.core.events.SimEvent;

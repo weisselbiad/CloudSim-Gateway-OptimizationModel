@@ -7,6 +7,7 @@
  */
 package org.cloudbus.cloudsim.schedulers.cloudlet;
 
+import gpu.GpuCloudlet;
 import gpu.ResCloudlet;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet.Status;
@@ -55,17 +56,13 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
     private static final long serialVersionUID = -2314361120790372742L;
 
     /** @see #getCloudletPausedList() */
-    private final List<CloudletExecution> cloudletPausedList;
-    private final List<ResCloudlet> gpucloudletPausedList;
+    private List<CloudletExecution> cloudletPausedList;
 
     /** @see #getCloudletFinishedList() */
-    private final List<CloudletExecution> cloudletFinishedList;
-    private final List<ResCloudlet> gpucloudletFinishedList;
-    private final List<ResCloudlet> gpucloudletFinishedList;
-
+    private  List<CloudletExecution> cloudletFinishedList;
 
     /** @see #getCloudletFailedList() */
-    private final List<CloudletExecution> cloudletFailedList;
+    private List<CloudletExecution> cloudletFailedList;
 
     /** @see #getTaskScheduler() */
     private CloudletTaskScheduler taskScheduler;
@@ -75,37 +72,47 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
 
     /** @see #getCurrentMipsShare() */
     private MipsShare currentMipsShare;
-    private List<Double> gpucurrentMipsShare;
 
     /** @see #getCloudletExecList() */
-    private final List<CloudletExecution> cloudletExecList;
-    private final List<ResCloudlet> gpucloudletExecList;
+    private  List<CloudletExecution> cloudletExecList;
 
     /** @see #enableCloudletSubmittedList() */
     private boolean enableCloudletSubmittedList;
 
     /** @see #getCloudletSubmittedList() */
-    private final List<Cloudlet> cloudletSubmittedList;
+    private  List<Cloudlet> cloudletSubmittedList;
 
     /**
      * @see #getCloudletWaitingList()
      */
-    private final List<CloudletExecution> cloudletWaitingList;
-
-    private final List<ResCloudlet> gpucloudletWaitingList  ;
-    private final List<ResCloudlet> gpucloudletExecList  ;
-    private final List<ResCloudlet> gpucloudletPausedList ;
-    private final List<ResCloudlet> gpucloudletFailedList ;
+    private  List<CloudletExecution> cloudletWaitingList;
 
     /** @see #getVm() */
     private Vm vm;
 
     /** @see #getCloudletReturnedList() */
-    private final Set<Cloudlet> cloudletReturnedList;
+    private Set<Cloudlet> cloudletReturnedList;
 
     /** @see #addOnCloudletResourceAllocationFail(EventListener) */
-    private final List<EventListener<CloudletResourceAllocationFailEventInfo>> resourceAllocationFailListeners;
+    private List<EventListener<CloudletResourceAllocationFailEventInfo>> resourceAllocationFailListeners;
 
+    /** The list of current mips share available for the VM using the scheduler. */
+    private List<Double> gpucurrentMipsShare;
+
+    /** The list of cloudlet waiting to be executed on the VM. */
+    protected List<? extends ResCloudlet> gpucloudletWaitingList;
+
+    /** The list of cloudlets being executed on the VM. */
+    protected List<? extends ResCloudlet> gpucloudletExecList;
+
+    /** The list of paused cloudlets. */
+    protected List<? extends ResCloudlet> gpucloudletPausedList;
+
+    /** The list of finished cloudlets. */
+    protected List<? extends ResCloudlet> gpucloudletFinishedList;
+
+    /** The list of failed cloudlets. */
+    protected List<? extends ResCloudlet> gpucloudletFailedList;
     public Simulation simulation;
 
     /**
@@ -272,9 +279,6 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
     public List<CloudletExecution> getCloudletFinishedList() {
         return cloudletFinishedList;
     }
-    public List<CloudletExecution> getgpuCloudletFinishedList() {
-        return gpucloudletFinishedList;
-    }
 
     /**
      * Gets the list of failed cloudlets.
@@ -285,10 +289,12 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
         return cloudletFailedList;
     }
 
+
     @Override
     public List<CloudletExecution> getCloudletWaitingList() {
         return Collections.unmodifiableList(cloudletWaitingList);
     }
+
 
     /**
      * Sorts the {@link #cloudletWaitingList} using a given {@link Comparator}.
@@ -395,12 +401,6 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
         cle.setStatus(Status.SUCCESS);
         cle.finalizeCloudlet();
         cloudletFinishedList.add(cle);
-    }
-    public void cloudletFinish(ResCloudlet rcl) {
-        rcl.setCloudletStatus(Cloudlet.Status.SUCCESS);
-        rcl.finalizeCloudlet();
-        getCloudletFinishedList().add(rcl);
-        usedPes -= rcl.getNumberOfPes();
     }
 
     @Override
@@ -1394,8 +1394,9 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
         this.cloudletExecList.clear();
     }
 
+    /**************************************GPU*************GPU***************************GPU*********************************GPU****************/
 
-    public abstract double updateVmProcessing(double currentTime, List<Double> mipsShare);
+   public abstract double updategpuVmProcessing(double currentTime, List<Double> mipsShare);
 
     /**
      * Receives an cloudlet to be executed in the VM managed by this scheduler.
@@ -1406,7 +1407,7 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @pre gl != null
      * @post $none
      */
-    public abstract double cloudletSubmit(Cloudlet gl, double fileTransferTime);
+    public abstract double gpucloudletSubmit(GpuCloudlet gl, double fileTransferTime);
 
     /**
      * Receives an cloudlet to be executed in the VM managed by this scheduler.
@@ -1416,7 +1417,7 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @pre gl != null
      * @post $none
      */
-    public abstract double cloudletSubmit(Cloudlet gl);
+    public abstract double gpucloudletSubmit(GpuCloudlet gl);
 
     /**
      * Cancels execution of a cloudlet.
@@ -1426,7 +1427,7 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @pre $none
      * @post $none
      */
-    public abstract Cloudlet  cloudletCancel(int clId);
+    public abstract Cloudlet  gpucloudletCancel(int clId);
 
     /**
      * Pauses execution of a cloudlet.
@@ -1436,7 +1437,7 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @pre $none
      * @post $none
      */
-    public abstract boolean cloudletPause(int clId);
+    public abstract boolean gpucloudletPause(int clId);
 
     /**
      * Resumes execution of a paused cloudlet.
@@ -1446,7 +1447,7 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @pre $none
      * @post $none
      */
-    public abstract double cloudletResume(int clId);
+    public abstract double gpucloudletResume(int clId);
 
     /**
      * Processes a finished cloudlet.
@@ -1455,7 +1456,7 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @pre rgl != $null
      * @post $none
      */
-    public abstract void cloudletFinish(ResCloudlet rcl);
+    public abstract void gpucloudletFinish(ResCloudlet rcl);
 
     /**
      * Gets the status of a cloudlet.
@@ -1467,7 +1468,7 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      *
      * @todo cloudlet status should be an enum
      */
-    public abstract int getCloudletStatus(int clId);
+    public abstract int getgpuCloudletStatus(int clId);
 
     /**
      * Informs if there is any cloudlet that finished to execute in the VM managed by this scheduler.
@@ -1477,7 +1478,7 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @post $none
      * @todo the method name would be isThereFinishedCloudlets to be clearer
      */
-    public abstract boolean isFinishedCloudlets();
+    public abstract boolean gpuisFinishedCloudlets();
 
     /**
      * Returns the next cloudlet in the finished list.
@@ -1486,7 +1487,7 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @pre $none
      * @post $none
      */
-    public abstract Cloudlet getNextFinishedCloudlet();
+    public abstract Cloudlet getgpuNextFinishedCloudlet();
 
     /**
      * Returns the number of cloudlets running in the virtual machine.
@@ -1495,7 +1496,7 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @pre $none
      * @post $none
      */
-    public abstract int runningCloudlets();
+    public abstract int gpurunningCloudlets();
 
     /**
      * Returns one cloudlet to migrate to another vm.
@@ -1504,7 +1505,7 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @pre $none
      * @post $none
      */
-    public abstract Cloudlet migrateCloudlet();
+    public abstract Cloudlet gpumigrateCloudlet();
 
     /**
      * Gets total CPU utilization percentage of all cloudlets, according to CPU UtilizationModel of
@@ -1513,14 +1514,14 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @param time the time to get the current CPU utilization
      * @return total utilization
      */
-    public abstract double getTotalUtilizationOfCpu(double time);
+    public abstract double getgpuTotalUtilizationOfCpu(double time);
 
     /**
      * Gets the current requested mips.
      *
      * @return the current mips
      */
-    public abstract List<Double> getCurrentRequestedMips();
+    public abstract List<Double> getgpuCurrentRequestedMips();
 
     /**
      * Gets the total current available mips for the Cloudlet.
@@ -1533,12 +1534,10 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * the resulting value can be different in every subclass,
      * but is not supposed that each subclass returns a complete different
      * result for the same method of the superclass.
-     * In some class such as {@link NetworkCloudletSpaceSharedScheduler},
-     * the method returns the average MIPS for the available PEs,
-     * in other classes such as {@link CloudletSchedulerDynamicWorkload} it returns
+
      * the MIPS' sum of all PEs.
      */
-    public abstract double getTotalCurrentAvailableMipsForCloudlet(ResCloudlet rcl, List<Double> mipsShare);
+    public abstract double getgpuTotalCurrentAvailableMipsForCloudlet(ResCloudlet rcl, List<Double> mipsShare);
 
     /**
      * Gets the total current requested mips for a given cloudlet.
@@ -1547,7 +1546,7 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @param time the time
      * @return the total current requested mips for the given cloudlet
      */
-    public abstract double getTotalCurrentRequestedMipsForCloudlet(ResCloudlet rcl, double time);
+    public abstract double getgpuTotalCurrentRequestedMipsForCloudlet(ResCloudlet rcl, double time);
 
     /**
      * Gets the total current allocated mips for cloudlet.
@@ -1556,21 +1555,21 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @param time the time
      * @return the total current allocated mips for cloudlet
      */
-    public abstract double getTotalCurrentAllocatedMipsForCloudlet(ResCloudlet rcl, double time);
+    public abstract double getgpuTotalCurrentAllocatedMipsForCloudlet(ResCloudlet rcl, double time);
 
     /**
      * Gets the current requested ram.
      *
      * @return the current requested ram
      */
-    public abstract double getCurrentRequestedUtilizationOfRam();
+    public abstract double getgpuCurrentRequestedUtilizationOfRam();
 
     /**
      * Gets the current requested bw.
      *
      * @return the current requested bw
      */
-    public abstract double getCurrentRequestedUtilizationOfBw();
+    public abstract double getgpuCurrentRequestedUtilizationOfBw();
 
 
 
@@ -1580,8 +1579,8 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      *
      * @param currentMipsShare the new current mips share
      */
-    protected void setCurrentMipsShare(List<Double> currentMipsShare) {
-        this.currentMipsShare = currentMipsShare;
+    protected void setgpuCurrentMipsShare(List<Double> currentMipsShare) {
+        this.gpucurrentMipsShare = currentMipsShare;
     }
 
     /**
@@ -1589,7 +1588,7 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      *
      * @return the current mips share
      */
-    public List<Double> getCurrentgpuMipsShare() {
+    public List<Double> getgpuCurrentMipsShare() {
         return gpucurrentMipsShare;
     }
 
@@ -1600,8 +1599,8 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @return the cloudlet waiting list
      */
     @SuppressWarnings("unchecked")
-    public <T extends ResCloudlet> List<T> getCloudletWaitingList() {
-        return (List<T>) cloudletWaitingList;
+    public <T extends ResCloudlet> List<T> getgpuCloudletWaitingList() {
+        return (List<T>) gpucloudletWaitingList;
     }
 
     /**
@@ -1610,8 +1609,8 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @param <T> the generic type
      * @param cloudletWaitingList the cloudlet waiting list
      */
-    protected <T extends ResCloudlet> void setCloudletWaitingList(List<T> cloudletWaitingList) {
-        this.cloudletWaitingList = cloudletWaitingList;
+    protected <T extends ResCloudlet> void setgpuCloudletWaitingList(List<T> cloudletWaitingList) {
+        this.gpucloudletWaitingList = cloudletWaitingList;
     }
 
     /**
@@ -1631,8 +1630,8 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @param <T> the generic type
      * @param cloudletExecList the new cloudlet exec list
      */
-    protected <T extends ResCloudlet> void setCloudletExecList(List<T> cloudletExecList) {
-        this.cloudletExecList = cloudletExecList;
+    protected <T extends ResCloudlet> void setgpuCloudletExecList(List<T> cloudletExecList) {
+        this.gpucloudletExecList = cloudletExecList;
     }
 
     /**
@@ -1652,8 +1651,8 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @param <T> the generic type
      * @param cloudletPausedList the new cloudlet paused list
      */
-    protected <T extends ResCloudlet> void setCloudletPausedList(List<T> cloudletPausedList) {
-        this.cloudletPausedList = cloudletPausedList;
+    protected <T extends ResCloudlet> void setgpuCloudletPausedList(List<T> cloudletPausedList) {
+        this.gpucloudletPausedList = cloudletPausedList;
     }
 
     /**
@@ -1673,8 +1672,8 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @param <T> the generic type
      * @param cloudletFinishedList the new cloudlet finished list
      */
-    protected <T extends ResCloudlet> void setCloudletFinishedList(List<T> cloudletFinishedList) {
-        this.cloudletFinishedList = cloudletFinishedList;
+    protected <T extends ResCloudlet> void setgpuCloudletFinishedList(List<T> cloudletFinishedList) {
+        this.gpucloudletFinishedList = cloudletFinishedList;
     }
 
     /**
@@ -1684,8 +1683,8 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @return the cloudlet failed list.
      */
     @SuppressWarnings("unchecked")
-    public <T extends ResCloudlet> List<T>  getCloudletFailedList() {
-        return (List<T>) cloudletFailedList;
+    public <T extends ResCloudlet> List<T>  getgpuCloudletFailedList() {
+        return (List<T>) gpucloudletFailedList;
     }
 
     /**
@@ -1694,8 +1693,8 @@ public abstract class CloudletSchedulerAbstract implements CloudletScheduler {
      * @param <T> the generic type
      * @param cloudletFailedList the new cloudlet failed list.
      */
-    protected <T extends ResCloudlet> void setCloudletFailedList(List<T> cloudletFailedList) {
-        this.cloudletFailedList = cloudletFailedList;
+    protected <T extends ResCloudlet> void setgpuCloudletFailedList(List<T> cloudletFailedList) {
+        this.gpucloudletFailedList = cloudletFailedList;
     }
 
 

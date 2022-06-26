@@ -26,7 +26,6 @@ public class PerformanceVgpuSchedulerSpaceShared extends VgpuSchedulerSpaceShare
 	private PerformanceModel<VgpuScheduler, Vgpu> performanceModel;
 
 	/**
-	 * @see gpu.VgpuSchedulerSpaceShared#VgpuSchedulerSpaceShared(int,
 	 *      List, PgpuSelectionPolicy) VgpuSchedulerSpaceShared(int, List,
 	 *      PgpuSelectionPolicy)
 	 * @param performanceModel

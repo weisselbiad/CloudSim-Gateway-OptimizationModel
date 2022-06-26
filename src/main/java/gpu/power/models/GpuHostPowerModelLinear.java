@@ -1,6 +1,6 @@
 package gpu.power.models;
 
-import org.cloudbus.cloudsim.power.models.PowerModelLinear;
+import gpu.power.models.GpuPowerModelLinear;
 
 /**
  * Implements a power model where the power consumption is linear to resource
@@ -9,10 +9,9 @@ import org.cloudbus.cloudsim.power.models.PowerModelLinear;
  * @author Ahmad Siavashi
  *
  */
-public class GpuHostPowerModelLinear extends PowerModelLinear {
+public class GpuHostPowerModelLinear extends GpuPowerModelLinear {
 
 	/**
-	 * The same as {@link PowerModelLinear}, however, the host will not be power
 	 * gated when it is idle.
 	 * 
 	 * @param maxPower

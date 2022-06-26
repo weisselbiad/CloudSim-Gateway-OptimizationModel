@@ -12,7 +12,7 @@ import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.ResourceManageable;
 import org.cloudbus.cloudsim.vms.Vm;
 
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A best-effort {@link PeProvisioner} policy used by a {@link Host} to provide virtual PEs to VMs from its physical PEs:
@@ -31,7 +31,7 @@ import java.util.Objects;
  * @author Manoel Campos da Silva Filho
  * @since CloudSim Toolkit 2.0
  */
-public class PeProvisionerSimple extends ResourceProvisionerSimple implements PeProvisioner {
+public class PeProvisionerSimple extends ResourceProvisionerSimple  implements PeProvisioner {
 
     /**
      * Instantiates a new PeProvisionerSimple. The {@link Pe} it will manage will be set
@@ -46,10 +46,7 @@ public class PeProvisionerSimple extends ResourceProvisionerSimple implements Pe
      *
      * @param pe
      */
-    public PeProvisionerSimple(final Pe pe){
-        super(pe, Vm::getProcessor);
-        pe.setPeProvisioner(this);
-    }
+
 
     @Override
     public void setPe(final Pe pe){
@@ -64,6 +61,9 @@ public class PeProvisionerSimple extends ResourceProvisionerSimple implements Pe
         return getTotalAllocatedResource() / (double)getCapacity();
     }
 
+
+
+
     /**
      * Checks if the {@link Pe} has a {@link PeProvisioner} assigned that is
      * different from the current one.
@@ -77,4 +77,8 @@ public class PeProvisionerSimple extends ResourceProvisionerSimple implements Pe
                pe.getPeProvisioner() != PeProvisioner.NULL &&
                !pe.getPeProvisioner().equals(this);
     }
+
+
+
+
 }

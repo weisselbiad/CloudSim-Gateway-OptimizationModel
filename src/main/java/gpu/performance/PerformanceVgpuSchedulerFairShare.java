@@ -24,7 +24,6 @@ public class PerformanceVgpuSchedulerFairShare extends VgpuSchedulerFairShare im
 	private PerformanceModel<VgpuScheduler, Vgpu> performanceModel;
 
 	/**
-	 * @see VgpuSchedulerFairShare#VgpuSchedulerFairShare(int,
 	 *      List, PgpuSelectionPolicy) VgpuSchedulerFairShare(int, List,
 	 *      PgpuSelectionPolicy)
 	 * 

@@ -19,7 +19,6 @@ public class VgpuSchedulerTimeShared extends VgpuScheduler {
 	/**
 	 * Instantiates a new vgpu time-shared scheduler.
 	 * 
-	 * @param pgpulist the list of pgpus of the video card where the VgpuScheduler
 	 *                 is associated to.
 	 */
 	public VgpuSchedulerTimeShared(String videoCardType, List<Pgpu> pgpuList, PgpuSelectionPolicy pgpuSelectionPolicy) {
@@ -33,7 +32,7 @@ public class VgpuSchedulerTimeShared extends VgpuScheduler {
 		pgpu.getBwProvisioner().deallocateBwForVgpu(vgpu);
 		getPgpuVgpuMap().get(pgpu).remove(vgpu);
 		for (Pe pe : getVgpuPeMap().get(vgpu)) {
-			pe.getPeProvisioner().deallocateMipsForVm(vgpu.getVm());
+			pe.getPeProvisioner().deallocateResourceForVm(vgpu.getVm());
 		}
 		getVgpuPeMap().remove(vgpu);
 		getMipsMap().remove(vgpu);
@@ -55,7 +54,7 @@ public class VgpuSchedulerTimeShared extends VgpuScheduler {
 		}
 		List<Pe> pgpuPes = pgpu.getPeList();
 		for (int i = 0; i < mipsShare.size(); i++) {
-			if (mipsShare.get(i) > pgpuPes.get(i).getPeProvisioner().getAvailableMips()) {
+			if (mipsShare.get(i) > pgpuPes.get(i).getPeProvisioner().getAvailableResource()) {
 				return false;
 			}
 		}
@@ -74,7 +73,7 @@ public class VgpuSchedulerTimeShared extends VgpuScheduler {
 		List<Pe> selectedPes = new ArrayList<Pe>();
 		for (int i = 0; i < mipsShare.size(); i++) {
 			Pe pe = selectedPgpuPes.get(i);
-			pe.getPeProvisioner().allocateMipsForVm(vgpu.getVm(), mipsShare.get(i));
+			pe.getPeProvisioner().allocateResourceForVm(vgpu.getVm(), mipsShare.get(i));
 			selectedPes.add(pe);
 		}
 		getPgpuVgpuMap().get(pgpu).add(vgpu);

@@ -29,14 +29,14 @@ public class GpuCloudletSchedulerTimeShared extends CloudletSchedulerTimeShared 
 	}
 
 	@Override
-	public double cloudletSubmit(Cloudlet cloudlet, double fileTransferTime) {
+	public double gpucloudletSubmit(GpuCloudlet cloudlet, double fileTransferTime) {
 		ResGpuCloudlet rcl = new ResGpuCloudlet((GpuCloudlet) cloudlet);
-		rcl.setStatus(Cloudlet.Status.INEXEC);
+		rcl.setCloudletStatus(GpuCloudlet.INEXEC);
 		for (int i = 0; i < cloudlet.getNumberOfPes(); i++) {
 			rcl.setMachineAndPeId(0, i);
 		}
 
-		getCloudletExecList().add(rcl);
+		getgpuCloudletExecList().add(rcl);
 
 		// use the current capacity to estimate the extra amount of
 		// time to file transferring. It must be added to the cloudlet length
@@ -48,16 +48,16 @@ public class GpuCloudletSchedulerTimeShared extends CloudletSchedulerTimeShared 
 	}
 
 	@Override
-	public void cloudletFinish(CloudletExecution rcl) {
+	public void gpucloudletFinish(ResCloudlet rcl) {
 		ResGpuCloudlet rgcl = (ResGpuCloudlet) rcl;
 		if (!rgcl.hasGpuTask()) {
-			super.cloudletFinish(rcl);
+			gpucloudletFinish(rcl);
 		} else {
 			GpuTask gt = rgcl.getGpuTask();
 			getGpuTaskList().add(gt);
 			try {
-				rgcl.setCloudletStatus(GpuCloudlet.Status.PAUSED);
-				getCloudletPausedList().add(rgcl);
+				rgcl.setCloudletStatus(GpuCloudlet.PAUSED);
+				getgpuCloudletPausedList().add(rgcl);
 			} catch (Exception e) {
 				e.printStackTrace();
 				((ResGpuCloudlet) rcl).simulation.abort();
@@ -88,10 +88,10 @@ public class GpuCloudletSchedulerTimeShared extends CloudletSchedulerTimeShared 
 
 	@Override
 	public boolean notifyGpuTaskCompletion(GpuTask gt) {
-		for (CloudletExecution rcl : getCloudletPausedList()) {
+		for (ResCloudlet rcl : getgpuCloudletPausedList()) {
 			ResGpuCloudlet rgcl = (ResGpuCloudlet) rcl;
 			if (rgcl.getGpuTask() == gt) {
-				rgcl.setCloudletStatus(GpuCloudlet.Status.SUCCESS);
+				rgcl.setCloudletStatus(GpuCloudlet.SUCCESS);
 				rgcl.finalizeCloudlet();
 				return true;
 			}

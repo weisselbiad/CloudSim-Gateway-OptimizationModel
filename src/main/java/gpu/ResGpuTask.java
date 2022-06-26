@@ -4,6 +4,7 @@ import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import gpu.Consts;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.core.Simulation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -251,7 +252,7 @@ public class ResGpuTask {
 
 		boolean success = true;
 		try {
-			double clock = CloudSim.clock();   // gets the current clock
+			double clock = task.getSimulation().clock();   // gets the current clock
 
 			// sets GpuTask's current status
 			task.setTaskStatus(status);
@@ -370,7 +371,7 @@ public class ResGpuTask {
 	 */
 	public void finalizeTask() {
 		// Sets the wall clock time and actual GPU time
-		double wallClockTime = .clock() - arrivalTime;
+		double wallClockTime = task.getSimulation().clock() - arrivalTime;
 		task.setExecParam(wallClockTime, totalCompletionTime);
 
 		long finished = taskFinishedSoFar > getTaskTotalLength() * Consts.MILLION ? getTaskTotalLength()
@@ -464,6 +465,10 @@ public class ResGpuTask {
 	 */
 	public String getUid() {
 		return getGpuTask().getCloudlet().getUserId() + "-" + getTaskId();
+	}
+
+	public Simulation getSimulation(){
+		return task.getSimulation();
 	}
 
 }

@@ -33,7 +33,7 @@ public class Pgpu {
 	/**
 	 * List of Pgpu's PEs
 	 */
-	private List<Pe> peList;
+	private List<GpuPe> peList;
 	/**
 	 * GPU's GDDRAM provisioner
 	 */
@@ -49,7 +49,7 @@ public class Pgpu {
 	 * @param pes
 	 *            list of Pgpu's processing elements
 	 */
-	public Pgpu(int id, String type, List<Pe> pes, GpuGddramProvisioner gddramProvisioner, GpuBwProvisioner bwProvisioner) {
+	public Pgpu(int id, String type, List<GpuPe> pes, GpuGddramProvisioner gddramProvisioner, GpuBwProvisioner bwProvisioner) {
 		super();
 		setId(id);
 		setType(type);
@@ -66,11 +66,11 @@ public class Pgpu {
 		this.id = id;
 	}
 
-	public List<Pe> getPeList() {
+	public List<GpuPe> getPeList() {
 		return peList;
 	}
 
-	protected void setPeList(List<Pe> peList) {
+	protected void setPeList(List<GpuPe> peList) {
 		this.peList = peList;
 	}
 

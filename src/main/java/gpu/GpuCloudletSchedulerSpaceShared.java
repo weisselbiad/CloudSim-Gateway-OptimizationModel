@@ -40,20 +40,20 @@ public class GpuCloudletSchedulerSpaceShared extends CloudletSchedulerSpaceShare
 	}
 
 	@Override
-	public double cloudletSubmit(Cloudlet cloudlet, double fileTransferTime) {
+	public double gpucloudletSubmit(GpuCloudlet cloudlet, double fileTransferTime) {
 		// it can go to the exec list
 		if ((currentCpus - usedPes) >= cloudlet.getNumberOfPes()) {
 			ResGpuCloudlet rgcl = new ResGpuCloudlet((GpuCloudlet) cloudlet);
-			rgcl.setStatus(Cloudlet.Status.INEXEC);
+			rgcl.setCloudletStatus(GpuCloudlet.INEXEC);
 			for (int i = 0; i < cloudlet.getNumberOfPes(); i++) {
 				rgcl.setMachineAndPeId(0, i);
 			}
-			getCloudletExecList().add(rgcl);
+			getgpuCloudletExecList().add(rgcl);
 			usedPes += cloudlet.getNumberOfPes();
 		} else {// no enough free PEs: go to the waiting queue
 			ResGpuCloudlet rgcl = new ResGpuCloudlet((GpuCloudlet) cloudlet);
-			rgcl.setStatus(Cloudlet.Status.QUEUED);
-			getCloudletWaitingList().add(rgcl);
+			rgcl.setCloudletStatus(GpuCloudlet.QUEUED);
+			getgpuCloudletWaitingList().add(rgcl);
 			return 0.0;
 		}
 
@@ -80,16 +80,16 @@ public class GpuCloudletSchedulerSpaceShared extends CloudletSchedulerSpaceShare
 	}
 
 	@Override
-	public void cloudletFinish(ResCloudlet rcl) {
+	public void gpucloudletFinish(ResCloudlet rcl) {
 		ResGpuCloudlet rgcl = (ResGpuCloudlet) rcl;
 		if (!rgcl.hasGpuTask()) {
-			super.cloudletFinish(rcl);
+			gpucloudletFinish(rcl);
 		} else {
 			GpuTask gt = rgcl.getGpuTask();
 			getGpuTaskList().add(gt);
 			try {
-				rgcl.setCloudletStatus(GpuCloudlet.Status.PAUSED);
-				getCloudletPausedList().add(rgcl);
+				rgcl.setCloudletStatus(GpuCloudlet.PAUSED);
+				getgpuCloudletPausedList().add(rgcl);
 			} catch (Exception e) {
 				e.printStackTrace();
 				((ResGpuCloudlet) rcl).simulation.abort();
@@ -121,10 +121,10 @@ public class GpuCloudletSchedulerSpaceShared extends CloudletSchedulerSpaceShare
 
 	@Override
 	public boolean notifyGpuTaskCompletion(GpuTask gt) {
-		for (CloudletExecution rcl : getCloudletPausedList()) {
+		for (ResCloudlet rcl : getgpuCloudletPausedList()) {
 			ResGpuCloudlet rgcl = (ResGpuCloudlet) rcl;
 			if (rgcl.getGpuTask() == gt) {
-				rgcl.setStatus(GpuCloudlet.Status.SUCCESS);
+				rgcl.setCloudletStatus(GpuCloudlet.SUCCESS);
 				rgcl.finalizeCloudlet();
 				return true;
 			}

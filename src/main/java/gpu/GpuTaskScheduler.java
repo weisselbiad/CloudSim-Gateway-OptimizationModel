@@ -1,5 +1,6 @@
 package gpu;
 
+import gpu.provisioners.GpuBwProvisioner;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.Simulation;
 
@@ -51,6 +52,7 @@ public abstract class GpuTaskScheduler {
 	 * @post $none
 	 */
 	public GpuTaskScheduler() {
+
 		setPreviousTime(0.0);
 		taskWaitingList = new ArrayList<ResGpuTask>();
 		taskExecList = new ArrayList<ResGpuTask>();
@@ -403,6 +405,10 @@ public abstract class GpuTaskScheduler {
 	 */
 	protected <T extends ResGpuTask> void setTaskFailedList(List<T> taskFailedList) {
 		this.taskFailedList = taskFailedList;
+
+
 	}
+
+
 
 }

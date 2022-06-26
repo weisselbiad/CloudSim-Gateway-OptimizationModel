@@ -43,7 +43,7 @@ public class VgpuSchedulerSpaceShared extends VgpuScheduler {
 		pgpu.getBwProvisioner().deallocateBwForVgpu(vgpu);
 		getPgpuVgpuMap().get(pgpu).remove(vgpu);
 		for (Pe pe : getVgpuPeMap().get(vgpu)) {
-			pe.getPeProvisioner().deallocateMipsForVm(vgpu.getVm());
+			pe.getPeProvisioner().deallocateResourceForVm(vgpu.getVm());
 		}
 		getVgpuPeMap().remove(vgpu);
 		getMipsMap().remove(vgpu);
@@ -65,7 +65,7 @@ public class VgpuSchedulerSpaceShared extends VgpuScheduler {
 			@Override
 			public boolean evaluate(Object arg) {
 				Pe pe = (Pe) arg;
-				if (pe.getPeProvisioner().getTotalAllocatedMips() == 0) {
+				if (pe.getPeProvisioner().getTotalAllocatedResource() == 0) {
 					return true;
 				}
 				return false;
@@ -77,7 +77,7 @@ public class VgpuSchedulerSpaceShared extends VgpuScheduler {
 		}
 
 		for (int i = 0; i < mipsShare.size(); i++) {
-			if (mipsShare.get(i) > pgpuPes.get(i).getPeProvisioner().getAvailableMips()) {
+			if (mipsShare.get(i) > pgpuPes.get(i).getPeProvisioner().getAvailableResource()) {
 				return false;
 			}
 		}
@@ -102,7 +102,7 @@ public class VgpuSchedulerSpaceShared extends VgpuScheduler {
 			@Override
 			public boolean evaluate(Object arg) {
 				Pe pe = (Pe) arg;
-				if (pe.getPeProvisioner().getTotalAllocatedMips() == 0) {
+				if (pe.getPeProvisioner().getTotalAllocatedResource() == 0) {
 					return true;
 				}
 				return false;
@@ -111,7 +111,7 @@ public class VgpuSchedulerSpaceShared extends VgpuScheduler {
 		List<Pe> selectedPes = new ArrayList<Pe>();
 		for (int i = 0; i < mipsShare.size(); i++) {
 			Pe pe = selectedPgpuPes.get(i);
-			pe.getPeProvisioner().allocateMipsForVm(vm, mipsShare.get(i));
+			pe.getPeProvisioner().allocateResourceForVm(vm, mipsShare.get(i));
 			selectedPes.add(pe);
 		}
 		getPgpuVgpuMap().get(pgpu).add(vgpu);

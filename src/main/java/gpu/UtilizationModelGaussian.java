@@ -1,10 +1,11 @@
 package gpu;
 
+import org.cloudbus.cloudsim.core.Simulation;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelAbstract;
 import java.util.Random;
 
-public class UtilizationModelGaussian implements UtilizationModel{
+public class UtilizationModelGaussian implements GpuUtilizationModel{
 
 	private Random random;
 	private double mean;
@@ -30,10 +31,14 @@ public class UtilizationModelGaussian implements UtilizationModel{
 		this(0, 1);
 	}
 
+
+
+
 	@Override
 	public double getUtilization(double time) {
 		return getRandom().nextGaussian() * getStd() + getMean();
 	}
+
 
 	public Random getRandom() {
 		return random;

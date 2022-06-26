@@ -38,7 +38,7 @@ public class InterferenceModelGpuMemory implements InterferenceModel<ResGpuTask>
 		}
 		double totalMemoryUtilization = 0.0;
 		for (ResGpuTask rgt : execList) {
-			totalMemoryUtilization += rgt.getGpuTask().getUtilizationOfGddram(CloudSim.clock());
+			totalMemoryUtilization += rgt.getGpuTask().getUtilizationOfGddram(rcl.getSimulation().clock());
 		}
 		if (totalMemoryUtilization <= 1) {
 			return allocatedMips;

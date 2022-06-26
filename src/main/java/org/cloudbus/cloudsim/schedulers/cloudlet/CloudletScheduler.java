@@ -7,6 +7,7 @@
  */
 package org.cloudbus.cloudsim.schedulers.cloudlet;
 
+import gpu.GpuCloudlet;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletExecution;
@@ -318,4 +319,14 @@ public interface CloudletScheduler extends Serializable {
      * @return true if the Listener was removed, false otherwise
      */
     boolean removeOnCloudletResourceAllocationFail(EventListener<CloudletResourceAllocationFailEventInfo> listener);
+
+    double updategpuVmProcessing(double currentTime, List<Double> mipsShare);
+
+    double gpucloudletSubmit(GpuCloudlet cl, double fileTransferTime);
+
+    Cloudlet gpucloudletCancel(int cloudlet);
+
+    boolean gpucloudletPause(int cloudlet);
+
+    double gpucloudletResume(int cloudlet);
 }

@@ -21,7 +21,7 @@ import org.cloudbus.cloudsim.core.CloudSim;
 public class ResCloudlet {
 
     /** The Cloudlet object. */
-    private final Cloudlet cloudlet;
+    private final GpuCloudlet cloudlet;
 
     /** The Cloudlet arrival time for the first time. */
     private double arrivalTime;
@@ -79,14 +79,12 @@ public class ResCloudlet {
 
     /**
      * Allocates a new ResCloudlet object upon the arrival of a Cloudlet object. The arriving time
-     * is determined by {@link gridsim.CloudSim#clock()}.
      *
      * @param cloudlet a cloudlet object
-     * @see gridsim.CloudSim#clock()
      * @pre cloudlet != null
      * @post $none
      */
-    public ResCloudlet(Cloudlet cloudlet) {
+    public ResCloudlet(GpuCloudlet cloudlet) {
         // when a new ResCloudlet is created, then it will automatically set
         // the submission time and other properties, such as remaining length
         this.cloudlet = cloudlet;
@@ -101,7 +99,6 @@ public class ResCloudlet {
     /**
      * Allocates a new ResCloudlet object upon the arrival of a Cloudlet object. Use this
      * constructor to store reserved Cloudlets, i.e. Cloudlets that done reservation before. The
-     * arriving time is determined by {@link gridsim.CloudSim#clock()}.
      *
      * @param cloudlet a cloudlet object
      * @param startTime a reservation start time. Can also be interpreted as starting time to
@@ -109,14 +106,13 @@ public class ResCloudlet {
      * @param duration a reservation duration time. Can also be interpreted as how long to execute
      *            this Cloudlet.
      * @param reservID a reservation ID that owns this Cloudlet
-     * @see gridsim.CloudSim#clock()
      * @pre cloudlet != null
      * @pre startTime > 0
      * @pre duration > 0
      * @pre reservID > 0
      * @post $none
      */
-    public ResCloudlet(Cloudlet cloudlet, long startTime, int duration, int reservID) {
+    public ResCloudlet(GpuCloudlet cloudlet, long startTime, int duration, int reservID) {
         this.cloudlet = cloudlet;
         this.startTime = startTime;
         reservId = reservID;
@@ -259,9 +255,9 @@ public class ResCloudlet {
      * @pre status >= 0
      * @post $none
      */
-    public boolean setCloudletStatus(Cloudlet.Status status) {
+    public boolean setCloudletStatus(int status) {
         // gets Cloudlet's previous status
-        Cloudlet.Status prevStatus = cloudlet.getStatus();
+        int prevStatus = cloudlet.getCloudletStatus();
 
         // if the status of a Cloudlet is the same as last time, then ignore
         if (prevStatus == status) {
@@ -273,12 +269,12 @@ public class ResCloudlet {
             double clock = this.simulation.clock();   // gets the current clock
 
             // sets Cloudlet's current status
-            cloudlet.setStatus(status);
+            cloudlet.setCloudletStatus(status);
 
             // if a previous Cloudlet status is INEXEC
-            if (prevStatus == Cloudlet.Status.INEXEC) {
+            if (prevStatus == GpuCloudlet.INEXEC) {
                 // and current status is either CANCELED, PAUSED or SUCCESS
-                if (status == Cloudlet.Status.CANCELED || status == Cloudlet.Status.PAUSED || status == Cloudlet.Status.SUCCESS) {
+                if (status == GpuCloudlet.CANCELED || status == GpuCloudlet.PAUSED || status == GpuCloudlet.SUCCESS) {
                     // then update the Cloudlet completion time
                     totalCompletionTime += (clock - startExecTime);
                     index = 0;
@@ -286,14 +282,14 @@ public class ResCloudlet {
                 }
             }
 
-            if (prevStatus == Cloudlet.Status.RESUMED && status == Cloudlet.Status.SUCCESS) {
+            if (prevStatus ==GpuCloudlet.RESUMED && status == GpuCloudlet.SUCCESS) {
                 // then update the Cloudlet completion time
                 totalCompletionTime += (clock - startExecTime);
                 return true;
             }
 
             // if a Cloudlet is now in execution
-            if (status == Cloudlet.Status.INEXEC || (prevStatus == Cloudlet.Status.PAUSED && status == Cloudlet.Status.RESUMED)) {
+            if (status == GpuCloudlet.INEXEC || (prevStatus == GpuCloudlet.PAUSED && status == GpuCloudlet.RESUMED)) {
                 startExecTime = clock;
                 cloudlet.setExecStartTime(startExecTime);
             }
@@ -310,7 +306,7 @@ public class ResCloudlet {
      *
      * @return Cloudlet's execution start time
      * @pre $none
-     * @post $none
+     * @post $noneg
      */
     public double getExecStartTime() {
         return cloudlet.getExecStartTime();
@@ -342,7 +338,6 @@ public class ResCloudlet {
      *
      * @todo the machineId param and attribute mean a VM or a PM id?
      * Only the term machine is ambiguous.
-     * At {@link  CloudletSchedulerTimeShared#cloudletSubmit(org.cloudbus.cloudsim.cloudlets.Cloudlet)}
      * it is stated it is a VM.
      */
     public void setMachineAndPeId(int machineId, int peId) {
@@ -523,8 +518,12 @@ public class ResCloudlet {
      * @pre $none
      * @post $none
      */
-    public Cloudlet.Status getCloudletStatus() {
+ /*   public Cloudlet.Status getCloudletStatus() {
         return cloudlet.getStatus();
+    }*/
+
+    public int getgpuCloudletStatus() {
+        return cloudlet.getgpuStatus();
     }
 
     /**

@@ -321,7 +321,16 @@ public class HostSimple implements Host {
         setId(id);
 
     }
+    public HostSimple( ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner, long storage,
+                        VmScheduler vmScheduler) {
+        setVmScheduler(vmScheduler);
+        setDefaultStorageCapacity(storage);
+        setBwProvisioner(bwProvisioner);
+        setRamProvisioner(ramProvisioner);
+        setBwProvisioner(bwProvisioner);
+        setId(id);
 
+    }
 
     /**
      * Gets the Default RAM capacity (in MB) for creating Hosts.

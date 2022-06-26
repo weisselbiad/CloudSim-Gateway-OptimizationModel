@@ -1,5 +1,7 @@
 package gpu.provisioners;
 
+import gpu.GpuVm;
+import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.vms.Vm;
 
 /**
@@ -13,7 +15,7 @@ import org.cloudbus.cloudsim.vms.Vm;
  * @author Anton Beloglazov
  * @since CloudSim Toolkit 1.0
  */
-public abstract class RamProvisioner {
+public abstract class RamProvisioner extends ResourceProvisionerSimple {
 
     /** The total ram capacity from the host that the provisioner can allocate to VMs. */
     private int ram;
@@ -45,7 +47,7 @@ public abstract class RamProvisioner {
      * @pre $none
      * @post $none
      */
-    public abstract boolean allocateRamForVm(Vm vm, int ram);
+    public abstract boolean allocateRamForVm(GpuVm vm, int ram);
 
     /**
      * Gets the allocated RAM for a given VM.
@@ -54,7 +56,7 @@ public abstract class RamProvisioner {
      *
      * @return the allocated RAM for the vm
      */
-    public abstract int getAllocatedRamForVm(Vm vm);
+    public abstract int getAllocatedRamForVm(GpuVm vm);
 
     /**
      * Releases RAM used by a VM.
@@ -64,7 +66,7 @@ public abstract class RamProvisioner {
      * @pre $none
      * @post none
      */
-    public abstract void deallocateRamForVm(Vm vm);
+    public abstract void deallocateRamForVm(GpuVm vm);
 
     /**
      * Releases RAM used by all VMs.
@@ -86,7 +88,7 @@ public abstract class RamProvisioner {
      *
      * @return true, if is suitable for vm
      */
-    public abstract boolean isSuitableForVm(Vm vm, int ram);
+    public abstract boolean isSuitableForVm(GpuVm vm, int ram);
 
     /**
      * Gets the ram capacity.

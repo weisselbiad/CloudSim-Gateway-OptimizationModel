@@ -1,5 +1,7 @@
 package gpu.provisioners;
 
+import gpu.GpuVm;
+import org.cloudbus.cloudsim.provisioners.ResourceProvisionerSimple;
 import org.cloudbus.cloudsim.vms.Vm;
 
 /**
@@ -14,7 +16,7 @@ import org.cloudbus.cloudsim.vms.Vm;
  * @author Anton Beloglazov
  * @since CloudSim Toolkit 1.0
  */
-public abstract class BwProvisioner {
+public abstract class BwProvisioner extends ResourceProvisionerSimple {
 
     /** The total bandwidth capacity from the host that the provisioner can allocate to VMs. */
     private long bw;
@@ -46,7 +48,7 @@ public abstract class BwProvisioner {
      * @pre $none
      * @post $none
      */
-    public abstract boolean allocateBwForVm(Vm vm, long bw);
+    public abstract boolean allocateBwForVm(GpuVm vm, long bw);
 
     /**
      * Gets the allocated BW for VM.
@@ -55,7 +57,7 @@ public abstract class BwProvisioner {
      *
      * @return the allocated BW for vm
      */
-    public abstract long getAllocatedBwForVm(Vm vm);
+    public abstract long getAllocatedBwForVm(GpuVm vm);
 
     /**
      * Releases BW used by a VM.
@@ -65,7 +67,7 @@ public abstract class BwProvisioner {
      * @pre $none
      * @post none
      */
-    public abstract void deallocateBwForVm(Vm vm);
+    public abstract void deallocateBwForVm(GpuVm vm);
 
     /**
      * Releases BW used by all VMs.
@@ -87,7 +89,7 @@ public abstract class BwProvisioner {
      *
      * @return true, if is suitable for vm
      */
-    public abstract boolean isSuitableForVm(Vm vm, long bw);
+    public abstract boolean isSuitableForVm(GpuVm vm, long bw);
 
     /**
      * Gets the bw capacity.

@@ -1,8 +1,11 @@
 package gpu;
 
+import org.cloudbus.cloudsim.resources.ResourceManageable;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletScheduler;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
+
+import java.util.List;
 
 /**
  * 
@@ -26,7 +29,8 @@ public class GpuVm extends VmSimple implements Vm {
 
 	/** The Vgpu associated with the Vm */
 	private Vgpu vgpu;
-
+	private long currentAllocatedBw;
+	private int currentAllocatedRam;
 	/**
 	 * @see Vm
 	 *
@@ -44,6 +48,8 @@ public class GpuVm extends VmSimple implements Vm {
 		setCloudletScheduler(cloudletScheduler);
 		setType(type);
 		setArrivalTime(0.0);
+		setCurrentAllocatedBw(0);
+		setCurrentAllocatedRam(0);
 	}
 
 	/**
@@ -90,5 +96,34 @@ public class GpuVm extends VmSimple implements Vm {
 	public void setArrivalTime(double arrivalTime) {
 		this.arrivalTime = arrivalTime;
 	}
+
+	public double updategpuVmProcessing(double currentTime, List<Double> mipsShare) {
+		if (mipsShare != null) {
+			return getCloudletScheduler().updategpuVmProcessing(currentTime, mipsShare);
+		}
+		return 0.0;
+	}
+	public void setCurrentAllocatedBw(long currentAllocatedBw) {
+		this.currentAllocatedBw = currentAllocatedBw;
+	}
+	public long getCurrentAllocatedBw() {
+		return currentAllocatedBw;
+	}
+
+	public int getCurrentAllocatedRam() {
+		return currentAllocatedRam;
+	}
+
+	/**
+	 * Sets the current allocated ram.
+	 *
+	 * @param currentAllocatedRam the new current allocated ram
+	 */
+	public void setCurrentAllocatedRam(int currentAllocatedRam) {
+		this.currentAllocatedRam = currentAllocatedRam;
+	}
+
+
+
 
 }

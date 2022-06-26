@@ -18,6 +18,7 @@ import java.util.Objects;
  */
 public class GpuCloudlet extends CloudletAbstract implements Cloudlet {
 	private int userId;
+	private double finishTime;
 
 	/**
 	 * A tag associated with the GpuCloudlet. A tag can be used to describe the
@@ -29,6 +30,62 @@ public class GpuCloudlet extends CloudletAbstract implements Cloudlet {
 	 * The GPU part of the application.
 	 */
 	private GpuTask gpuTask;
+
+
+	// //////////////////////////////////////////
+	// Below are CONSTANTS attributes
+	/**
+	 * The Cloudlet has been created and added to the CloudletList object.
+	 */
+	public static final int CREATED = 0;
+
+	/**
+	 * The Cloudlet has been assigned to a CloudResource object to be executed
+	 * as planned.
+	 */
+	public static final int READY = 1;
+
+	/**
+	 * The Cloudlet has moved to a Cloud node.
+	 */
+	public static final int QUEUED = 2;
+
+	/**
+	 * The Cloudlet is in execution in a Cloud node.
+	 */
+	public static final int INEXEC = 3;
+
+	/**
+	 * The Cloudlet has been executed successfully.
+	 */
+	public static final int SUCCESS = 4;
+
+	/**
+	 * The Cloudlet has failed.
+	 */
+	public static final int FAILED = 5;
+
+	/**
+	 * The Cloudlet has been canceled.
+	 */
+	public static final int CANCELED = 6;
+
+	/**
+	 * The Cloudlet has been paused. It can be resumed by changing the status
+	 * into <tt>RESUMED</tt>.
+	 */
+	public static final int PAUSED = 7;
+
+	/**
+	 * The Cloudlet has been resumed from <tt>PAUSED</tt> state.
+	 */
+	public static final int RESUMED = 8;
+
+	/**
+	 * The cloudlet has failed due to a resource failure.
+	 */
+	public static final int FAILED_RESOURCE_UNAVAILABLE = 9;
+	private int status;
 
 	/**
 	 * Create a GpuCloudlet. {@link Cloudlet} represents the host portion of the
@@ -54,6 +111,9 @@ public class GpuCloudlet extends CloudletAbstract implements Cloudlet {
 		setUtilizationModelRam(utilizationModelRam);
 		setUtilizationModelBw(utilizationModelBw);
 		setGpuTask(gpuTask);
+		setgpuStatus(CREATED);
+		finishTime = -1.0;    // meaning this Cloudlet hasn't finished yet
+
 	}
 
 	public GpuCloudlet(long id, long cloudletLength, int pesNumber, long cloudletFileSize,
@@ -67,6 +127,9 @@ public class GpuCloudlet extends CloudletAbstract implements Cloudlet {
 		setUtilizationModelRam(utilizationModelRam);
 		setUtilizationModelBw(utilizationModelBw);
 		setGpuTask(gpuTask);
+		setgpuStatus(CREATED);
+		finishTime = -1.0;    // meaning this Cloudlet hasn't finished yet
+
 	}
 
 
@@ -127,4 +190,95 @@ public class GpuCloudlet extends CloudletAbstract implements Cloudlet {
 	public int getUserId() {
 		return userId;
 	}
+	@Override
+	public int getgpuStatus() {
+		return status;
+	}
+
+	protected void setgpuStatus(int status) {
+		this.status = status;
+	}
+	public static String getStatusString(final int status) {
+		String statusString = null;
+		switch (status) {
+			case GpuCloudlet.CREATED:
+				statusString = "Created";
+				break;
+
+			case GpuCloudlet.READY:
+				statusString = "Ready";
+				break;
+
+			case GpuCloudlet.INEXEC:
+				statusString = "InExec";
+				break;
+
+			case GpuCloudlet.SUCCESS:
+				statusString = "Success";
+				break;
+
+			case GpuCloudlet.QUEUED:
+				statusString = "Queued";
+				break;
+
+			case GpuCloudlet.FAILED:
+				statusString = "Failed";
+				break;
+
+			case GpuCloudlet.CANCELED:
+				statusString = "Canceled";
+				break;
+
+			case GpuCloudlet.PAUSED:
+				statusString = "Paused";
+				break;
+
+			case GpuCloudlet.RESUMED:
+				statusString = "Resumed";
+				break;
+
+			case GpuCloudlet.FAILED_RESOURCE_UNAVAILABLE:
+				statusString = "Failed_resource_unavailable";
+				break;
+
+			default:
+				break;
+		}
+
+		return statusString;
+	}
+	public void setCloudletStatus(final int newStatus) throws Exception {
+		// if the new status is same as current one, then ignore the rest
+		if (status == newStatus) {
+			return;
+		}
+
+		// throws an exception if the new status is outside the range
+		if (newStatus < GpuCloudlet.CREATED || newStatus > GpuCloudlet.FAILED_RESOURCE_UNAVAILABLE) {
+			throw new Exception(
+					"Cloudlet.setCloudletStatus() : Error - Invalid integer range for Cloudlet status.");
+		}
+
+		if (newStatus == GpuCloudlet.SUCCESS) {
+			finishTime = getSimulation().clock();
+		}
+
+
+
+		setgpuStatus(newStatus);
+	}
+	public int getCloudletStatus() {
+		return status;
+	}
+	public String getCloudletStatusString() {
+		return GpuCloudlet.getStatusString(status);
+	}
+
+	public double getFinishTime() {
+		return finishTime;
+	}
+	public double getActualCPUTime() {
+		return getFinishTime() - getExecStartTime();
+	}
+
 }

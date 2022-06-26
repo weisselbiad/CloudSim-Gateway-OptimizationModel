@@ -39,7 +39,6 @@ public class PowerGpuDatacenter extends GpuDatacenter {
 	private boolean powerSavingMode;
 
 	/**
-	 * @see gpu.GpuDatacenter#GpuDatacenter(String,
 	 *      DatacenterCharacteristics, VmAllocationPolicy, List, double)
 	 *      GpuDatacenter(String, DatacenterCharacteristics, VmAllocationPolicy,
 	 *      List, double)
@@ -102,7 +101,7 @@ public class PowerGpuDatacenter extends GpuDatacenter {
 				&& simulation.select(ev.getSource(), new PredicateType(CloudSimTag.GPU_VM_DATACENTER_POWER_EVENT)) == null) {
 			schedule(ev.getSource(), getSchedulingInterval(), CloudSimTag.GPU_VM_DATACENTER_POWER_EVENT);
 		}
-		super.processgpuEvent(ev);
+		super.processEvent(ev);
 	}
 
 	@Override
