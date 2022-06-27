@@ -1,12 +1,13 @@
 package gpu;
 
+import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
 import java.util.List;
 import java.util.Map;
 
-public abstract class GpuVmAllocationPolicyAbstract {
+public abstract class GpuVmAllocationPolicyAbstract  {
     /*
      * Title:        CloudSim Toolkit
      * Description:  CloudSim (Cloud Simulation) Toolkit for Modeling and Simulation of Clouds

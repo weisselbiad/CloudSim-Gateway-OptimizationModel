@@ -6,6 +6,10 @@
  */
 package org.cloudbus.cloudsim.schedulers.vm;
 
+import gpu.GpuPe;
+import gpu.GpuVm;
+import gpu.core.Log;
+import gpu.core.PeList;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.resources.Pe;
@@ -13,7 +17,10 @@ import org.cloudbus.cloudsim.schedulers.MipsShare;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
@@ -29,6 +36,33 @@ import static java.util.stream.Collectors.toList;
  */
 public abstract class VmSchedulerAbstract implements VmScheduler {
 
+    /** The PEs of the host where the scheduler is associated. */
+    private List<? extends Pe> peList;
+
+    /** The map of VMs to PEs, where each key is a VM id and each value is
+     * a list of PEs allocated to that VM. */
+    private Map<String, List<Pe>> peMap;
+
+    /** The map of VMs to MIPS, were each key is a VM id and each value is
+     * the currently allocated MIPS from the respective PE to that VM.
+     * The PEs where the MIPS capacity is get are defined
+     * in the {@link #peMap}.
+     *
+     * @todo subclasses such as {@link VmSchedulerTimeShared} have an
+     * may be confused with this one. So, the name of this one
+     * may be changed to something such as allocatedMipsMap
+     */
+    private Map<String, List<Double>> mipsMap;
+
+    /** The total available MIPS that can be allocated on demand for VMs. */
+    private double availableMips;
+
+    /** The VMs migrating in the host (arriving). It is the list of VM ids */
+    private List<String> vmsMigratingIn;
+
+    /** The VMs migrating out the host (departing). It is the list of VM ids */
+    private List<String> vmsMigratingOut;
+
     /**
      * @see #getHost()
      */
@@ -37,7 +71,7 @@ public abstract class VmSchedulerAbstract implements VmScheduler {
     /**
      * @see #getVmMigrationCpuOverhead()
      */
-    private final double vmMigrationCpuOverhead;
+    private double vmMigrationCpuOverhead;
 
     /**
      * Creates a VmScheduler, defining a CPU overhead for VM migration.
@@ -52,6 +86,7 @@ public abstract class VmSchedulerAbstract implements VmScheduler {
         setHost(Host.NULL);
         this.vmMigrationCpuOverhead = vmMigrationCpuOverhead;
     }
+
 
     @Override
     public final boolean isSuitableForVm(final Vm vm) {
@@ -347,4 +382,6 @@ public abstract class VmSchedulerAbstract implements VmScheduler {
         * which is set only when the Host list is assigned to a Datacenter. */
         return this.host != null && this.host != Host.NULL && host != this.host;
     }
+
+
 }

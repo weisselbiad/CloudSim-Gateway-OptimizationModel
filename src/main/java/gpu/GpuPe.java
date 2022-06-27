@@ -1,10 +1,10 @@
 package gpu;
 
 import gpu.provisioners.GpuPeProvisioner;
+import org.cloudbus.cloudsim.resources.PeSimple;
 
 
-
-    /**
+/**
      * Pe (Processing Element) class represents a CPU core of a physical machine (PM),
      * defined in terms of Millions Instructions Per Second (MIPS) rating.<br/>
      * <b>ASSUMPTION:<b> All PEs under the same Machine have the same MIPS rating.
@@ -15,7 +15,7 @@ import gpu.provisioners.GpuPeProvisioner;
      * @author Rajkumar Buyya
      * @since CloudSim Toolkit 1.0
      */
-    public class GpuPe {
+    public class GpuPe  {
 
 
         /** Denotes Pe is FREE for allocation. */
@@ -70,7 +70,7 @@ import gpu.provisioners.GpuPeProvisioner;
          *
          * @return the id
          */
-        public int getId() {
+        public long getId() {
             return id;
         }
 
@@ -103,7 +103,8 @@ import gpu.provisioners.GpuPeProvisioner;
          * @pre $none
          * @post $none
          */
-        public int getStatus() {
+
+        public int getGpuPeStatus() {
             return status;
         }
 

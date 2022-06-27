@@ -7,6 +7,7 @@
  */
 package org.cloudbus.cloudsim.resources;
 
+import gpu.provisioners.GpuPeProvisioner;
 import org.cloudbus.cloudsim.core.ChangeableId;
 import org.cloudbus.cloudsim.provisioners.PeProvisioner;
 
@@ -97,6 +98,7 @@ public interface Pe extends ChangeableId, ResourceManageable {
      * @return the PE provisioner
      */
     PeProvisioner getPeProvisioner();
+    //GpuPeProvisioner getGpuPeProvisioner();
 
     /**
      * Gets the status of the PE.

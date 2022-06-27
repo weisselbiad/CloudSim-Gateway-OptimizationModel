@@ -7,6 +7,7 @@
 package org.cloudbus.cloudsim.datacenters;
 
 import cloudsimMixedPeEnv.GpuHost;
+import gpu.GpuVmAllocationPolicy;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigration;
@@ -914,6 +915,11 @@ public class DatacenterSimple extends CloudSimEntity implements Datacenter {
     @Override
     public VmAllocationPolicy getVmAllocationPolicy() {
         return vmAllocationPolicy;
+    }
+
+    @Override
+    public GpuVmAllocationPolicy getGpuVmAllocationPolicy() {
+        return null;
     }
 
     /**

@@ -11,6 +11,7 @@ import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
 import org.cloudbus.cloudsim.vms.Vm;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -50,6 +51,24 @@ public class GpuHost extends HostSimple implements Host{
 		setType(type);
 		setVideoCardAllocationPolicy(videoCardAllocationPolicy);
 		setGpuHostFailed(false);
+	}
+
+	public Vm getVm(int vmId, int userId) {
+		for (GpuVm vm : getGpuVmList()) {
+			if (vm.getId() == vmId && vm.getUserId() == userId) {
+				return vm;
+			}
+		}
+		return null;
+	}
+
+	public List<GpuVm> getGpuVmList(){
+		List<GpuVm> list = new ArrayList<>();
+		for (Vm vm : getVmList()) {
+			if (vm.getClass().equals(GpuVm.class)) {
+				list.add((GpuVm) vm);
+			}
+			}return list;
 	}
 
 	/**

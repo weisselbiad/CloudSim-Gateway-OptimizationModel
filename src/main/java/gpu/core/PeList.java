@@ -123,7 +123,7 @@ public class PeList {
      */
     public static <T extends GpuPe> GpuPe getFreePe(List<T> peList) {
         for (GpuPe pe : peList) {
-            if (pe.getStatus() == GpuPe.FREE) {
+            if (pe.getGpuPeStatus() == GpuPe.FREE) {
                 return pe;
             }
         }
@@ -141,7 +141,7 @@ public class PeList {
     public static <T extends GpuPe> int getNumberOfFreePes(List<T> peList) {
         int cnt = 0;
         for (GpuPe pe : peList) {
-            if (pe.getStatus() == GpuPe.FREE) {
+            if (pe.getGpuPeStatus() == GpuPe.FREE) {
                 cnt++;
             }
         }
@@ -179,7 +179,7 @@ public class PeList {
     public static <T extends GpuPe> int getNumberOfBusyPes(List<T> peList) {
         int cnt = 0;
         for (GpuPe pe : peList) {
-            if (pe.getStatus() == GpuPe.BUSY) {
+            if (pe.getGpuPeStatus() == GpuPe.BUSY) {
                 cnt++;
             }
         }

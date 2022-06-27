@@ -7,6 +7,7 @@
  */
 package org.cloudbus.cloudsim.datacenters;
 
+import gpu.GpuVmAllocationPolicy;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
 import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigration;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
@@ -175,6 +176,7 @@ public interface Datacenter extends SimEntity, PowerAware<PowerModelDatacenter>,
      * @see VmAllocationPolicy
      */
     VmAllocationPolicy getVmAllocationPolicy();
+    GpuVmAllocationPolicy getGpuVmAllocationPolicy();
 
     /**
      * Gets the scheduling interval to process each event received by the

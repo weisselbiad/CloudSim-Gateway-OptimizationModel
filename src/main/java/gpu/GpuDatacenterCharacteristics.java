@@ -1,9 +1,11 @@
 package gpu;
 
-import org.cloudbus.cloudsim.core.CloudSim;
-
 import gpu.core.HostList;
 import gpu.core.PeList;
+import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristics;
+import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristicsSimple;
+
 import java.util.List;
 
    /**
@@ -141,7 +143,7 @@ import java.util.List;
          * @post $result != null
          */
         public String getResourceName() {
-            return CloudSim.getEntityName(getId());
+            return CloudSim.LOGGER.getName();
         }
 
         /**
@@ -177,11 +179,7 @@ import java.util.List;
          *
          * @pre $none
          * @post $result >= -1
-         * @todo It considers that all PEs of all PM have the same MIPS capacity,
-         * what is not ensured because it is possible to add PMs of different configurations
-         * to a datacenter. Even for the {@link Host} it is possible
-         * to add Pe's of different capacities through the {@link Host#peList} attribute.
-         */
+         *          */
         public int getMipsOfOnePe() {
             if (getHostList().size() == 0) {
                 return -1;
@@ -191,7 +189,7 @@ import java.util.List;
                 The note in the method states that it is considered that all PEs into
                 a PM have the same MIPS capacity, but different PM can have different
                 PEs' MIPS.*/
-            return PeList.getMips(getHostList().get(0).getPeList(), 0);
+            return PeList.getMips(getHostList().get(0).getGpuPeList(), 0);
         }
 
         /**
@@ -213,7 +211,7 @@ import java.util.List;
                 return -1;
             }
 
-            return PeList.getMips(HostList.getById(getHostList(), id).getPeList(), peId);
+            return PeList.getMips(HostList.getById(getHostList(), id).getGpuPeList(), peId);
         }
 
         /**
@@ -257,16 +255,16 @@ import java.util.List;
                         /*@todo But it is possible to add PMs of different configurations
                             in a hostlist attached to a DatacenterCharacteristic attribute
                             of a Datacenter*/
-                case DatacenterCharacteristics.TIME_SHARED:
-                case DatacenterCharacteristics.OTHER_POLICY_SAME_RATING:
+                case GpuDatacenterCharacteristics.TIME_SHARED:
+                case GpuDatacenterCharacteristics.OTHER_POLICY_SAME_RATING:
                     mips = getMipsOfOnePe() * HostList.getNumberOfPes(getHostList());
                     break;
 
                 // Assuming all PEs in a given PM have the same rating.
                 // But different PMs in a Cluster can have different rating
-                case DatacenterCharacteristics.SPACE_SHARED:
-                case DatacenterCharacteristics.OTHER_POLICY_DIFFERENT_RATING:
-                    for (Host host : getHostList()) {
+                case GpuDatacenterCharacteristics.SPACE_SHARED:
+                case GpuDatacenterCharacteristics.OTHER_POLICY_DIFFERENT_RATING:
+                    for (GpuHost host : getHostList()) {
                         mips += host.getTotalMips();
                     }
                     break;
@@ -297,7 +295,7 @@ import java.util.List;
             double cpuTime = 0.0;
 
             switch (getAllocationPolicy()) {
-                case DatacenterCharacteristics.TIME_SHARED:
+                case GpuDatacenterCharacteristics.TIME_SHARED:
                                 /*@todo It is not exacly clear what this method does.
                                 I guess it computes how many time the cloudlet will
                                 spend using the CPU to finish its job, considering
@@ -403,7 +401,7 @@ import java.util.List;
          */
         public int getNumberOfFailedHosts() {
             int numberOfFailedHosts = 0;
-            for (Host host : getHostList()) {
+            for (GpuHost host : getHostList()) {
                 if (host.isFailed()) {
                     numberOfFailedHosts++;
                 }
@@ -634,4 +632,4 @@ import java.util.List;
         }
     }
 
-}
+

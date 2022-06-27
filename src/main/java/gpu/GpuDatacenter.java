@@ -38,12 +38,10 @@ import static org.cloudbus.cloudsim.util.BytesConversion.bitesToBytes;
  * {@link GpuDatacenter} extends {@link Datacenter} to support
  * {@link GpuCloudlet}s as well as the memory transfer between CPU and GPU.
  *
- * @author Ahmad Siavashi
- *
  */
 public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 	private List<SanStorage> storageList;
-	private DatacenterCharacteristics characteristics;
+	private GpuDatacenterCharacteristics characteristics;
 	private double gpuTaskLastProcessTime;
 	private long activeHostsNumber;
 	private DatacenterStorage datacenterStorage;
@@ -62,7 +60,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 	/**
 	 * See {@link Datacenter#}
 	 */
-	public GpuDatacenter(String name, Simulation simulation, DatacenterCharacteristics characteristics, VmAllocationPolicy vmAllocationPolicy,
+	public GpuDatacenter(String name, Simulation simulation, GpuDatacenterCharacteristics characteristics, GpuVmAllocationPolicy vmAllocationPolicy,
 						 List<SanStorage> storageList, double schedulingInterval) throws Exception {
 		super(simulation);
 		setName(name);
@@ -79,7 +77,6 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		this.simulation =simulation;
 		this.onHostAvailableListeners = new ArrayList<>();
 		this.onVmMigrationFinishListeners = new ArrayList<>();
-		this.characteristics = new DatacenterCharacteristicsSimple(this);
 		this.bandwidthPercentForMigration = DEF_BW_PERCENT_FOR_MIGRATION;
 		this.migrationsEnabled = true;
 		this.hostSearchRetryDelay = -1;
@@ -196,7 +193,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 
 	protected void checkCloudletCompletion(SimEvent ev) {
 		firstcheckCloudletCompletion(ev);
-		List<? extends Host> list = getVmAllocationPolicy().getHostList();
+		List<? extends Host> list = getGpuVmAllocationPolicy().getGpuHostList();
 		for (int i = 0; i < list.size(); i++) {
 			Host host = list.get(i);
 			for (Vm vm : host.getVmList()) {
@@ -272,8 +269,8 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			// TODO: checks whether this task has finished or not
 
 			// process this task to this CloudResource
-			gt.setResourceParameter((int)getId(), getCharacteristics().getCostPerSecond(),
-					getCharacteristics().getCostPerBw());
+			gt.setResourceParameter((int)getId(), getGpuCharacteristics().getCostPerSecond(),
+					getGpuCharacteristics().getCostPerBw());
 
 			GpuVm vm = getGpuTaskVm(gt);
 			Vgpu vgpu = vm.getVgpu();
@@ -322,7 +319,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		private String regionalCisName;
 
 		/** The vm provisioner. */
-		private VmAllocationPolicy vmAllocationPolicy;
+		private GpuVmAllocationPolicy vmAllocationPolicy;
 
 		/** The last time some cloudlet was processed in the datacenter. */
 		private double lastProcessTime;
@@ -356,7 +353,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 				// Resource characteristics inquiry
 				case RESOURCE_CHARACTERISTICS:
 					srcId = ((Integer) ev.getData()).intValue();
-					sendNow(ev.getSource(), ev.getTag(), getCharacteristics());
+					sendNow(ev.getSource(), ev.getTag(), getGpuCharacteristics());
 					break;
 
 				// Resource dynamic info inquiry
@@ -367,13 +364,13 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 
 				case RESOURCE_NUM_PE:
 					srcId = ((Integer) ev.getData()).intValue();
-					int numPE = getCharacteristics().getNumberOfPes();
+					int numPE = getGpuCharacteristics().getNumberOfPes();
 					sendNow(ev.getSource(), ev.getTag(), numPE);
 					break;
 
 				case RESOURCE_NUM_FREE_PE:
 					srcId = ((Integer) ev.getData()).intValue();
-					int freePesNumber = (int) getCharacteristics().getDatacenter().getHostList().stream().mapToLong(Host::getFreePesNumber).sum();
+					int freePesNumber =  getGpuCharacteristics().getNumberOfFreePes();
 					sendNow(ev.getSource(), ev.getTag(), freePesNumber);
 					break;
 
@@ -647,14 +644,14 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		protected void firstprocessVmCreate(SimEvent ev, boolean ack) {
 			Vm vm = (Vm) ev.getData();
 
-			HostSuitability result = getVmAllocationPolicy().allocateHostForVm(vm);
+			boolean result = getGpuVmAllocationPolicy().allocateHostForVm(vm);
 
 			if (ack) {
 				int[] data = new int[3];
 				data[0] = (int)getId();
 				data[1] = (int)vm.getId();
 
-				if (result.fully()) {
+				if (result) {
 					data[2] = CloudSimTags.TRUE;
 				} else {
 					data[2] = CloudSimTags.FALSE;
@@ -662,15 +659,14 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 				send(ev.getSource(), simulation.getMinTimeBetweenEvents(), CloudSimTag.VM_CREATE_ACK, data);
 			}
 
-			if (result.fully()) {
+			if (result) {
 				getVmList().add(vm);
 
 				if (vm.isWorking()) {
 					vm.setFailed(true);
 				}
 
-				vm.updateProcessing(simulation.clock(), getVmAllocationPolicy().getDatacenter().getHost((int)vm.getHost().getId()).getVmScheduler()
-						.getAllocatedMips(vm));
+				vm.updategpuVmProcessing(simulation.clock(), getGpuVmAllocationPolicy().getHost(vm).getGpuVmScheduler().getAllocatedMipsForVm((GpuVm) vm));
 			}
 
 		}
@@ -843,7 +839,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			int destId = array[4];
 
 			// get the cloudlet
-			GpuCloudlet cl = (GpuCloudlet) getVmAllocationPolicy().getDatacenter().getHost((int)getVmList().get(vmId).getHost().getId()).getVmList().get(vmId).getCloudletScheduler().getCloudletList().get(cloudletId);
+			GpuCloudlet cl = (GpuCloudlet) getGpuVmAllocationPolicy().getHost(vmId, userId).getVmList().get(vmId).getCloudletScheduler().getCloudletList().get(cloudletId);
 
 			boolean failed = false;
 			if (cl == null) {// cloudlet doesn't exist
@@ -1270,41 +1266,16 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			registerOtherEntity();
 		}
 
-	@Override
-	public void requestVmMigration(Vm sourceVm, Host targetHost) {
-		//If Host.NULL is given, it must try to find a target host
-		if(Host.NULL.equals(targetHost)){
-			targetHost = vmAllocationPolicy.findHostForVm(sourceVm).orElse(Host.NULL);
-		}
 
-		//If a host couldn't be found yet
-		if(Host.NULL.equals(targetHost)) {
-			LOGGER.warn("{}: {}: No suitable host found for {} in {}", sourceVm.getSimulation().clockStr(), getClass().getSimpleName(), sourceVm, this);
-			return;
-		}
-
-		final Host sourceHost = sourceVm.getHost();
-		final double delay = timeToMigrateVm(sourceVm, targetHost);
-		final String msg1 =
-				Host.NULL.equals(sourceHost) ?
-						String.format("%s to %s", sourceVm, targetHost) :
-						String.format("%s from %s to %s", sourceVm, sourceHost, targetHost);
-
-		final String currentTime = getSimulation().clockStr();
-		final var fmt = "It's expected to finish in %.2f seconds, considering the %.0f%% of bandwidth allowed for migration and the VM RAM size.";
-		final String msg2 = String.format(fmt, delay, getBandwidthPercentForMigration()*100);
-		LOGGER.info("{}: {}: Migration of {} is started. {}", currentTime, getName(), msg1, msg2);
-
-		if(targetHost.addMigratingInVm(sourceVm)) {
-			sourceHost.addVmMigratingOut(sourceVm);
-			send(this, delay, CloudSimTag.VM_MIGRATE, new TreeMap.SimpleEntry<>(sourceVm, targetHost));
-		}
-
-	}
 	private double timeToMigrateVm(final Vm vm, final Host targetHost) {
 		return vm.getRam().getCapacity() / bitesToBytes(targetHost.getBw().getCapacity() * getBandwidthPercentForMigration());
 	}
 
+
+	@Override
+	public void requestVmMigration(Vm sourceVm, Host targetHost) {
+
+	}
 
 	@Override
 	public void requestVmMigration(Vm sourceVm) {
@@ -1409,12 +1380,17 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		return this;
 	}
 
+	@Override
+	public VmAllocationPolicy getVmAllocationPolicy() {
+		return null;
+	}
+
 	/**
 		 * Gets the datacenter characteristics.
 		 *
 		 * @return the datacenter characteristics
 		 */
-		public DatacenterCharacteristics getCharacteristics() {
+		public GpuDatacenterCharacteristics getGpuCharacteristics() {
 			return characteristics;
 		}
 
@@ -1458,23 +1434,16 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		return this;
 	}
 
-
+	@Override
 	public boolean isMigrationsEnabled() {
-		return migrationsEnabled && vmAllocationPolicy.isVmMigrationSupported();
+		return false;
 	}
 
 	@Override
-	public final Datacenter enableMigrations() {
-		if(!vmAllocationPolicy.isVmMigrationSupported()){
-			LOGGER.warn(
-					"{}: {}: It was requested to enable VM migrations but the {} doesn't support that.",
-					getSimulation().clockStr(), getName(), vmAllocationPolicy.getClass().getSimpleName());
-			return this;
-		}
-
-		this.migrationsEnabled = true;
-		return this;
+	public Datacenter enableMigrations() {
+		return null;
 	}
+
 
 	@Override
 	public final Datacenter disableMigrations() {
@@ -1501,7 +1470,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 *
 		 * @param characteristics the new datacenter characteristics
 		 */
-		protected void setCharacteristics(DatacenterCharacteristics characteristics) {
+		protected void setCharacteristics(GpuDatacenterCharacteristics characteristics) {
 			this.characteristics = characteristics;
 		}
 
@@ -1528,7 +1497,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 *
 		 * @return the vm allocation policy
 		 */
-		public VmAllocationPolicy getVmAllocationPolicy() {
+		public GpuVmAllocationPolicy getGpuVmAllocationPolicy() {
 			return vmAllocationPolicy;
 		}
 
@@ -1537,7 +1506,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		 *
 		 * @param vmAllocationPolicy the new vm allocation policy
 		 */
-		protected void setVmAllocationPolicy(VmAllocationPolicy vmAllocationPolicy) {
+		protected void setVmAllocationPolicy(GpuVmAllocationPolicy vmAllocationPolicy) {
 			this.vmAllocationPolicy = vmAllocationPolicy;
 		}
 
@@ -1615,6 +1584,11 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			this.schedulingInterval = schedulingInterval;
 			return this;
 		}
+
+	@Override
+	public DatacenterCharacteristics getCharacteristics() {
+		return null;
+	}
 
 	@Override
 	protected void startInternal() {

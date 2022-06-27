@@ -44,6 +44,7 @@ public class DatacenterCharacteristicsSimple implements DatacenterCharacteristic
     /** @see #getCostPerBw() */
     private double costPerBw;
 
+
     /** @see #getDatacenter() */
     private final Datacenter datacenter;
 

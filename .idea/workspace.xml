@@ -4,71 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenterCharacteristics.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuPe.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuUtilizationModel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/power/GpuPowerModel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/power/models/GpuPowerModelLinear.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/provisioners/BwProvisionerSimple.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/provisioners/GpuPeProvisioner.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/provisioners/GpuPeProvisionerSimple.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/provisioners/RamProvisionerSimple.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/GpuExperimentFirst.java" afterDir="false" />
+    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="24.06.1">
+      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuVmSchedulerAbstract.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuVmSchedulerSpaceShared.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuVmSchedulerTimeShared.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/CloudletSchedulerTimeShared.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/CloudletSchedulerTimeShared.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuCloudlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuCloudlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuCloudletSchedulerSpaceShared.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuCloudletSchedulerSpaceShared.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuCloudletSchedulerTimeShared.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuCloudletSchedulerTimeShared.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenterCharacteristics.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenterCharacteristics.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuHost.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuHost.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuTask.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuTaskScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuTaskScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuPe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuPe.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuVm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuVm.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/Pgpu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/Pgpu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/ResCloudlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/ResCloudlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/ResGpuCloudlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/ResGpuCloudlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/ResGpuTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/ResGpuTask.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/UtilizationModelGaussian.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/UtilizationModelGaussian.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/VgpuScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/VgpuScheduler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/VgpuSchedulerFairShare.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/VgpuSchedulerFairShare.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/VgpuSchedulerFairShareEx.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/VgpuSchedulerSpaceShared.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/VgpuSchedulerSpaceShared.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/VgpuSchedulerTimeShared.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/VgpuSchedulerTimeShared.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/core/GpuCloudSimTags.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/core/GpuCloudSimTags.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuVmAllocationPolicy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuVmAllocationPolicy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuVmAllocationPolicyAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuVmAllocationPolicyAbstract.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/gpu/core/PeList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/core/PeList.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/hardware_assisted/GridVideoCardPowerModelK1.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/hardware_assisted/GridVideoCardPowerModelK1.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/hardware_assisted/GridVideoCardPowerModelK2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/hardware_assisted/GridVideoCardPowerModelK2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/interference/models/InterferenceModelGpuMemory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/interference/models/InterferenceModelGpuMemory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/performance/PerformanceVgpuSchedulerFairShare.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/performance/PerformanceVgpuSchedulerFairShare.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/performance/PerformanceVgpuSchedulerFairShareEx.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/performance/PerformanceVgpuSchedulerSpaceShared.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/performance/PerformanceVgpuSchedulerSpaceShared.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/performance/PerformanceVgpuSchedulerTimeShared.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/performance/PerformanceVgpuSchedulerTimeShared.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/placement/GpuDatacenterBrokerEx.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/placement/GpuDatacenterEx.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/power/PowerGpuDatacenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/power/PowerGpuDatacenter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/power/models/GpuHostPowerModelLinear.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/power/models/GpuHostPowerModelLinear.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/provisioners/BwProvisioner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/provisioners/BwProvisioner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/provisioners/RamProvisioner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/provisioners/RamProvisioner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/remote/RemoteGpuDatacenterEx.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/remote/RemoteGpuVmAllocationPolicy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/remote/RemoteGpuVmAllocationPolicy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/remote/RemoteGpuVmAllocationPolicyLeastLoad.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/remote/RemoteGpuVmAllocationPolicyLeastLoad.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/remote/RemoteGpuVmAllocationPolicyLeastLoadModified.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/remote/RemoteGpuVmAllocationPolicyLeastLoadModified.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/remote/RemoteGpuVmAllocationPolicySimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/remote/RemoteGpuVmAllocationPolicySimple.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/remote/RemoteVgpuSchedulerFairShareEx.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/cloudlets/Cloudlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/cloudlets/Cloudlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/CloudSimTag.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/CloudSimTag.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/provisioners/GpuPeProvisioner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/provisioners/GpuPeProvisioner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/datacenters/Datacenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/datacenters/Datacenter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/datacenters/DatacenterCharacteristicsSimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/datacenters/DatacenterCharacteristicsSimple.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/datacenters/DatacenterSimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/datacenters/DatacenterSimple.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/hosts/Host.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/hosts/Host.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/hosts/HostSimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/hosts/HostSimple.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/provisioners/PeProvisioner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/provisioners/PeProvisioner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/provisioners/PeProvisionerSimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/provisioners/PeProvisionerSimple.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/provisioners/ResourceProvisionerAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/provisioners/ResourceProvisionerAbstract.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/provisioners/ResourceProvisionerSimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/provisioners/ResourceProvisionerSimple.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/schedulers/cloudlet/CloudletScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/schedulers/cloudlet/CloudletScheduler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/schedulers/cloudlet/CloudletSchedulerAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/schedulers/cloudlet/CloudletSchedulerAbstract.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/schedulers/cloudlet/CloudletSchedulerSpaceShared.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/schedulers/cloudlet/CloudletSchedulerSpaceShared.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/schedulers/cloudlet/CloudletSchedulerTimeShared.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/schedulers/cloudlet/CloudletSchedulerTimeShared.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/vms/Vm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/vms/Vm.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/vms/VmSimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/vms/VmSimple.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/resources/Pe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/resources/Pe.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/schedulers/vm/VmSchedulerAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/schedulers/vm/VmSchedulerAbstract.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/GpuExperimentFirst.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/GpuExperimentFirst.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,9 +71,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Enum" />
         <option value="JUnit5 Test Class" />
-        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -354,6 +311,7 @@
       <workItem from="1655117532076" duration="949000" />
       <workItem from="1655135197562" duration="3544000" />
       <workItem from="1655634471932" duration="20099000" />
+      <workItem from="1656059630782" duration="13268000" />
     </task>
     <task id="LOCAL-00001" summary="gradle">
       <created>1637948985872</created>
@@ -467,14 +425,7 @@
       <option name="project" value="LOCAL" />
       <updated>1655845144038</updated>
     </task>
-    <task id="LOCAL-00017" summary="22.06">
-      <created>1655929659163</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1655929659164</updated>
-    </task>
-    <option name="localTasksCounter" value="18" />
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -502,8 +453,7 @@
     <MESSAGE value="08.06" />
     <MESSAGE value="20.06.1" />
     <MESSAGE value="21.06" />
-    <MESSAGE value="22.06" />
-    <option name="LAST_COMMIT_MESSAGE" value="22.06" />
+    <option name="LAST_COMMIT_MESSAGE" value="21.06" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -526,7 +476,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cloudsimplus/cloudsim-plus/7.1.2/3c6d01bece7d9835501bd28439d948acc52e826b/cloudsim-plus-7.1.2-sources.jar!/org/cloudbus/cloudsim/cloudlets/network/NetworkCloudlet.java</url>
           <line>209</line>
-          <properties class="org.cloudbus.cloudsim.cloudlets.network.NetworkCloudlet" method="setVm">
+          <properties class="org.cloudbus.cloudsim.cloudlets.network.NetworkCloudlet">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -537,6 +487,8 @@
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="org.cloudbus.cloudsim.hosts.HostSimple" memberName="vmList" />
+        <PinnedItemInfo parentTag="org.cloudbus.cloudsim.hosts.HostSimple" memberName="powerModel" />
+        <PinnedItemInfo parentTag="org.cloudbus.cloudsim.hosts.HostSimple" memberName="id" />
       </pinned-members>
     </pin-to-top-manager>
     <watches-manager>

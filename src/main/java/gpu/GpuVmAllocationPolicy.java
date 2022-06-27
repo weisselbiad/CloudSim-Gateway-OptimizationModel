@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Ahmad Siavashi
  *
  */
-public abstract class GpuVmAllocationPolicy extends GpuVmAllocationPolicyAbstract {
+public abstract class GpuVmAllocationPolicy  {
 
 	/**
 	 * The map between each VM and its allocated host. The map key is a VM UID and
@@ -42,18 +42,18 @@ public abstract class GpuVmAllocationPolicy extends GpuVmAllocationPolicyAbstrac
 	 * @param list all data center hosts
 	 */
 	public GpuVmAllocationPolicy(List<? extends Host> list) {
-		super(list);
 		setVmTable(new HashMap<String, Host>());
 		setGpuHostList(getHostList());
 		setVgpuHosts(new HashMap<Vgpu, GpuHost>());
+		setHostList(list);
 	}
 
-	@Override
+
 	public List<Map<String, Object>> optimizeAllocation(List<? extends Vm> vmList) {
 		return null;
 	}
 
-	@Override
+
 	public void deallocateHostForVm(Vm vm) {
 		//getVmTable().remove(vm.getUid()).vmDestroy(vm);
 		vm.getHost().destroyVm(vm);
@@ -96,7 +96,7 @@ public abstract class GpuVmAllocationPolicy extends GpuVmAllocationPolicyAbstrac
 		return false;
 	}
 
-	@Override
+
 	public boolean allocateHostForVm(Vm vm, Host host) {
 		if (!getVmTable().containsKey(vm.getUid())) {
 			boolean result = host.vmCreate(vm);
@@ -122,12 +122,12 @@ public abstract class GpuVmAllocationPolicy extends GpuVmAllocationPolicyAbstrac
 		return results;
 	}
 
-	@Override
+
 	public Host getHost(Vm vm) {
 		return getVmTable().get(vm.getUid());
 	}
 
-	@Override
+
 	public Host getHost(int vmId, int userId) {
 		return getVmTable().get(Vm.getUid(userId, vmId));
 	}
@@ -146,7 +146,7 @@ public abstract class GpuVmAllocationPolicy extends GpuVmAllocationPolicyAbstrac
 		this.vmTable = vmTable;
 	}
 
-	protected List<GpuHost> getGpuHostList() {
+	public List<GpuHost> getGpuHostList() {
 		return gpuHostList;
 	}
 
@@ -166,5 +166,32 @@ public abstract class GpuVmAllocationPolicy extends GpuVmAllocationPolicyAbstrac
 	protected void setVgpuHosts(Map<Vgpu, GpuHost> vgpuHosts) {
 		this.vgpuHosts = vgpuHosts;
 	}
+
+
+	/** The host list. */
+	private List<? extends Host> hostList;
+
+
+
+	public abstract boolean allocateHostForVm(Vm vm);
+
+
+
+	protected void setHostList(List<? extends Host> hostList) {
+		this.hostList = hostList;
+	}
+
+	/**
+	 * Gets the host list.
+	 *
+	 * @return the host list
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends Host> List<T> getHostList() {
+		return (List<T>) hostList;
+	}
+
+
+
 
 }

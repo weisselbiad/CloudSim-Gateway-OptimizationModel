@@ -7,6 +7,7 @@
  */
 package org.cloudbus.cloudsim.hosts;
 
+import gpu.GpuVmSchedulerAbstract;
 import org.cloudbus.cloudsim.core.Machine;
 import org.cloudbus.cloudsim.core.ResourceStatsComputer;
 import org.cloudbus.cloudsim.core.Simulation;
@@ -362,7 +363,7 @@ public interface Host extends Machine, Comparable<Host>, PowerAware<PowerModelHo
      * @return the {@link VmScheduler}
      */
     VmScheduler getVmScheduler();
-
+    GpuVmSchedulerAbstract getGpuVmScheduler();
     /**
      * Sets the policy for allocation of host PEs to VMs in order to schedule VM
      * execution. The host also sets itself to the given scheduler.

@@ -7,6 +7,7 @@
 package org.cloudbus.cloudsim.hosts;
 
 
+import gpu.GpuVmSchedulerAbstract;
 import org.cloudbus.cloudsim.core.*;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
@@ -866,6 +867,11 @@ public class HostSimple implements Host {
     }
 
     @Override
+    public GpuVmSchedulerAbstract getGpuVmScheduler() {
+        return null;
+    }
+
+    @Override
     public final Host setVmScheduler(final VmScheduler vmScheduler) {
         this.vmScheduler = requireNonNull(vmScheduler);
         vmScheduler.setHost(this);
@@ -982,6 +988,7 @@ public class HostSimple implements Host {
     public <T extends Vm> List<T> getVmList() {
         return (List<T>) vmList;
     }
+
 
     @Override
     public <T extends Vm> List<T> getVmCreatedList() {
@@ -1502,5 +1509,10 @@ public class HostSimple implements Host {
      */
     public boolean isActivateOnDatacenterStartup() {
         return activateOnDatacenterStartup;
+    }
+
+    @Override
+    public double getRelativeCpuUtilization(Vm vm) {
+        return Host.super.getRelativeCpuUtilization(vm);
     }
 }
