@@ -1,16 +1,14 @@
 package gpu.power;
 
 import gpu.GpuDatacenter;
+import gpu.GpuDatacenterCharacteristics;
+import gpu.GpuVmAllocationPolicy;
 import gpu.VideoCard;
 import gpu.allocation.VideoCardAllocationPolicy;
-import gpu.core.GpuCloudSimTags;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
-import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTag;
 import org.cloudbus.cloudsim.core.Simulation;
 import org.cloudbus.cloudsim.core.events.PredicateType;
 import org.cloudbus.cloudsim.core.events.SimEvent;
-import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristics;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.resources.SanStorage;
 
@@ -44,8 +42,8 @@ public class PowerGpuDatacenter extends GpuDatacenter {
 	 *      List, double)
 	 */
 	@SuppressWarnings("unchecked")
-	public PowerGpuDatacenter(String name, Simulation simulation, DatacenterCharacteristics characteristics,
-							  VmAllocationPolicy vmAllocationPolicy, List<SanStorage> storageList, double schedulingInterval)
+	public PowerGpuDatacenter(String name, Simulation simulation, GpuDatacenterCharacteristics characteristics,
+							  GpuVmAllocationPolicy vmAllocationPolicy, List<SanStorage> storageList, double schedulingInterval)
 			throws Exception {
 		super(name, simulation, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
 		setHostEnergyMap(new HashMap<PowerGpuHost, Double>());

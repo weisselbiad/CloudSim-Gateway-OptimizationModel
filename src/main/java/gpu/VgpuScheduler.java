@@ -36,7 +36,7 @@ public abstract class VgpuScheduler {
 	/**
 	 * Vgpus to allocated PEs map.
 	 */
-	private Map<Vgpu, List<Pe>> vgpuPeMap;
+	private Map<Vgpu, List<GpuPe>> vgpuPeMap;
 
 	/**
 	 * The map of Vgpus to MIPS
@@ -61,7 +61,7 @@ public abstract class VgpuScheduler {
 		for (Pgpu pgpu : getPgpuList()) {
 			getPgpuVgpuMap().put(pgpu, new ArrayList<Vgpu>());
 		}
-		setVgpuPeMap(new HashMap<Vgpu, List<Pe>>());
+		setVgpuPeMap(new HashMap<Vgpu, List<GpuPe>>());
 		setMipsMap(new HashMap<Vgpu, List<Double>>());
 		setPgpuSelectionPolicy(pgpuSelectionPolicy);
 
@@ -151,7 +151,7 @@ public abstract class VgpuScheduler {
 		getMipsMap().clear();
 		getVgpuPeMap().clear();
 		for (Pgpu pgpu : getPgpuList()) {
-			for (Pe pe : pgpu.getPeList()) {
+			for (GpuPe pe : pgpu.getPeList()) {
 
 				pe.getPeProvisioner().deallocateMipsForAllVms();
 			}
@@ -167,7 +167,7 @@ public abstract class VgpuScheduler {
 	 * @param vgpu the vgpu
 	 * @return the pes allocated for the given vgpu
 	 */
-	public List<Pe> getPesAllocatedForVgpu(Vgpu vgpu) {
+	public List<GpuPe> getPesAllocatedForVgpu(Vgpu vgpu) {
 		return getVgpuPeMap().get(vgpu);
 	}
 
@@ -298,14 +298,14 @@ public abstract class VgpuScheduler {
 	/**
 	 * @return the vgpuPeMap
 	 */
-	public Map<Vgpu, List<Pe>> getVgpuPeMap() {
+	public Map<Vgpu, List<GpuPe>> getVgpuPeMap() {
 		return vgpuPeMap;
 	}
 
 	/**
 	 * @param vgpuPeMap the vgpuPeMap to set
 	 */
-	protected void setVgpuPeMap(Map<Vgpu, List<Pe>> vgpuPeMap) {
+	protected void setVgpuPeMap(Map<Vgpu, List<GpuPe>> vgpuPeMap) {
 		this.vgpuPeMap = vgpuPeMap;
 	}
 

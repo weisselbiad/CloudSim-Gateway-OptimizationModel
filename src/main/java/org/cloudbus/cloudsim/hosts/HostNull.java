@@ -23,6 +23,7 @@
  */
 package org.cloudbus.cloudsim.hosts;
 
+import gpu.GpuVmSchedulerAbstract;
 import org.cloudbus.cloudsim.core.AbstractMachine;
 import org.cloudbus.cloudsim.core.Simulation;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
@@ -111,6 +112,12 @@ final class HostNull implements Host {
     @Override public VmScheduler getVmScheduler() {
         return VmScheduler.NULL;
     }
+
+    @Override
+    public GpuVmSchedulerAbstract getGpuVmScheduler() {
+        return null;
+    }
+
     @Override public Host setVmScheduler(VmScheduler vmScheduler) {
         return Host.NULL;
     }
@@ -141,6 +148,12 @@ final class HostNull implements Host {
     @Override public HostSuitability createVm(Vm vm) {
         return HostSuitability.NULL;
     }
+
+    @Override
+    public boolean vmCreate(Vm vm) {
+        return false;
+    }
+
     @Override public HostSuitability createTemporaryVm(Vm vm) { return HostSuitability.NULL; }
     @Override public void destroyTemporaryVm(Vm vm) {/**/}
     @Override public void destroyVm(Vm vm) {/**/}

@@ -11,6 +11,8 @@ import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -72,6 +74,21 @@ public class VmAllocationPolicySimple extends VmAllocationPolicyAbstract {
 
         final var hostStream = isParallelHostSearchEnabled() ? getGpuHostList().stream().parallel() : getGpuHostList().stream();
         return hostStream.filter(host -> host.isSuitableForVm(vm)).max(comparator);
+    }
+
+    @Override
+    public List<Map<String, Object>> optimizeAllocation(List<? extends Vm> vmList) {
+        return null;
+    }
+
+    @Override
+    public Host getHost(Vm vm) {
+        return null;
+    }
+
+    @Override
+    public Host getHost(int vmId, int userId) {
+        return null;
     }
 
 }

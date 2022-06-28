@@ -40,6 +40,12 @@ final class SimulationNull implements Simulation {
         return null;
     }
     @Override public List<SimEntity> getEntityList() { return Collections.emptyList(); }
+
+    @Override
+    public SimEntity getEntityId(String name) {
+        return null;
+    }
+
     @Override public double getMinTimeBetweenEvents() {
         return 0;
     }

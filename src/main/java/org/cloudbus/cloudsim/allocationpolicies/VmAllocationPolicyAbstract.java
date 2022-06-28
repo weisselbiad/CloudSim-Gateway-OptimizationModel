@@ -80,6 +80,10 @@ public abstract class VmAllocationPolicyAbstract implements VmAllocationPolicy {
         setgpuHostList(list);
     }
 
+    public VmAllocationPolicyAbstract() {
+
+    }
+
     @Override
     public final <T extends Host> List<T> getHostList() {
         return datacenter.getHostList();

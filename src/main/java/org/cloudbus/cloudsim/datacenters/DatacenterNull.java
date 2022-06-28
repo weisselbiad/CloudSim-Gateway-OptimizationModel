@@ -23,6 +23,7 @@
  */
 package org.cloudbus.cloudsim.datacenters;
 
+import gpu.GpuVmAllocationPolicy;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEntityNullBase;
@@ -55,6 +56,12 @@ final class DatacenterNull implements Datacenter, SimEntityNullBase {
     @Override public VmAllocationPolicy getVmAllocationPolicy() {
         return VmAllocationPolicy.NULL;
     }
+
+    @Override
+    public GpuVmAllocationPolicy getGpuVmAllocationPolicy() {
+        return null;
+    }
+
     @Override public void requestVmMigration(Vm sourceVm, Host targetHost) {/**/}
     @Override public void requestVmMigration(Vm sourceVm) {/**/}
 

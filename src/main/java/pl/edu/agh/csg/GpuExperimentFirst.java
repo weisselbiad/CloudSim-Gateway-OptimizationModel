@@ -13,12 +13,16 @@ import gpu.selection.PgpuSelectionPolicy;
 import gpu.selection.PgpuSelectionPolicyNull;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
+import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterCharacteristics;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
+import org.cloudbus.cloudsim.hosts.Host;
+import org.cloudbus.cloudsim.hosts.HostSimple;
+import org.cloudbus.cloudsim.power.models.PowerModelHostSpec;
 import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
@@ -27,8 +31,10 @@ import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
+import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.Vm;
+import org.cloudbus.cloudsim.vms.VmSimple;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -46,24 +52,24 @@ import java.util.List;
  * @since CloudSim Plus 1.0
  */
 public class GpuExperimentFirst {
-    private static final int HOSTS = 1;
+    private static final int HOSTS = 8;
     private static final int HOST_PES = 8;
     private static final int GPUHOSTSV3 = 1;
     private static final int GPUHOSTSV4 = 5;
 
 
-    private static final int VMS = 2;
+    private static final int VMS = 20;
     private static final int GPUVMS = 176;
-    private static final int GPUVMS140 =0;
-    private static final int GPUVMS240 =0;
-    private static final int GPUVMS160 =0;
-    private static final int GPUVMS260 =0;
+    private static final int GPUVMS140 =10;
+    private static final int GPUVMS240 =10;
+    private static final int GPUVMS160 =10;
+    private static final int GPUVMS260 =10;
     private static final int GPUVMS180 =10;
     private static final int GPUVMS280 = 10;
     private static final int VM_PES = 4;
 
-    private static final int CLOUDLETS = 10;
-    private static final int GPUCLOUDLETS =500;
+    private static final int CLOUDLETS = 30;
+    private static final int GPUCLOUDLETS =20;
     private static final int CLOUDLET_PES = 2;
     private static final int CLOUDLET_LENGTH = 10000;
 
@@ -79,18 +85,11 @@ public class GpuExperimentFirst {
 
     private List<Vm> vmList;
     private List<GpuVm> gpuvmList;
-    private List<CloudletSimple> cloudletList;
+    private List<Cloudlet> cloudletList;
     private List<GpuCloudlet> gpucloudletList;
     private Datacenter datacenter0;
 
-    public int getClassID (Cloudlet cl){
-        if(cl.getClass().toString() == "org.cloudbus.cloudsim.cloudlets.CloudletSimple"){
-            return 0;
-        }else if(cl.getClass().toString() == "cloudsimMixedPeEnv.GpuCloudlet"){
-            return 1;
-        }else
-            return -1;
-    }
+
     public static void main(String[] args) throws Exception {
         new GpuExperimentFirst();
     }
@@ -104,8 +103,8 @@ public class GpuExperimentFirst {
         datacenter0 = createDatacenter();
 
         //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
-        GpuDatacenter datacenter = createGpuDatacenter(simulation,"Datacenter");
-        GpuDatacenterBroker broker = createGpuBroker(simulation,"Broker");
+        GpuDatacenter gpudatacenter = createGpuDatacenter(simulation,"GpuDatacenter");
+        GpuDatacenterBroker gpubroker = createGpuBroker(simulation,"GpuBroker");
 
 
         gpuvmList = createGpuVms();
@@ -113,13 +112,23 @@ public class GpuExperimentFirst {
 
         gpucloudletList = createGpuCloudlet((int)broker0.getId());
 
-        broker0.submitVmList(gpuvmList);
+        gpubroker.submitVmList(gpuvmList);
+        gpubroker.submitCloudletList(gpucloudletList);
 
-        broker0.submitCloudletList(gpucloudletList);
+        broker0 = new DatacenterBrokerSimple(simulation);
+
+        vmList = createVms();
+        cloudletList = createCloudlets();
+        broker0.submitVmList(vmList);
+        broker0.submitCloudletList(cloudletList);
 
         simulation.start();
 
-        final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
+        List<Cloudlet> finishedCloudlets = new ArrayList<>();
+        final List<Cloudlet> finishedGpuCloudlets = gpubroker.getgpuCloudletReceivedList();
+        final List<Cloudlet> finishedSimpleCloudlets = broker0.getCloudletFinishedList();
+        finishedCloudlets.addAll(finishedGpuCloudlets);
+        finishedCloudlets.addAll(finishedSimpleCloudlets);
         new org.cloudsimplus.builders.tables.CloudletsTableBuilder(finishedCloudlets).build();
 
     }
@@ -135,11 +144,11 @@ public class GpuExperimentFirst {
     }
 
     private Datacenter createDatacenter() {
-        final List<GpuHost> hostList = new ArrayList<>();
-
-
-
-
+        final List<Host> hostList = new ArrayList<>(HOSTS);
+        for(int i = 0; i < HOSTS; i++) {
+            Host host = createHost();
+            hostList.add(host);
+        }
         //Uses a VmAllocationPolicySimple by default to allocate VMs
         final var datacenter = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
         datacenter.setSchedulingInterval(10)
@@ -150,6 +159,55 @@ public class GpuExperimentFirst {
                 .setCostPerStorage(0.001)
                 .setCostPerBw(0.005);
         return datacenter;
+    }
+
+    private Host createHost() {
+        final List<Pe> peList = new ArrayList<>(HOST_PES);
+        //List of Host's CPUs (Processing Elements, PEs)
+        for (int i = 0; i < HOST_PES; i++) {
+            //Uses a PeProvisionerSimple by default to provision PEs for VMs
+            peList.add(new PeSimple(1000));
+        }
+
+        final long ram = 2048; //in Megabytes
+        final long bw = 10000; //in Megabits/s
+        final long storage = 1000000; //in Megabytes
+
+        /*
+        Uses ResourceProvisionerSimple by default for RAM and BW provisioning
+        and VmSchedulerSpaceShared for VM scheduling.
+        */
+        return new HostSimple(ram, bw, storage, peList);
+    }
+
+    private List<Vm> createVms() {
+        final List<Vm> list = new ArrayList<>(VMS);
+        for (int i = 0; i < VMS; i++) {
+            //Uses a CloudletSchedulerTimeShared by default to schedule Cloudlets
+            final Vm vm = new VmSimple(1000, VM_PES);
+            vm.setRam(512).setBw(1000).setSize(10000);
+            list.add(vm);
+        }
+
+        return list;
+    }
+
+    /**
+     * Creates a list of Cloudlets.
+     */
+    private List<Cloudlet> createCloudlets() {
+        final List<Cloudlet> list = new ArrayList<>(CLOUDLETS);
+
+        //UtilizationModel defining the Cloudlets use only 50% of any resource all the time
+        final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.5);
+
+        for (int i = 0; i < CLOUDLETS; i++) {
+            final Cloudlet cloudlet = new CloudletSimple(CLOUDLET_LENGTH, CLOUDLET_PES, utilizationModel);
+            cloudlet.setSizes(1024);
+            list.add(cloudlet);
+        }
+
+        return list;
     }
 
     private static List<VideoCard> createVideoCards(int numVideoCards){
@@ -198,23 +256,23 @@ public class GpuExperimentFirst {
         // PE's MIPS power
         double mips = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS;
 
-        for (int peId = 0; peId < GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_NUM_PES; peId++) {
+        for (int peId = 0; peId < GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_NUM_PES; peId++) {
             // Create PEs and add these into a list.
             peList.add(new GpuPe(0, new GpuPeProvisionerSimple(mips)));
         }
 
         // Create Host with its id and list of PEs and add them to the list of machines
         // host memory (MB)
-        int ram = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_RAM;
+        int ram = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_RAM;
         // host storage
-        long storage = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_STORAGE;
+        long storage = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_STORAGE;
         // host BW
-        int bw = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_BW;
+        int bw = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_BW;
         // Set VM Scheduler
         VmScheduler vmScheduler = new GpuVmSchedulerTimeShared(peList);
         // Video Card Selection Policy
         VideoCardAllocationPolicy videoCardAllocationPolicy = new VideoCardAllocationPolicyNull(videoCards);
-        GpuHost newHost = new GpuHost(hostId, GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4, new RamProvisionerSimple(ram),
+        GpuHost newHost = new GpuHost(hostId, GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3, new RamProvisionerSimple(ram),
                 new BwProvisionerSimple(Long.MAX_VALUE), storage, peList, vmScheduler, videoCardAllocationPolicy);
         hostList.add(newHost);
 
@@ -229,32 +287,34 @@ public class GpuExperimentFirst {
             // PE's MIPS power
             double mips = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_PE_MIPS;
 
-            for (int peId = 0; peId < GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_NUM_PES; peId++) {
+            for (int peId = 0; peId < GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_NUM_PES; peId++) {
                 // Create PEs and add these into a list.
                 peList.add(new GpuPe(0, new GpuPeProvisionerSimple(mips)));
             }
 
             // Create Host with its id and list of PEs and add them to the list of machines
             // host memory (MB)
-            int ram = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_RAM;
+            int ram = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_RAM;
             // host storage
-            long storage = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_STORAGE;
+            long storage = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_STORAGE;
             // host BW
-            int bw = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_BW;
+            int bw = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_BW;
             // Set VM Scheduler
             VmScheduler vmScheduler = new GpuVmSchedulerTimeShared(peList);
             // Video Card Selection Policy
             VideoCardAllocationPolicy videoCardAllocationPolicy = new VideoCardAllocationPolicyNull(videoCards);
-            GpuHost newHost = new GpuHost(hostId, GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3, new RamProvisionerSimple(ram),
+            GpuHost newHost = new GpuHost(hostId, GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4, new RamProvisionerSimple(ram),
                     new BwProvisionerSimple(Long.MAX_VALUE), storage, peList, vmScheduler, videoCardAllocationPolicy);
             hostList.add(newHost);}
             return hostList;}
     private static GpuDatacenter createGpuDatacenter(CloudSim simulation,String name) {
-
+        List<VideoCard> videoCards = new ArrayList<VideoCard>();
         // Number of host's video cards
-        List<VideoCard> videoCards = createVideoCards(GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_NUM_VIDEO_CARDS);
+        List<VideoCard> videoV3Cards = createVideoCards(GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_NUM_VIDEO_CARDS);
+        List<VideoCard> videoV4Cards = createVideoCards(GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_NUM_VIDEO_CARDS);
+        videoCards.addAll(videoV3Cards);
+        videoCards.addAll(videoV4Cards);
         List<GpuHost> hostList = createGpuHosts(GPUHOSTSV3, GPUHOSTSV4, videoCards);
-
 
         // Create a DatacenterCharacteristics object that stores the
         // properties of a data center: architecture, OS, list of

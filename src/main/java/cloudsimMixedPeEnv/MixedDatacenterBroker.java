@@ -127,6 +127,16 @@ public class MixedDatacenterBroker extends BrokerAbstract {
             return getVmFromCreatedList(lastSelectedVmIndex);
 
         }}
+
+    @Override
+    public List<gpu.GpuCloudlet> getgpuCloudletSubmittedList() {
+        return null;
+    }
+
+    @Override
+    public void bindgpuCloudletToVm() {
+
+    }
 }
 
 

@@ -1,15 +1,14 @@
 package gpu.performance;
 
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
-
-import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
-import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerAbstract;
 import gpu.GpuHost;
+import gpu.GpuPe;
 import gpu.Vgpu;
 import gpu.allocation.VideoCardAllocationPolicy;
+import gpu.provisioners.BwProvisioner;
+import gpu.provisioners.RamProvisioner;
 import org.cloudbus.cloudsim.provisioners.ResourceProvisioner;
 
+import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +26,8 @@ public class PerformanceGpuHost extends GpuHost {
 	/**
 	 * @see GpuHost#GpuHost GpuHost
 	 */
-	public PerformanceGpuHost(int id, String type, ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner,
-							  long storage, List<Pe> peList, VmScheduler vmScheduler,
+	public PerformanceGpuHost(int id, String type, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner,
+							  long storage, List<GpuPe> peList, VmScheduler vmScheduler,
 							  VideoCardAllocationPolicy videoCardAllocationPolicy) {
 		super(id, type, ramProvisioner, bwProvisioner, storage, peList, vmScheduler, videoCardAllocationPolicy);
 	}
@@ -36,8 +35,8 @@ public class PerformanceGpuHost extends GpuHost {
 	/**
 	 * @see GpuHost#GpuHost GpuHost
 	 */
-	public PerformanceGpuHost(int id, String type, ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner,
-			long storage, List< Pe> peList, VmScheduler vmScheduler) {
+	public PerformanceGpuHost(int id, String type, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner,
+			long storage, List< GpuPe> peList, VmScheduler vmScheduler) {
 		super(id, type, ramProvisioner, bwProvisioner, storage, peList, vmScheduler);
 	}
 

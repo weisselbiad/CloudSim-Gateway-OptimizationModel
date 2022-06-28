@@ -993,7 +993,8 @@ public class CloudSim implements Simulation {
         return abortRequested;
     }
 
-    public static SimEntity getEntityId(String name) {
+
+    public SimEntity getEntityId(String name) {
         SimEntity obj = entitiesByName.get(name);
         if (obj == null) {
             return SimEntity.NULL;

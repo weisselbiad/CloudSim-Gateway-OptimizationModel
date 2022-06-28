@@ -33,7 +33,8 @@ public class GpuHostTags {
 	/** 25 GB/s */
 	public final static int DUAL_INTEL_XEON_E5_2620_V3_BW = NETWORK_BANDWIDTH_25_GBIT_PER_SEC;
 	/** 1 Video Card Per GPU Host */
-	public final static int DUAL_INTEL_XEON_E5_2620_V3_NUM_VIDEO_CARDS = 1;
+	public final static int DUAL_INTEL_XEON_E5_2620_V3_NUM_VIDEO_CARDS = 10;
+
 	/** 1 NVIDIA Grid K1 Per Host */
 	public final static String DUAL_INTEL_XEON_E5_2620_V3_VIDEO_CARD = GridVideoCardTags.NVIDIA_K1_CARD;
 
@@ -49,7 +50,7 @@ public class GpuHostTags {
 	/** 25 GB/s */
 	public final static int DUAL_INTEL_XEON_E5_2690_V4_BW = NETWORK_BANDWIDTH_25_GBIT_PER_SEC;
 	/** 1 Video Card Per GPU Host */
-	public final static int DUAL_INTEL_XEON_E5_2690_V4_NUM_VIDEO_CARDS = 1;
+	public final static int DUAL_INTEL_XEON_E5_2690_V4_NUM_VIDEO_CARDS = 10;
 	/** 1 NVIDIA Grid K2 Per Host */
 	public final static String DUAL_INTEL_XEON_E5_2690_V4_VIDEO_CARD = GridVideoCardTags.NVIDIA_K2_CARD;
 

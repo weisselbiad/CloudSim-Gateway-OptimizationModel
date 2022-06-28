@@ -180,6 +180,12 @@ class VmNull implements Vm {
         return this;
     }
     @Override public double updateProcessing(double currentTime, MipsShare mipsShare) { return 0.0; }
+
+    @Override
+    public double updategpuVmProcessing(double currentTime, List<Double> mipsShare) {
+        return 0;
+    }
+
     @Override public double updateProcessing(MipsShare mipsShare) { return 0; }
     @Override public Vm setCloudletScheduler(CloudletScheduler cloudletScheduler) {
         return this;

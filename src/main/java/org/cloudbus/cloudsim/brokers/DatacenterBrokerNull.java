@@ -23,6 +23,7 @@
  */
 package org.cloudbus.cloudsim.brokers;
 
+import gpu.GpuCloudlet;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEntityNullBase;
@@ -81,6 +82,17 @@ final class DatacenterBrokerNull implements DatacenterBroker, SimEntityNullBase 
     @Override public DatacenterBroker setVmDestructionDelayFunction(Function<Vm, Double> function) { return this; }
     @Override public DatacenterBroker setVmDestructionDelay(double delay) { return this; }
     @Override public List<? extends Cloudlet> getCloudletSubmittedList() { return Collections.emptyList(); }
+
+    @Override
+    public List<GpuCloudlet> getgpuCloudletSubmittedList() {
+        return null;
+    }
+
+    @Override
+    public void bindgpuCloudletToVm() {
+
+    }
+
     @Override public <T extends Vm> List<T> getVmFailedList() { return Collections.emptyList(); }
     @Override public boolean isRetryFailedVms() { return false; }
     @Override public double getFailedVmsRetryDelay() { return 0; }

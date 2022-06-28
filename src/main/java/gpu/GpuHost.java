@@ -53,6 +53,15 @@ public class GpuHost extends HostSimple implements Host{
 		setGpuHostFailed(false);
 	}
 
+	public GpuHost(int id, String type, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner, long storage,
+				   List<? extends GpuPe> peList, VmScheduler vmScheduler) {
+		super(ramProvisioner, bwProvisioner, storage, vmScheduler);
+		setGpuPeList(peList);
+		setId(id);
+		setType(type);
+		setVideoCardAllocationPolicy(null);
+	}
+
 	public Vm getVm(int vmId, int userId) {
 		for (GpuVm vm : getGpuVmList()) {
 			if (vm.getId() == vmId && vm.getUserId() == userId) {

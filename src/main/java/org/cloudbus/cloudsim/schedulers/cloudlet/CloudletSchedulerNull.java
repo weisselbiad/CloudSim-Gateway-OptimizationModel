@@ -1,5 +1,6 @@
 package org.cloudbus.cloudsim.schedulers.cloudlet;
 
+import gpu.GpuCloudlet;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletExecution;
 import org.cloudbus.cloudsim.schedulers.MipsShare;
@@ -80,4 +81,29 @@ final class CloudletSchedulerNull implements CloudletScheduler {
     @Override public void clear() {/**/}
     @Override public CloudletScheduler addOnCloudletResourceAllocationFail(EventListener<CloudletResourceAllocationFailEventInfo> listener) { return this; }
     @Override public boolean removeOnCloudletResourceAllocationFail(EventListener<CloudletResourceAllocationFailEventInfo> listener) { return false; }
+
+    @Override
+    public double updategpuVmProcessing(double currentTime, List<Double> mipsShare) {
+        return 0;
+    }
+
+    @Override
+    public double gpucloudletSubmit(GpuCloudlet cl, double fileTransferTime) {
+        return 0;
+    }
+
+    @Override
+    public Cloudlet gpucloudletCancel(int cloudlet) {
+        return null;
+    }
+
+    @Override
+    public boolean gpucloudletPause(int cloudlet) {
+        return false;
+    }
+
+    @Override
+    public double gpucloudletResume(int cloudlet) {
+        return 0;
+    }
 }

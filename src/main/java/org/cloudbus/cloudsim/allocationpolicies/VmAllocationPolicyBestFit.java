@@ -27,7 +27,10 @@ import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 /**
@@ -48,6 +51,10 @@ import java.util.stream.Stream;
  * @see VmAllocationPolicySimple
  */
 public class VmAllocationPolicyBestFit extends VmAllocationPolicyAbstract {
+    public VmAllocationPolicyBestFit(BiFunction<VmAllocationPolicy, Vm, Optional<Host>> findHostForVmFunction) {
+        super(findHostForVmFunction);
+    }
+
     /**
      * Gets the first suitable host from the {@link #getHostList()}
      * that has the highest number of PEs in use (i.e. the least number of free PEs).
@@ -70,6 +77,21 @@ public class VmAllocationPolicyBestFit extends VmAllocationPolicyAbstract {
     @Override
     protected Optional<Host> GpuFindHostForVm(Vm vm) {
         return Optional.empty();
+    }
+
+    @Override
+    public List<Map<String, Object>> optimizeAllocation(List<? extends Vm> vmList) {
+        return null;
+    }
+
+    @Override
+    public Host getHost(Vm vm) {
+        return null;
+    }
+
+    @Override
+    public Host getHost(int vmId, int userId) {
+        return null;
     }
 
 }

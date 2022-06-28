@@ -148,7 +148,7 @@ public class CloudletSchedulerSpaceShared extends CloudletSchedulerAbstract {
                 toRemove.clear();
                 for (ResCloudlet rcl : getgpuCloudletWaitingList()) {
                     if ((currentCpus - usedPes) >= rcl.getNumberOfPes()) {
-                        rcl.setCloudletStatus(Cloudlet.Status.INEXEC);
+                        rcl.setCloudletStatus(GpuCloudlet.INEXEC);
                         for (int k = 0; k < rcl.getNumberOfPes(); k++) {
                             rcl.setMachineAndPeId(0, i);
                         }
@@ -198,7 +198,7 @@ public class CloudletSchedulerSpaceShared extends CloudletSchedulerAbstract {
                 if (rcl.getRemainingCloudletLength() == 0) {
                     gpucloudletFinish(rcl);
                 } else {
-                    rcl.setCloudletStatus(Cloudlet.Status.CANCELED);
+                    rcl.setCloudletStatus(GpuCloudlet.CANCELED);
                 }
                 return rcl.getCloudlet();
             }
@@ -215,7 +215,7 @@ public class CloudletSchedulerSpaceShared extends CloudletSchedulerAbstract {
         // Finally, looks in the waiting list
         for (ResCloudlet rcl : getgpuCloudletWaitingList()) {
             if (rcl.getCloudletId() == cloudletId) {
-                rcl.setCloudletStatus(Cloudlet.Status.CANCELED);
+                rcl.setCloudletStatus(GpuCloudlet.CANCELED);
                 getgpuCloudletWaitingList().remove(rcl);
                 return rcl.getCloudlet();
             }
@@ -244,7 +244,7 @@ public class CloudletSchedulerSpaceShared extends CloudletSchedulerAbstract {
             if (rgl.getRemainingCloudletLength() == 0) {
                 gpucloudletFinish(rgl);
             } else {
-                rgl.setCloudletStatus(Cloudlet.Status.PAUSED);
+                rgl.setCloudletStatus(GpuCloudlet.PAUSED);
                 getgpuCloudletPausedList().add(rgl);
             }
             return true;
@@ -268,7 +268,7 @@ public class CloudletSchedulerSpaceShared extends CloudletSchedulerAbstract {
             if (rgl.getRemainingCloudletLength() == 0) {
                 gpucloudletFinish(rgl);
             } else {
-                rgl.setCloudletStatus(Cloudlet.Status.PAUSED);
+                rgl.setCloudletStatus(GpuCloudlet.PAUSED);
                 getgpuCloudletPausedList().add(rgl);
             }
             return true;
@@ -297,7 +297,7 @@ public class CloudletSchedulerSpaceShared extends CloudletSchedulerAbstract {
 
             // it can go to the exec list
             if ((currentCpus - usedPes) >= rcl.getNumberOfPes()) {
-                rcl.setCloudletStatus(Cloudlet.Status.INEXEC);
+                rcl.setCloudletStatus(GpuCloudlet.INEXEC);
                 for (int i = 0; i < rcl.getNumberOfPes(); i++) {
                     rcl.setMachineAndPeId(0, i);
                 }
@@ -327,7 +327,7 @@ public class CloudletSchedulerSpaceShared extends CloudletSchedulerAbstract {
 
                 return estimatedFinishTime;
             } else {// no enough free PEs: go to the waiting queue
-                rcl.setCloudletStatus(Cloudlet.Status.QUEUED);
+                rcl.setCloudletStatus(GpuCloudlet.QUEUED);
 
                 long size = rcl.getRemainingCloudletLength();
                 size *= rcl.getNumberOfPes();
@@ -347,7 +347,7 @@ public class CloudletSchedulerSpaceShared extends CloudletSchedulerAbstract {
 // it can go to the exec list
         if ((currentCpus - usedPes) >= cloudlet.getNumberOfPes()) {
             ResCloudlet rcl = new ResCloudlet(cloudlet);
-            rcl.setCloudletStatus(Cloudlet.Status.INEXEC);
+            rcl.setCloudletStatus(GpuCloudlet.INEXEC);
             for (int i = 0; i < cloudlet.getNumberOfPes(); i++) {
                 rcl.setMachineAndPeId(0, i);
             }
@@ -355,7 +355,7 @@ public class CloudletSchedulerSpaceShared extends CloudletSchedulerAbstract {
             usedPes += cloudlet.getNumberOfPes();
         } else {// no enough free PEs: go to the waiting queue
             ResCloudlet rcl = new ResCloudlet(cloudlet);
-            rcl.setCloudletStatus(Cloudlet.Status.QUEUED);
+            rcl.setCloudletStatus(GpuCloudlet.QUEUED);
             getgpuCloudletWaitingList().add(rcl);
             return 0.0;
         }
@@ -387,7 +387,7 @@ public class CloudletSchedulerSpaceShared extends CloudletSchedulerAbstract {
 
     @Override
     public void gpucloudletFinish(ResCloudlet rcl) {
-        rcl.setCloudletStatus(Cloudlet.Status.SUCCESS);
+        rcl.setCloudletStatus(GpuCloudlet.SUCCESS);
         rcl.finalizeCloudlet();
         getgpuCloudletFinishedList().add(rcl);
         usedPes -= rcl.getNumberOfPes();

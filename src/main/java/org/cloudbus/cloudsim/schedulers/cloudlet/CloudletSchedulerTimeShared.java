@@ -185,7 +185,7 @@ public class CloudletSchedulerTimeShared extends CloudletSchedulerAbstract {
     @Override
     public double gpucloudletSubmit(GpuCloudlet cloudlet, double fileTransferTime) {
         ResCloudlet rcl = new ResCloudlet(cloudlet);
-        rcl.setCloudletStatus(Cloudlet.Status.INEXEC);
+        rcl.setCloudletStatus(GpuCloudlet.INEXEC);
         for (int i = 0; i < cloudlet.getNumberOfPes(); i++) {
             rcl.setMachineAndPeId(0, i);
         }
@@ -241,7 +241,7 @@ public class CloudletSchedulerTimeShared extends CloudletSchedulerAbstract {
             if (rcl.getRemainingCloudletLength() == 0) {
                 gpucloudletFinish(rcl);
             } else {
-                rcl.setCloudletStatus(Cloudlet.Status.CANCELED);
+                rcl.setCloudletStatus(GpuCloudlet.CANCELED);
             }
             return rcl.getCloudlet();
         }
@@ -252,7 +252,7 @@ public class CloudletSchedulerTimeShared extends CloudletSchedulerAbstract {
         for (ResCloudlet rcl : getgpuCloudletPausedList()) {
             if (rcl.getCloudletId() == cloudletId) {
                 found = true;
-                rcl.setCloudletStatus(Cloudlet.Status.CANCELED);
+                rcl.setCloudletStatus(GpuCloudlet.CANCELED);
                 break;
             }
             position++;
@@ -283,7 +283,7 @@ public class CloudletSchedulerTimeShared extends CloudletSchedulerAbstract {
             if (rcl.getRemainingCloudletLength() == 0) {
                 gpucloudletFinish(rcl);
             } else {
-                rcl.setCloudletStatus(Cloudlet.Status.PAUSED);
+                rcl.setCloudletStatus(GpuCloudlet.PAUSED);
                 getgpuCloudletPausedList().add(rcl);
             }
             return true;
@@ -307,7 +307,7 @@ public class CloudletSchedulerTimeShared extends CloudletSchedulerAbstract {
 
         if (found) {
             ResCloudlet rgl = getgpuCloudletPausedList().remove(position);
-            rgl.setCloudletStatus(Cloudlet.Status.INEXEC);
+            rgl.setCloudletStatus(GpuCloudlet.INEXEC);
             getgpuCloudletExecList().add(rgl);
 
             // calculate the expected time for cloudlet completion
@@ -325,7 +325,7 @@ public class CloudletSchedulerTimeShared extends CloudletSchedulerAbstract {
 
     @Override
     public void gpucloudletFinish(ResCloudlet rcl) {
-        rcl.setCloudletStatus(Cloudlet.Status.SUCCESS);
+        rcl.setCloudletStatus(GpuCloudlet.SUCCESS);
         rcl.finalizeCloudlet();
         getgpuCloudletFinishedList().add(rcl);
     }

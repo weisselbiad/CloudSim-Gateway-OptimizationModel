@@ -26,7 +26,10 @@ package org.cloudbus.cloudsim.allocationpolicies;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 /**
  * A <b>Round-Robin VM allocation policy</b>
@@ -57,6 +60,10 @@ public class VmAllocationPolicyRoundRobin extends VmAllocationPolicyAbstract imp
      */
     private int lastHostIndex;
 
+    public VmAllocationPolicyRoundRobin(BiFunction<VmAllocationPolicy, Vm, Optional<Host>> findHostForVmFunction) {
+        super(findHostForVmFunction);
+    }
+
     @Override
     protected Optional<Host> defaultFindHostForVm(final Vm vm) {
         final var hostList = getHostList();
@@ -78,5 +85,20 @@ public class VmAllocationPolicyRoundRobin extends VmAllocationPolicyAbstract imp
     @Override
     protected Optional<Host> GpuFindHostForVm(Vm vm) {
         return Optional.empty();
+    }
+
+    @Override
+    public List<Map<String, Object>> optimizeAllocation(List<? extends Vm> vmList) {
+        return null;
+    }
+
+    @Override
+    public Host getHost(Vm vm) {
+        return null;
+    }
+
+    @Override
+    public Host getHost(int vmId, int userId) {
+        return null;
     }
 }

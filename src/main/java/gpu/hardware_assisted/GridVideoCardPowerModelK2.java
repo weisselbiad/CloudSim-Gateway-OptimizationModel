@@ -41,7 +41,7 @@ public class GridVideoCardPowerModelK2 implements VideoCardPowerModel {
 			if (!pgpuScaleFactorMap.containsKey(pgpu)) {
 				double gridK2Frequency = 745;
 				double pgpuFrequency = GridVideoCardTags.getGpuPeFrequencyFromMips(GridVideoCardTags.NVIDIA_K2_CARD,
-						pgpu.getPeList().get(0).getAllocatedResource());
+						pgpu.getPeList().get(0).getMips());
 				double scaleFactor = (pgpuFrequency - gridK2Frequency) / gridK2Frequency;
 				scaleFactor = Math.exp(scaleFactor);
 				pgpuScaleFactorMap.put(pgpu, scaleFactor);
@@ -50,7 +50,7 @@ public class GridVideoCardPowerModelK2 implements VideoCardPowerModel {
 			double pgpuPower = 0.0;
 			if (!this.powerGate || this.powerGate && utilization > 0.0) {
 				pgpuPower = powerFunction(GridVideoCardTags.getGpuPeFrequencyFromMips(GridVideoCardTags.NVIDIA_K2_CARD,
-						pgpu.getPeList().get(0).getAllocatedResource()), utilization);
+						pgpu.getPeList().get(0).getMips()), utilization);
 			}
 			pgpuPower *= pgpuScaleFactorMap.get(pgpu);
 			totalVideoCardPower += pgpuPower;

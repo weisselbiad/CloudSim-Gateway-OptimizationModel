@@ -516,4 +516,5 @@ public interface Simulation {
      * @return
      */
     boolean isAbortRequested();
+
 }

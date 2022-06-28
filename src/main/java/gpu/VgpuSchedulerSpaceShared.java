@@ -2,8 +2,7 @@ package gpu;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.cloudbus.cloudsim.resources.Pe;
-import org.cloudbus.cloudsim.resources.PeSimple;
+
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
 import gpu.selection.PgpuSelectionPolicy;
@@ -42,8 +41,8 @@ public class VgpuSchedulerSpaceShared extends VgpuScheduler {
 		pgpu.getGddramProvisioner().deallocateGddramForVgpu(vgpu);
 		pgpu.getBwProvisioner().deallocateBwForVgpu(vgpu);
 		getPgpuVgpuMap().get(pgpu).remove(vgpu);
-		for (Pe pe : getVgpuPeMap().get(vgpu)) {
-			pe.getPeProvisioner().deallocateResourceForVm(vgpu.getVm());
+		for (GpuPe pe : getVgpuPeMap().get(vgpu)) {
+			pe.getPeProvisioner().deallocateMipsForVm(vgpu.getVm());
 		}
 		getVgpuPeMap().remove(vgpu);
 		getMipsMap().remove(vgpu);
@@ -60,12 +59,12 @@ public class VgpuSchedulerSpaceShared extends VgpuScheduler {
 				|| !pgpu.getBwProvisioner().isSuitableForVgpu(vgpu, bwShare)) {
 			return false;
 		}
-		List<Pe> pgpuPes = pgpu.getPeList();
+		List<GpuPe> pgpuPes = pgpu.getPeList();
 		int freePes = CollectionUtils.countMatches(pgpuPes, new Predicate() {
 			@Override
 			public boolean evaluate(Object arg) {
-				Pe pe = (Pe) arg;
-				if (pe.getPeProvisioner().getTotalAllocatedResource() == 0) {
+				GpuPe pe = (GpuPe) arg;
+				if (pe.getPeProvisioner().getTotalAllocatedMips() == 0) {
 					return true;
 				}
 				return false;
@@ -77,7 +76,7 @@ public class VgpuSchedulerSpaceShared extends VgpuScheduler {
 		}
 
 		for (int i = 0; i < mipsShare.size(); i++) {
-			if (mipsShare.get(i) > pgpuPes.get(i).getPeProvisioner().getAvailableResource()) {
+			if (mipsShare.get(i) > pgpuPes.get(i).getPeProvisioner().getAvailableMips()) {
 				return false;
 			}
 		}
@@ -98,20 +97,20 @@ public class VgpuSchedulerSpaceShared extends VgpuScheduler {
 		// allocated gddram bandwidth
 		pgpu.getBwProvisioner().allocateBwForVgpu(vgpu, bwShare);
 		// and finally, select pes
-		List<Pe> selectedPgpuPes = (List<Pe>) CollectionUtils.select(pgpu.getPeList(), new Predicate() {
+		List<GpuPe> selectedPgpuPes = (List<GpuPe>) CollectionUtils.select(pgpu.getPeList(), new Predicate() {
 			@Override
 			public boolean evaluate(Object arg) {
-				Pe pe = (Pe) arg;
-				if (pe.getPeProvisioner().getTotalAllocatedResource() == 0) {
+				GpuPe pe = (GpuPe) arg;
+				if (pe.getPeProvisioner().getTotalAllocatedMips() == 0) {
 					return true;
 				}
 				return false;
 			}
 		});
-		List<Pe> selectedPes = new ArrayList<Pe>();
+		List<GpuPe> selectedPes = new ArrayList<GpuPe>();
 		for (int i = 0; i < mipsShare.size(); i++) {
-			Pe pe = selectedPgpuPes.get(i);
-			pe.getPeProvisioner().allocateResourceForVm(vm, mipsShare.get(i));
+			GpuPe pe = selectedPgpuPes.get(i);
+			pe.getPeProvisioner().allocateMipsForVm((GpuVm) vm, mipsShare.get(i));
 			selectedPes.add(pe);
 		}
 		getPgpuVgpuMap().get(pgpu).add(vgpu);
