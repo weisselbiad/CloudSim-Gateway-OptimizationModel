@@ -1,6 +1,7 @@
 package gpu;
 
 import gpu.provisioners.GpuPeProvisioner;
+import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.resources.PeSimple;
 
 

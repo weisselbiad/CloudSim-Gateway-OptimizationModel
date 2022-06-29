@@ -208,6 +208,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
     /** The number of submitted cloudlets. */
     protected int cloudletsSubmitted;
 
+
     /** The number of requests to create VM. */
     protected int vmsRequested;
 
@@ -418,7 +419,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
         sortCloudletsIfComparatorIsSet(list);
         configureEntities(list);
         lastSubmittedCloudlet = setIdForEntitiesWithoutOne(list, lastSubmittedCloudlet);
-        gpucloudletSubmittedList.addAll((List< GpuCloudlet >)list);
+        cloudletSubmittedList.addAll(list);
         setSimulationForCloudletUtilizationModels(list);
         cloudletWaitingList.addAll(list);
         wereThereWaitingCloudlets = true;

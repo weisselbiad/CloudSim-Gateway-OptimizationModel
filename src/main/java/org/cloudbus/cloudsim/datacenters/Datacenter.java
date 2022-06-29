@@ -14,6 +14,7 @@ import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.Sizeable;
 import org.cloudbus.cloudsim.hosts.Host;
+import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.power.PowerAware;
 import org.cloudbus.cloudsim.power.models.PowerModelDatacenter;
 import org.cloudbus.cloudsim.resources.DatacenterStorage;
@@ -314,4 +315,6 @@ public interface Datacenter extends SimEntity, PowerAware<PowerModelDatacenter>,
      * @return
      */
     Datacenter setHostSearchRetryDelay(double delay);
+
+    void updateActiveHostsNumber(Host host);
 }

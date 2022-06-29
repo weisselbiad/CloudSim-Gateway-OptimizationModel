@@ -60,12 +60,12 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 	/**
 	 * See {@link Datacenter#}
 	 */
-	public GpuDatacenter(String name, Simulation simulation, GpuDatacenterCharacteristics characteristics, GpuVmAllocationPolicy vmAllocationPolicy,
+	public GpuDatacenter(String name, Simulation simulation,List<? extends Host> hostList, GpuDatacenterCharacteristics characteristics, GpuVmAllocationPolicy vmAllocationPolicy,
 						 List<SanStorage> storageList, double schedulingInterval) throws Exception {
 		super(simulation);
 		setName(name);
 
-		addHostList(getHostList());
+		setHostList(hostList);
 		setSchedulingInterval(schedulingInterval);
 		setCharacteristics(characteristics);
 		setVmAllocationPolicy(vmAllocationPolicy);
@@ -1342,7 +1342,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		}
 
 		host.setSimulation(getSimulation()).setDatacenter(this);
-		host.setActive(((HostSimple)host).isActivateOnDatacenterStartup());
+		host.setActive(((GpuHost)host).isActivateOnDatacenterStartup());
 		return nextId;
 	}
 	@Override

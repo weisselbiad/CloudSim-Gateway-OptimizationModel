@@ -7,7 +7,6 @@ import gpu.provisioners.BwProvisioner;
 import gpu.provisioners.RamProvisioner;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
-import org.cloudbus.cloudsim.resources.Pe;
 import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
 import org.cloudbus.cloudsim.vms.Vm;
 
@@ -45,11 +44,13 @@ public class GpuHost extends HostSimple implements Host{
 	 */
 	public GpuHost(int id, String type, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner, long storage,
 				   List<GpuPe> peList, VmScheduler vmScheduler, VideoCardAllocationPolicy videoCardAllocationPolicy) {
-		super( ramProvisioner, bwProvisioner, storage,  vmScheduler);
+		super( ramProvisioner, bwProvisioner, storage, vmScheduler);
 		setGpuPeList(peList);
 		setId(id);
 		setType(type);
-		setVideoCardAllocationPolicy(videoCardAllocationPolicy);
+		this.setVmScheduler(new GpuVmSchedulerSpaceShared(peList));
+
+    	setVideoCardAllocationPolicy(videoCardAllocationPolicy);
 		setGpuHostFailed(false);
 	}
 
@@ -59,6 +60,7 @@ public class GpuHost extends HostSimple implements Host{
 		setGpuPeList(peList);
 		setId(id);
 		setType(type);
+		this.setVmScheduler(new GpuVmSchedulerSpaceShared(peList));
 		setVideoCardAllocationPolicy(null);
 	}
 
@@ -86,7 +88,7 @@ public class GpuHost extends HostSimple implements Host{
 	 * 
 	 * @param type type of the host which is specified in {@link GpuHostTags}.
 	 */
-	public GpuHost(int id, String type, RamProvisioner ramProvisioner, RamProvisioner bwProvisioner, long storage,
+	public GpuHost(int id, String type, RamProvisioner ramProvisioner, BwProvisioner bwProvisioner, long storage,
 			 VmScheduler vmScheduler) {
 		super(ramProvisioner, bwProvisioner, storage,  vmScheduler);
 		setId(id);

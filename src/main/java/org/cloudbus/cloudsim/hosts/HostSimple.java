@@ -8,6 +8,9 @@ package org.cloudbus.cloudsim.hosts;
 
 
 import gpu.GpuVmSchedulerAbstract;
+import gpu.GpuVmSchedulerSpaceShared;
+import gpu.provisioners.BwProvisionerSimple;
+import gpu.provisioners.RamProvisionerSimple;
 import org.cloudbus.cloudsim.core.*;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
@@ -244,12 +247,16 @@ public class HostSimple implements Host {
         this(ram, bw, new HarddriveStorage(storage), peList);
     }
 
+
+
     public HostSimple(
         final long ram, final long bw,
         final HarddriveStorage storage, final List<Pe> peList)
     {
         this(ram, bw, storage, peList, true);
     }
+
+
 
     /**
      * Creates a Host without a pre-defined ID. It uses a {@link ResourceProvisionerSimple}
@@ -313,6 +320,7 @@ public class HostSimple implements Host {
 
     public HostSimple( ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner, long storage,
                    List< Pe> peList, VmScheduler vmScheduler) {
+        this(ramProvisioner.getCapacity(), bwProvisioner.getCapacity(), storage, peList);
         setVmScheduler(vmScheduler);
         setPeList(peList);
         setDefaultStorageCapacity(storage);
@@ -324,14 +332,55 @@ public class HostSimple implements Host {
     }
     public HostSimple( ResourceProvisioner ramProvisioner, ResourceProvisioner bwProvisioner, long storage,
                         VmScheduler vmScheduler) {
+        this(ramProvisioner.getCapacity(), bwProvisioner.getCapacity(), storage,true);
+
+        setId(id);
         setVmScheduler(vmScheduler);
         setDefaultStorageCapacity(storage);
         setBwProvisioner(bwProvisioner);
         setRamProvisioner(ramProvisioner);
-        setBwProvisioner(bwProvisioner);
-        setId(id);
+
 
     }
+
+    public HostSimple(
+            final long ram, final long bw, final long storage,
+             final boolean activate)
+    {
+        this.setId(-1);
+        this.setSimulation(Simulation.NULL);
+        this.idleShutdownDeadline = DEF_IDLE_SHUTDOWN_DEADLINE;
+        this.lazySuitabilityEvaluation = true;
+
+        this.ram = new Ram(ram);
+        this.bw = new Bandwidth(bw);
+        this.disk = requireNonNull(new HarddriveStorage(storage));
+        this.setRamProvisioner(new RamProvisionerSimple((int)ram));
+        this.setBwProvisioner(new BwProvisionerSimple(bw));
+
+
+
+        this.shutdownTime = -1;
+        this.setDatacenter(Datacenter.NULL);
+
+        this.onUpdateProcessingListeners = new HashSet<>();
+        this.onStartupListeners = new ArrayList<>();
+        this.onShutdownListeners = new ArrayList<>();
+        this.cpuUtilizationStats = HostResourceStats.NULL;
+
+        this.resources = new ArrayList<>();
+        this.vmCreatedList = new ArrayList<>();
+        this.provisioners = new ArrayList<>();
+        this.vmsMigratingIn = new HashSet<>();
+        this.vmsMigratingOut = new HashSet<>();
+        this.powerModel = PowerModelHost.NULL;
+        this.stateHistory = new LinkedList<>();
+        this.activateOnDatacenterStartup = activate;
+    }
+
+
+
+
 
     /**
      * Gets the Default RAM capacity (in MB) for creating Hosts.
@@ -631,7 +680,7 @@ public class HostSimple implements Host {
         }
 
         this.active = activate;
-        ((DatacenterSimple) datacenter).updateActiveHostsNumber(this);
+        ( datacenter).updateActiveHostsNumber(this);
         activationChangeInProgress = false;
         notifyStartupOrShutdown(activate, wasActive);
     }

@@ -240,7 +240,7 @@ public class GpuDatacenterBroker extends DatacenterBrokerAbstract {
 
 	@Override
 	public void submitgpuVmList(List<? extends Vm> list) {
-		super.submitVmList(list);
+		super.submitgpuVmList(list);
 		for (Vm vm : vmList) {
 			if (!getVmGpuCloudletMap().containsKey(vm.getUid())) {
 				getVmGpuCloudletMap().put(vm.getUid(), new ArrayList<>());

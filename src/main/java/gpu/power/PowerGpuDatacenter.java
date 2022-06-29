@@ -42,10 +42,10 @@ public class PowerGpuDatacenter extends GpuDatacenter {
 	 *      List, double)
 	 */
 	@SuppressWarnings("unchecked")
-	public PowerGpuDatacenter(String name, Simulation simulation, GpuDatacenterCharacteristics characteristics,
+	public PowerGpuDatacenter(String name, Simulation simulation, List<? extends Host> hostList ,GpuDatacenterCharacteristics characteristics,
 							  GpuVmAllocationPolicy vmAllocationPolicy, List<SanStorage> storageList, double schedulingInterval)
 			throws Exception {
-		super(name, simulation, characteristics, vmAllocationPolicy, storageList, schedulingInterval);
+		super(name, simulation, hostList,characteristics, vmAllocationPolicy, storageList, schedulingInterval);
 		setHostEnergyMap(new HashMap<PowerGpuHost, Double>());
 		setHostCpuEnergyMap(new HashMap<PowerGpuHost, Double>());
 		setHostVideoCardEnergyMap(new HashMap<PowerGpuHost, Map<PowerVideoCard, Double>>());

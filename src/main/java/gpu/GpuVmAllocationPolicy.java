@@ -43,7 +43,7 @@ public abstract class GpuVmAllocationPolicy  {
 	 */
 	public GpuVmAllocationPolicy(List<? extends Host> list) {
 		setVmTable(new HashMap<String, Host>());
-		setGpuHostList(getHostList());
+		setGpuHostList((List<GpuHost>) list);
 		setVgpuHosts(new HashMap<Vgpu, GpuHost>());
 		setHostList(list);
 	}
@@ -186,7 +186,6 @@ public abstract class GpuVmAllocationPolicy  {
 	 *
 	 * @return the host list
 	 */
-	@SuppressWarnings("unchecked")
 	public <T extends Host> List<T> getHostList() {
 		return (List<T>) hostList;
 	}

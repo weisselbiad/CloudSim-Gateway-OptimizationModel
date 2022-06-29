@@ -97,6 +97,12 @@ final class DatacenterNull implements Datacenter, SimEntityNullBase {
     @Override public Datacenter disableMigrations() { return this; }
     @Override public double getHostSearchRetryDelay() { return 0; }
     @Override public Datacenter setHostSearchRetryDelay(double delay) { return this; }
+
+    @Override
+    public void updateActiveHostsNumber(Host host) {
+
+    }
+
     @Override public String toString() { return "Datacenter.NULL"; }
     @Override public double getTimeZone() { return Integer.MAX_VALUE; }
     @Override public TimeZoned setTimeZone(double timeZone) { return this; }

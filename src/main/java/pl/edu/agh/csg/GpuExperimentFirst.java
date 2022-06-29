@@ -88,6 +88,8 @@ public class GpuExperimentFirst {
     private List<Cloudlet> cloudletList;
     private List<GpuCloudlet> gpucloudletList;
     private Datacenter datacenter0;
+    private GpuDatacenter gpudatacenter;
+    private GpuDatacenterBroker gpubroker;
 
 
     public static void main(String[] args) throws Exception {
@@ -101,26 +103,18 @@ public class GpuExperimentFirst {
 
         simulation = new CloudSim();
         datacenter0 = createDatacenter();
-
-        //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
-        GpuDatacenter gpudatacenter = createGpuDatacenter(simulation,"GpuDatacenter");
-        GpuDatacenterBroker gpubroker = createGpuBroker(simulation,"GpuBroker");
-
-
-        gpuvmList = createGpuVms();
-
-
-        gpucloudletList = createGpuCloudlet((int)broker0.getId());
-
-        gpubroker.submitVmList(gpuvmList);
-        gpubroker.submitCloudletList(gpucloudletList);
-
         broker0 = new DatacenterBrokerSimple(simulation);
-
         vmList = createVms();
         cloudletList = createCloudlets();
         broker0.submitVmList(vmList);
         broker0.submitCloudletList(cloudletList);
+
+        gpudatacenter = createGpuDatacenter(simulation,"GpuDatacenter");
+        gpubroker = createGpuBroker(simulation,"GpuBroker");
+        gpuvmList = createGpuVms();
+        gpucloudletList = createGpuCloudlet((int)gpubroker.getId());
+        gpubroker.submitgpuVmList(gpuvmList);
+        gpubroker.submitgpuCloudletList(gpucloudletList);
 
         simulation.start();
 
@@ -279,7 +273,7 @@ public class GpuExperimentFirst {
     }
         for (int i=0; i < GPUHOSTSV4; i++){
             // Create a host
-            int hostId = i;
+            int hostId = i+hostList.size()+1;
 
             // A Machine contains one or more PEs or CPUs/Cores.
             List<GpuPe> peList = new ArrayList<GpuPe>();
@@ -345,7 +339,7 @@ public class GpuExperimentFirst {
         // We need to create a Datacenter object.
         GpuDatacenter datacenter = null;
         try {
-            datacenter = new GpuDatacenter(name,simulation, characteristics, new GridGpuVmAllocationPolicyBreadthFirst(hostList),
+             datacenter = new GpuDatacenter(name,simulation, hostList ,characteristics, new GridGpuVmAllocationPolicyBreadthFirst(hostList),
                     storageList, schedulingInterval);
         } catch (Exception e) {
             e.printStackTrace();
@@ -353,8 +347,6 @@ public class GpuExperimentFirst {
 
         return datacenter;
     }
-
-
 
     /**
      * Creates a list of VMs.
