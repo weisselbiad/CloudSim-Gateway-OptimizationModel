@@ -444,7 +444,7 @@ public interface DatacenterBroker extends SimEntity {
     List<? extends Cloudlet> getCloudletSubmittedList();
     List<GpuCloudlet> getgpuCloudletSubmittedList();
 
-    void bindgpuCloudletToVm();
+    void bindgpuCloudletToVm(int cloudletId, int vmId);
 
     /**
      * Gets a List of VMs submitted to the broker that have failed to be created inside

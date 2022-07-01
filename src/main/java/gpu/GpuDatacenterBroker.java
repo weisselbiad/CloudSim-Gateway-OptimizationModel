@@ -184,15 +184,6 @@ public class GpuDatacenterBroker extends DatacenterBrokerAbstract {
 		}
 	}
 
-	@Override
-	protected Datacenter defaultDatacenterMapper(Datacenter lastDatacenter, Vm vm) {
-		return null;
-	}
-
-	@Override
-	protected Vm defaultVmMapper(Cloudlet cloudlet) {
-		return null;
-	}
 
 	@Override
 	protected void processOtherEvent(SimEvent ev) {
@@ -214,7 +205,7 @@ public class GpuDatacenterBroker extends DatacenterBrokerAbstract {
 		cloudletsSubmitted++;
 	}
 
-	@Override
+
 	public void bindgpuCloudletToVm(int cloudletId, int vmId) {
 		CloudletList.getById(getgpuCloudletList(), cloudletId).setVm(getVmFromCreatedList(vmId));
 	}
@@ -226,17 +217,18 @@ public class GpuDatacenterBroker extends DatacenterBrokerAbstract {
 			throw new IllegalArgumentException("no vm submitted.");
 		}
 		for (GpuCloudlet cloudlet : getgpuCloudletList()) {
-			if (cloudlet.getVm().getId() < 0) {
+			if (cloudlet.getVmId() < 0) {
 				throw new IllegalArgumentException("cloudlet (#" + cloudlet.getId() + ") has no VM.");
 			}
-			Vm vm = VmList.getById(getgpuVmList(), (int)cloudlet.getVm().getId());
+			GpuVm vm = VmList.getById(getgpuVmList(), cloudlet.getVmId());
 			if (vm == null) {
-				throw new IllegalArgumentException("no such vm (Id #" + cloudlet.getVm().getId() + ") exists for cloudlet (#"
+				throw new IllegalArgumentException("no such vm (Id #" + cloudlet.getVmId() + ") exists for cloudlet (#"
 						+ cloudlet.getId() + ")");
 			}
 			getVmGpuCloudletMap().get(vm.getUid()).add((GpuCloudlet) cloudlet);
 		}
 	}
+
 
 	@Override
 	public void submitgpuVmList(List<? extends Vm> list) {
@@ -286,9 +278,43 @@ public class GpuDatacenterBroker extends DatacenterBrokerAbstract {
 		return gpucloudletSubmittedList;
 	}
 
-	@Override
-	public void bindgpuCloudletToVm() {
-		throw new NotImplementedException("not implemented");
+	private int lastSelectedDcIndex = -1;
 
+	@Override
+	protected Datacenter defaultDatacenterMapper(final Datacenter lastDatacenter, final Vm vm) {
+		if(getDatacenterList().isEmpty()) {
+			throw new IllegalStateException("You don't have any Datacenter created.");
+		}
+
+		if (lastDatacenter != Datacenter.NULL) {
+			return getDatacenterList().get(lastSelectedDcIndex);
+		}
+
+		/*If all Datacenter were tried already, return Datacenter.NULL to indicate
+		 * there isn't a suitable Datacenter to place waiting VMs.*/
+		if(lastSelectedDcIndex == getDatacenterList().size()-1){
+			return Datacenter.NULL;
+		}
+
+		return getDatacenterList().get(++lastSelectedDcIndex);
 	}
+
+	private int lastSelectedVmIndex =-1;
+
+	protected Vm defaultVmMapper(final Cloudlet cloudlet) {
+		if (cloudlet.isBoundToVm()) {
+			return cloudlet.getVm();
+		}
+
+		if (getgpuVmList().isEmpty()) {
+			return Vm.NULL;
+		}
+
+        /*If the cloudlet isn't bound to a specific VM or the bound VM was not created,
+        cyclically selects the next VM on the list of created VMs.*/
+		lastSelectedVmIndex = ++lastSelectedVmIndex % getgpuVmList().size();
+		return  getgpuVmsCreatedList().get(lastSelectedVmIndex);
+	}
+
+
 }

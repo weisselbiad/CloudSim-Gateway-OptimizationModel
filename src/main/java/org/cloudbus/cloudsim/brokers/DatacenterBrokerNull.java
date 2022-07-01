@@ -89,9 +89,10 @@ final class DatacenterBrokerNull implements DatacenterBroker, SimEntityNullBase 
     }
 
     @Override
-    public void bindgpuCloudletToVm() {
+    public void bindgpuCloudletToVm(int cloudletId, int vmId) {
 
     }
+
 
     @Override public <T extends Vm> List<T> getVmFailedList() { return Collections.emptyList(); }
     @Override public boolean isRetryFailedVms() { return false; }

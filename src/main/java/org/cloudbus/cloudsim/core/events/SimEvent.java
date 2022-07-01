@@ -93,7 +93,7 @@ public interface SimEvent extends Comparable<SimEvent>, EventInfo {
      *
      * @return a reference to the data object
      */
-    Object getData();
+    Object  getData();
 
     /**
      * Sets the source entity of this event, that defines its sender.

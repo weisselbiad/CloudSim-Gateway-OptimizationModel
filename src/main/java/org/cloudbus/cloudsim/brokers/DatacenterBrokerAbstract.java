@@ -9,6 +9,7 @@ package org.cloudbus.cloudsim.brokers;
 
 import gpu.GpuCloudlet;
 import gpu.GpuDatacenter;
+import gpu.GpuDatacenterBroker;
 import gpu.core.CloudSimTags;
 import gpu.core.CloudletList;
 import gpu.core.Log;
@@ -506,15 +507,16 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
 
     @Override
     public void processEvent(final SimEvent evt) {
-        if (evt.getData().equals(DatacenterSimple.class)){
-        if (processCloudletEvents(evt) || processVmEvents(evt) || processGeneralEvents(evt)) {
-            return;
-        }
+        Object sr = evt.getSource();
+        Object dst = evt.getDestination();
+        if ( sr instanceof DatacenterSimple || sr instanceof DatacenterBrokerSimple || dst instanceof DatacenterSimple || dst instanceof DatacenterBrokerSimple ) {
+            if (processCloudletEvents(evt) || processVmEvents(evt) || processGeneralEvents(evt)) {
+                return;
+            }
+        } else if (sr instanceof GpuDatacenterBroker || sr instanceof GpuDatacenter || dst instanceof GpuDatacenterBroker || dst instanceof GpuDatacenter) {
 
-        LOGGER.trace("{}: {}: Unknown event {} received.", getSimulation().clockStr(), this, evt.getTag());
-    }
-        if (evt.getData().equals(GpuDatacenter.class)){
-            switch (evt.getTag()) {
+
+        switch (evt.getTag()) {
                 // Resource characteristics request
                 case RESOURCE_CHARACTERISTICS_REQUEST:
                     processResourceCharacteristicsRequest(evt);
@@ -539,10 +541,12 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
                 default:
                     processOtherEvent(evt);
                     break;
-            }
-        }
 
-        }
+
+            }
+        }else
+        LOGGER.trace("{}: {}: Unknown event {} received.", getSimulation().clockStr(), this, evt.getTag());
+    }
 
     private boolean processCloudletEvents(final SimEvent evt) {
         return switch (evt.getTag()) {
@@ -1447,9 +1451,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
      * @pre list !=null
      * @post $none
      *
-     * @todo The name of the method is confused with the {@link #submitCloudlets()},
-     * that in fact submit cloudlets to VMs. The term "submit" is being used
-     * ambiguously. The method {@link #submitCloudlets()} would be named "sendCloudletsToVMs"
+     *
      *
      * The method {@link #submitVmList(java.util.List)} may have
      * be checked too.
@@ -1467,10 +1469,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
      * @pre id > 0
      * @post $none
      */
-    public void bindgpuCloudletToVm(int cloudletId, int vmId) {
-        CloudletList.getById(getgpuCloudletList(), cloudletId).setVm(getVmFromCreatedList(vmId));
-    }
-
+    public abstract void bindgpuCloudletToVm(int cloudletId, int vmId);
 
     /**
      * Process the return of a request for the characteristics of a Datacenter.
@@ -1950,6 +1949,8 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
     protected void setDatacenterRequestedIdsList(List<Integer> datacenterRequestedIdsList) {
         this.datacenterRequestedIdsList = datacenterRequestedIdsList;
     }
+
+
 
 
 }

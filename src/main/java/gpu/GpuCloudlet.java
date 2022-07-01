@@ -19,7 +19,7 @@ import java.util.Objects;
 public class GpuCloudlet extends CloudletAbstract implements Cloudlet {
 	private int userId;
 	private double finishTime;
-
+	private int vmId;
 	/**
 	 * A tag associated with the GpuCloudlet. A tag can be used to describe the
 	 * application.
@@ -112,6 +112,7 @@ public class GpuCloudlet extends CloudletAbstract implements Cloudlet {
 		setUtilizationModelBw(utilizationModelBw);
 		setGpuTask(gpuTask);
 		setgpuStatus(CREATED);
+		vmId =-1;
 		finishTime = -1.0;    // meaning this Cloudlet hasn't finished yet
 
 	}
@@ -128,6 +129,7 @@ public class GpuCloudlet extends CloudletAbstract implements Cloudlet {
 		setUtilizationModelBw(utilizationModelBw);
 		setGpuTask(gpuTask);
 		setgpuStatus(CREATED);
+		vmId =-1;
 		finishTime = -1.0;    // meaning this Cloudlet hasn't finished yet
 
 	}
@@ -279,6 +281,14 @@ public class GpuCloudlet extends CloudletAbstract implements Cloudlet {
 	}
 	public double getActualCPUTime() {
 		return getFinishTime() - getExecStartTime();
+	}
+
+	public int getVmId() {
+		return vmId;
+	}
+
+	public void setVmId(final int vmId) {
+		this.vmId = vmId;
 	}
 
 }

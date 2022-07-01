@@ -134,7 +134,7 @@ public class MixedDatacenterBroker extends BrokerAbstract {
     }
 
     @Override
-    public void bindgpuCloudletToVm() {
+    public void bindgpuCloudletToVm(int cloudletId, int vmId) {
 
     }
 }

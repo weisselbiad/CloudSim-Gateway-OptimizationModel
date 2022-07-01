@@ -138,7 +138,7 @@ public class DatacenterBrokerSimple extends DatacenterBrokerAbstract {
     }
 
     @Override
-    public void bindgpuCloudletToVm() {
+    public void bindgpuCloudletToVm(int cloudletId, int vmId) {
 
     }
 }

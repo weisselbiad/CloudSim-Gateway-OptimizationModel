@@ -66,6 +66,8 @@ public class GpuExperimentFirst {
     private static final int GPUVMS260 =10;
     private static final int GPUVMS180 =10;
     private static final int GPUVMS280 = 10;
+
+    private int GPUVMSNUM = GPUVMS140+GPUVMS240+GPUVMS160+GPUVMS260+GPUVMS180+GPUVMS280;
     private static final int VM_PES = 4;
 
     private static final int CLOUDLETS = 30;
@@ -111,8 +113,15 @@ public class GpuExperimentFirst {
 
         gpudatacenter = createGpuDatacenter(simulation,"GpuDatacenter");
         gpubroker = createGpuBroker(simulation,"GpuBroker");
+
         gpuvmList = createGpuVms();
         gpucloudletList = createGpuCloudlet((int)gpubroker.getId());
+
+        for (int i = 0; i < gpucloudletList.size(); i++) {
+            GpuCloudlet cloudlet = gpucloudletList.get(i);
+            cloudlet.setVmId(i % GPUVMSNUM);
+        }
+
         gpubroker.submitgpuVmList(gpuvmList);
         gpubroker.submitgpuCloudletList(gpucloudletList);
 
@@ -422,6 +431,7 @@ public class GpuExperimentFirst {
         // Create a Vgpu
         //Vgpu vgpu = GridVgpuTags.getK180Q(simulation,id, gpuTaskScheduler);
         vm.setVgpu(vgpu);
+
 
         return vm;
     }

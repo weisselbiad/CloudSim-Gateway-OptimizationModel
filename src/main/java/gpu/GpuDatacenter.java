@@ -210,14 +210,14 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 		Vm vm = (Vm) ev.getData();
 		Log.printLine(simulation.clock() + ": Trying to Create VM #" + vm.getId() + " in " + getName());
 
-		HostSuitability result = getVmAllocationPolicy().allocateHostForVm(vm);
+		boolean result = getGpuVmAllocationPolicy().allocateHostForVm(vm);
 
 		if (ack) {
 			int[] data = new int[3];
 			data[0] = (int)getId();
 			data[1] = (int)vm.getId();
 
-			if (result.fully()) {
+			if (result) {
 				data[2] = CloudSimTags.TRUE;
 			} else {
 				data[2] = CloudSimTags.FALSE;
@@ -225,7 +225,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			send(ev.getSource(), simulation.getMinTimeBetweenEvents(), CloudSimTag.VM_CREATE_ACK, data);
 		}
 
-		if (result.fully()) {
+		if (result) {
 			getVmList().add(vm);
 			GpuVm gpuVm = (GpuVm) vm;
 			Vgpu vgpu = gpuVm.getVgpu();
@@ -722,10 +722,10 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 			Vm vm = (Vm) migrate.get("vm");
 			Host host = (Host) migrate.get("host");
 
-			getVmAllocationPolicy().deallocateHostForVm(vm);
+			getGpuVmAllocationPolicy().deallocateHostForVm(vm);
 			host.removeMigratingInVm(vm);
-			HostSuitability result = getVmAllocationPolicy().allocateHostForVm(vm, host);
-			if (!result.fully()) {
+			boolean result = getGpuVmAllocationPolicy().allocateHostForVm(vm, host);
+			if (!result) {
 				Log.printLine("[Datacenter.processVmMigrate] VM allocation to the destination host failed");
 				System.exit(0);
 			}
@@ -735,7 +735,7 @@ public class GpuDatacenter extends CloudSimEntity implements Datacenter {
 				data[0] = (int)getId();
 				data[1] = (int)vm.getId();
 
-				if (result.fully()) {
+				if (result) {
 					data[2] = CloudSimTags.TRUE;
 				} else {
 					data[2] = CloudSimTags.FALSE;
