@@ -1,7 +1,14 @@
 package org.cloudbus.cloudsim.core.events;
 
+import gpu.GpuDatacenter;
+import gpu.GpuDatacenterBroker;
+import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
+import org.cloudbus.cloudsim.core.CloudInformationService;
+import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
+
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -46,7 +53,7 @@ public class DeferredQueue implements EventQueue {
         // with the same event_time(). Yes, this matters.
         final double eventTime = newEvent.getTime();
         maxSize = Math.max(maxSize, eventList.size());
-        if (eventTime >= maxTime) {
+        if (eventTime >= maxTime || checkEvent(newEvent)) {
             eventList.add(newEvent);
             maxTime = eventTime;
             addedToTail++;
@@ -63,7 +70,7 @@ public class DeferredQueue implements EventQueue {
          * of iterations on the best cases.
          * */
         final var reverseEvtIterator = eventList.listIterator(eventList.size() - 1);
-        while (reverseEvtIterator.hasPrevious()) {
+        while (reverseEvtIterator.hasPrevious() || checkEvent(newEvent)) {
             if (reverseEvtIterator.previous().getTime() <= eventTime) {
                 reverseEvtIterator.next();
                 reverseEvtIterator.add(newEvent);
@@ -75,6 +82,21 @@ public class DeferredQueue implements EventQueue {
         eventList.add(newEvent);
     }
 
+    public boolean checkEvent(SimEvent event){
+        Class sr =event.getSource().getClass();
+        Class dst = event.getDestination().getClass();
+        if(dst.equals(GpuDatacenter.class) || dst.equals(GpuDatacenterBroker.class)){
+            if(sr.equals(DatacenterSimple.class) || sr.equals(DatacenterBrokerSimple.class)){
+                return false;}else return true;
+        }
+        else if(dst.equals(DatacenterSimple.class)|| dst.equals(DatacenterBrokerSimple.class)){
+            if(sr.equals(GpuDatacenter.class) || sr.equals(GpuDatacenterBroker.class)){return false;}
+            else return true;}
+
+
+        else return true;
+
+    }
     /**
      * Returns an iterator to the events in the queue.
      *

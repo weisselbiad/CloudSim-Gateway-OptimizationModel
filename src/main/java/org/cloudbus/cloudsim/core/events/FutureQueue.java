@@ -8,6 +8,11 @@
 
 package org.cloudbus.cloudsim.core.events;
 
+import gpu.GpuDatacenter;
+import gpu.GpuDatacenterBroker;
+import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
+import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
+
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -41,11 +46,26 @@ public class FutureQueue implements EventQueue {
 
     @Override
     public void addEvent(final SimEvent newEvent) {
+        if(checkEvent(newEvent)){
         newEvent.setSerial(serial++);
         sortedSet.add(newEvent);
         maxEventsNumber = Math.max(maxEventsNumber, sortedSet.size());
-    }
+    }}
+    public boolean checkEvent(SimEvent event){
+        Class sr =event.getSource().getClass();
+        Class dst = event.getDestination().getClass();
+        if(dst.equals(GpuDatacenter.class) || dst.equals(GpuDatacenterBroker.class)){
+            if(sr.equals(DatacenterSimple.class) || sr.equals(DatacenterBrokerSimple.class)){
+            return false;}else return true;
+        }
+        else if(dst.equals(DatacenterSimple.class)|| dst.equals(DatacenterBrokerSimple.class)){
+            if(sr.equals(GpuDatacenter.class) || sr.equals(GpuDatacenterBroker.class)){return false;}
+            else return true;}
 
+
+        else return true;
+
+    }
     /**
      * Adds a new event to the head of the queue.
      *

@@ -7,9 +7,13 @@
  */
 package org.cloudbus.cloudsim.core;
 
+import gpu.GpuDatacenter;
+import gpu.GpuDatacenterBroker;
+import org.cloudbus.cloudsim.brokers.DatacenterBrokerSimple;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.core.events.*;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
+import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.network.topologies.NetworkTopology;
 import org.cloudbus.cloudsim.util.TimeUtil;
 import org.cloudbus.cloudsim.util.Util;
@@ -20,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
@@ -80,6 +85,7 @@ public class CloudSim implements Simulation {
 
     /** @see #getEntityList() */
     private final List<CloudSimEntity> entities;
+    //private final List<CloudSimEntity> gpuentities;
 
     /**
      * The queue of events that will be sent in a future simulation time.
@@ -132,6 +138,7 @@ public class CloudSim implements Simulation {
     private final Set<EventListener<EventInfo>> onClockTickListeners;
     private final Set<EventListener<EventInfo>> onSimulationStartListeners;
     private static Map<String, SimEntity> entitiesByName;
+  //  private static Map<String, SimEntity> gpuentitiesByName;
 
     private boolean processEventsInParallel;
 
@@ -157,6 +164,7 @@ public class CloudSim implements Simulation {
      */
     public CloudSim(final double minTimeBetweenEvents) {
         this.entities = new ArrayList<>();
+    //    this.gpuentities = new ArrayList<>();
         this.future = new FutureQueue();
         this.deferred = new DeferredQueue();
         this.waitPredicates = new HashMap<>();
@@ -202,6 +210,9 @@ public class CloudSim implements Simulation {
             for (int i = 0; i < entities.size(); i++) {
                 entities.get(i).run();
             }
+    /*        for (int i = 0; i < gpuentities.size(); i++) {
+                gpuentities.get(i).run();
+            }*/
         }
 
         shutdownEntities();
@@ -218,7 +229,10 @@ public class CloudSim implements Simulation {
         //Uses indexed loop to avoid ConcurrentModificationException
         for (int i = 0; i < entities.size(); i++) {
             entities.get(i).shutdown();
-        }
+            }
+  /*      for (int i = 0; i < gpuentities.size(); i++) {
+            gpuentities.get(i).shutdown();
+        }*/
     }
 
     @Override
@@ -335,6 +349,9 @@ public class CloudSim implements Simulation {
         entities.stream()
             .filter(CloudSimEntity::isAlive)
             .forEach(e -> sendNow(e, CloudSimTag.SIMULATION_END));
+    /*    gpuentities.stream()
+                .filter(CloudSimEntity::isAlive)
+                .forEach(e -> sendNow(e, CloudSimTag.SIMULATION_END));*/
         LOGGER.info("{}: Processing last events before simulation shutdown.", clockStr());
 
         while (true) {
@@ -446,14 +463,18 @@ public class CloudSim implements Simulation {
 
     @Override
     public int getNumEntities() {
-        return entities.size();
+        return entities.size() ;
     }
+
 
     @Override
     public List<SimEntity> getEntityList() {
         return Collections.unmodifiableList(entities);
     }
 
+ /*   public List<SimEntity> getGpuEntityList() {
+        return Collections.unmodifiableList(gpuentities);
+    }*/
     @Override
     public void addEntity(final CloudSimEntity entity) {
         requireNonNull(entity);
@@ -461,20 +482,35 @@ public class CloudSim implements Simulation {
             final var evt = new CloudSimEvent(SimEvent.Type.CREATE, 0, entity, SimEntity.NULL, CloudSimTag.NONE, entity);
             future.addEvent(evt);
         }
-
-        if (entity.getId() == -1) { // Only add once!
+  /*      if (entity instanceof GpuDatacenter || entity instanceof GpuDatacenterBroker) {
+            if (entity.getId() == -1) { // Only add once!
+                entity.setId(gpuentities.size());
+                gpuentities.add(entity);
+        }}
+        else if (entity instanceof DatacenterSimple || entity instanceof DatacenterBrokerSimple) {
+                if (entity.getId() == -1) { // Only add once!
             entity.setId(entities.size());
             entities.add(entity);
-        }
-    }
+        }}
+        else*/
+            if (entity.getId() == -1) { // Only add once!
+                entity.setId(entities.size());
+                entities.add(entity);
+
+    }}
 
     protected void removeFinishedEntity(final CloudSimEntity entity){
         if(entity.isAlive()){
             final var msg = "Alive entity %s cannot be removed from the simulation entity list.";
             throw new IllegalStateException(String.format(msg, entity));
         }
-
-        entities.remove(entity);
+ /*       if (entity instanceof GpuDatacenter || entity instanceof GpuDatacenterBroker) {
+        gpuentities.remove(entity);}
+        else if (entity instanceof DatacenterSimple || entity instanceof DatacenterBrokerSimple) {
+            entities.remove(entity);}
+        else
+            gpuentities.remove(entity);*/
+            entities.remove(entity);
     }
 
     /**
@@ -565,6 +601,12 @@ public class CloudSim implements Simulation {
                 ent.run(until);
             }
         }
+  /*      for (int i = 0; i < gpuentities.size(); i++) {
+            final CloudSimEntity ent = gpuentities.get(i);
+            if (ent.getState() == SimEntity.State.RUNNABLE) {
+                ent.run(until);
+            }
+        }*/
     }
 
     private void sendNow(final SimEntity dest, final CloudSimTag tag) {
@@ -626,7 +668,7 @@ public class CloudSim implements Simulation {
 
     /**
      * Gets a stream of events inside a specific queue that match a given predicate
-     * and are targeted to an specific entity.
+     * and are targeted to a specific entity.
      *
      * @param queue the queue to get the events from
      * @param predicate the event selection predicate
@@ -634,7 +676,8 @@ public class CloudSim implements Simulation {
      * @return a Stream of events from the queue
      */
     private Stream<SimEvent> filterEventsToDestinationEntity(final EventQueue queue, final Predicate<SimEvent> predicate, final SimEntity dest) {
-        return filterEvents(queue, predicate.and(evt -> evt.getDestination() == dest));
+         return   filterEvents(queue, predicate.and(evt -> evt.getDestination() == dest));
+
     }
 
     @Override
@@ -772,6 +815,7 @@ public class CloudSim implements Simulation {
 
         running = true;
         entities.forEach(SimEntity::start);
+  //      gpuentities.forEach(SimEntity::start);
         LOGGER.info("Entities started.");
     }
 
@@ -995,7 +1039,12 @@ public class CloudSim implements Simulation {
 
 
     public SimEntity getEntityId(String name) {
+    /*    Map<String, SimEntity> allentitiesNames = null;
+        allentitiesNames.putAll(entitiesByName);
+        allentitiesNames.putAll(gpuentitiesByName);*/
+
         SimEntity obj = entitiesByName.get(name);
+
         if (obj == null) {
             return SimEntity.NULL;
         } else {

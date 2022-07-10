@@ -16,6 +16,7 @@ import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
 
 import java.util.Calendar;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -517,4 +518,5 @@ public interface Simulation {
      */
     boolean isAbortRequested();
 
+  //  List<SimEntity> getGpuEntityList();
 }

@@ -107,6 +107,7 @@ public class GridGpuVmAllocationPolicyBreadthFirst extends GpuVmAllocationPolicy
 	}
 
 	@Override
+
 	public boolean allocateHostForVm(Vm vm) {
 		GpuVm gpuVm = (GpuVm) vm;
 		if (!gpuVm.hasVgpu()) {

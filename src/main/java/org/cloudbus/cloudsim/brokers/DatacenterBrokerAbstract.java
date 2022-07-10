@@ -1251,7 +1251,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
      * @param datacenterList the new dc list
      */
     private void setDatacenterList(final List<Datacenter> datacenterList) {
-        this.datacenterList = new ArrayList<>(datacenterList);
+        this.datacenterList = datacenterList;
         if(selectClosestDatacenter){
             this.datacenterList.sort(Comparator.comparingDouble(Datacenter::getTimeZone));
         }
