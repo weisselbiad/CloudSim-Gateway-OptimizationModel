@@ -349,7 +349,7 @@ public abstract class VmAllocationPolicyAbstract implements VmAllocationPolicy {
         //If the selected Host is not active, activate it (if it's already active, setActive has no effect)
         return optionalHost.map(host -> host.setActive(true));}
         else if (vm.getClass().equals(GpuVm.class) ){
-final var optionalHost = findHostForVmFunction == null ? GpuFindHostForVm(vm) : findHostForVmFunction.apply(this, vm);
+        final var optionalHost = findHostForVmFunction == null ? GpuFindHostForVm(vm) : findHostForVmFunction.apply(this, vm);
             //If the selected Host is not active, activate it (if it's already active, setActive has no effect)
             return optionalHost.map(host -> host.setActive(true));
         }

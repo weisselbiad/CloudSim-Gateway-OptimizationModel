@@ -185,15 +185,15 @@ public class GpuDatacenterBroker extends DatacenterBrokerAbstract {
 	}
 
 
-	@Override
-	protected void processOtherEvent(SimEvent ev) {
+
+	protected void processOtherEvent1(SimEvent ev) {
 		switch (ev.getTag()) {
 		// VM Destroy answer
 		case VM_DESTROY_ACK:
 			processVmDestroy(ev);
 			break;
 		default:
-			super.processOtherEvent(ev);
+			super.processOtherEvent1(ev);
 			break;
 		}
 	}

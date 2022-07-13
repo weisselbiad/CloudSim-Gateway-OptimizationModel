@@ -59,7 +59,7 @@ public class GpuExperiment {
     private static final int GPUVMS = 176;
     private static final int GPUVMS140 =0;
     private static final int GPUVMS240 =0;
-    private static final int GPUVMS160 =0;
+    private static final int GPUVMS160 =10;
     private static final int GPUVMS260 =0;
     private static final int GPUVMS180 =10;
     private static final int GPUVMS280 = 10;
@@ -121,7 +121,7 @@ public class GpuExperiment {
         simulation.start();
 
         final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new org.cloudsimplus.builders.tables.CloudletsTableBuilder(finishedCloudlets).build();
+        new CloudletsTableBuilder(finishedCloudlets).build();
 
     }
 
@@ -155,139 +155,139 @@ public class GpuExperiment {
 
     private GpuHost createGpuHost (String hosttype){
 
-      if (hosttype == DUAL_INTEL_XEON_E5_2620_V3){
-        int numVideoCards = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_NUM_VIDEO_CARDS;
-        // To hold video cards
-        List<VideoCard> videoCards = new ArrayList<VideoCard>(numVideoCards);
-        for (int videoCardId = 0; videoCardId < numVideoCards; videoCardId++) {
-            List<Pgpu> pgpus = new ArrayList<Pgpu>();
-            // Adding an NVIDIA K1 Card
-            double mips = GridVideoCardTags.NVIDIA_K1_CARD_PE_MIPS;
-            int gddram = GridVideoCardTags.NVIDIA_K1_CARD_GPU_MEM;
-            long bw = GridVideoCardTags.NVIDIA_K1_CARD_BW_PER_BUS;
-            for (int pgpuId = 0; pgpuId < GridVideoCardTags.NVIDIA_K1_CARD_GPUS; pgpuId++) {
-                List<Pe> pes = new ArrayList<Pe>();
-                for (int peId = 0; peId < GridVideoCardTags.NVIDIA_K1_CARD_GPU_PES; peId++) {
-                    pes.add(peId, new PeSimple(mips));
+        if (hosttype == DUAL_INTEL_XEON_E5_2620_V3){
+            int numVideoCards = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_NUM_VIDEO_CARDS;
+            // To hold video cards
+            List<VideoCard> videoCards = new ArrayList<VideoCard>(numVideoCards);
+            for (int videoCardId = 0; videoCardId < numVideoCards; videoCardId++) {
+                List<Pgpu> pgpus = new ArrayList<Pgpu>();
+                // Adding an NVIDIA K1 Card
+                double mips = GridVideoCardTags.NVIDIA_K1_CARD_PE_MIPS;
+                int gddram = GridVideoCardTags.NVIDIA_K1_CARD_GPU_MEM;
+                long bw = GridVideoCardTags.NVIDIA_K1_CARD_BW_PER_BUS;
+                for (int pgpuId = 0; pgpuId < GridVideoCardTags.NVIDIA_K1_CARD_GPUS; pgpuId++) {
+                    List<Pe> pes = new ArrayList<Pe>();
+                    for (int peId = 0; peId < GridVideoCardTags.NVIDIA_K1_CARD_GPU_PES; peId++) {
+                        pes.add(peId, new PeSimple(mips));
+                    }
+                    pgpus.add(new Pgpu(pgpuId, GridVideoCardTags.NVIDIA_K1_GPU_TYPE, pes,
+                            new GpuGddramProvisionerSimple(gddram), new GpuBwProvisionerShared(bw)));
                 }
-                pgpus.add(new Pgpu(pgpuId, GridVideoCardTags.NVIDIA_K1_GPU_TYPE, pes,
-                        new GpuGddramProvisionerSimple(gddram), new GpuBwProvisionerShared(bw)));
+                // Pgpu selection policy
+                PgpuSelectionPolicy pgpuSelectionPolicy = new PgpuSelectionPolicyNull();
+
+                double performanceLoss = 0.1;
+                PerformanceModel<VgpuScheduler, Vgpu> performanceModel = new PerformanceModelGpuConstant(performanceLoss);
+                // Vgpu Scheduler
+                GridPerformanceVgpuSchedulerFairShare vgpuScheduler = new GridPerformanceVgpuSchedulerFairShare(
+                        GridVideoCardTags.NVIDIA_K1_CARD, pgpus, pgpuSelectionPolicy, performanceModel);
+
+                // PCI Express Bus Bw Provisioner
+                VideoCardBwProvisioner videoCardBwProvisioner = new VideoCardBwProvisionerShared(BusTags.PCI_E_3_X16_BW);
+                // Video Card Power Model
+                VideoCardPowerModel videoCardPowerModel = new VideoCardPowerModelNvidiaGridK1(false);
+                // Create a video card
+                VideoCard videoCard = new PowerVideoCard(videoCardId, GridVideoCardTags.NVIDIA_K1_CARD, vgpuScheduler,
+                        videoCardBwProvisioner,videoCardPowerModel);
+                videoCards.add(videoCard);
             }
-            // Pgpu selection policy
-            PgpuSelectionPolicy pgpuSelectionPolicy = new PgpuSelectionPolicyNull();
 
-            double performanceLoss = 0.1;
-            PerformanceModel<VgpuScheduler, Vgpu> performanceModel = new PerformanceModelGpuConstant(performanceLoss);
-            // Vgpu Scheduler
-            GridPerformanceVgpuSchedulerFairShare vgpuScheduler = new GridPerformanceVgpuSchedulerFairShare(
-                    GridVideoCardTags.NVIDIA_K1_CARD, pgpus, pgpuSelectionPolicy, performanceModel);
+            // A Machine contains one or more PEs or CPUs/Cores.
+            List<Pe> peList = new ArrayList<Pe>();
 
-            // PCI Express Bus Bw Provisioner
-            VideoCardBwProvisioner videoCardBwProvisioner = new VideoCardBwProvisionerShared(BusTags.PCI_E_3_X16_BW);
-            // Video Card Power Model
-            VideoCardPowerModel videoCardPowerModel = new VideoCardPowerModelNvidiaGridK1(false);
-            // Create a video card
-            VideoCard videoCard = new PowerVideoCard(videoCardId, GridVideoCardTags.NVIDIA_K1_CARD, vgpuScheduler,
-                    videoCardBwProvisioner,videoCardPowerModel);
-            videoCards.add(videoCard);
-        }
+            // PE's MIPS power
+            double mips = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS;
 
-        // A Machine contains one or more PEs or CPUs/Cores.
-        List<Pe> peList = new ArrayList<Pe>();
+            for (int peId = 0; peId < GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_NUM_PES; peId++) {
+                // Create PEs and add these into a list.
+                peList.add(0, new PeSimple(mips));
+            }
 
-        // PE's MIPS power
-        double mips = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS;
+            // Create Host with its id and list of PEs and add them to the list of machines
+            // host memory (MB)
+            long ram = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_RAM;
+            // host storage
+            long storage = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_STORAGE;
+            // host BW
+            long bw = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_BW;
+            // Set VM Scheduler
+            VmScheduler vmScheduler = new VmSchedulerTimeShared();
 
-        for (int peId = 0; peId < GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_NUM_PES; peId++) {
-            // Create PEs and add these into a list.
-            peList.add(0, new PeSimple(mips));
-        }
+            // Video Card Selection Policy
+            VideoCardAllocationPolicy videoCardAllocationPolicy = new VideoCardAllocationPolicyBreadthFirst(videoCards);
+            GpuHost gpuhost =new GpuHost(ram,bw, storage, peList,vmScheduler, videoCardAllocationPolicy);
+            gpuhost.setId(lastHostIndex);
+            lastHostIndex = ++lastHostIndex ;
+            return gpuhost;
 
-        // Create Host with its id and list of PEs and add them to the list of machines
-        // host memory (MB)
-        long ram = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_RAM;
-        // host storage
-        long storage = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_STORAGE;
-        // host BW
-        long bw = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_BW;
-        // Set VM Scheduler
-        VmScheduler vmScheduler = new VmSchedulerTimeShared();
+        }else if (hosttype == DUAL_INTEL_XEON_E5_2690_V4){
 
-        // Video Card Selection Policy
-        VideoCardAllocationPolicy videoCardAllocationPolicy = new VideoCardAllocationPolicyBreadthFirst(videoCards);
-          GpuHost gpuhost =new GpuHost(ram,bw, storage, peList,vmScheduler, videoCardAllocationPolicy);
-          gpuhost.setId(lastHostIndex);
-          lastHostIndex = ++lastHostIndex ;
-          return gpuhost;
+            int numVideoCards = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_NUM_VIDEO_CARDS;
+            // To hold video cards
+            List<VideoCard> videoCards = new ArrayList<VideoCard>(numVideoCards);
+            for (int videoCardId = 0; videoCardId < numVideoCards; videoCardId++) {
+                List<Pgpu> pgpus = new ArrayList<Pgpu>();
+                // Adding an NVIDIA K1 Card
+                double mips = GridVideoCardTags.NVIDIA_K2_CARD_PE_MIPS;
+                int gddram = GridVideoCardTags.NVIDIA_K2_CARD_GPU_MEM;
+                long bw = GridVideoCardTags.NVIDIA_K2_CARD_BW_PER_BUS;
+                for (int pgpuId = 0; pgpuId < GridVideoCardTags.NVIDIA_K2_CARD_GPUS; pgpuId++) {
+                    List<Pe> pes = new ArrayList<Pe>();
+                    for (int peId = 0; peId < GridVideoCardTags.NVIDIA_K2_CARD_GPU_PES; peId++) {
+                        pes.add(peId, new PeSimple(mips));
+                    }
+                    pgpus.add(new Pgpu(pgpuId, GridVideoCardTags.NVIDIA_K2_GPU_TYPE, pes,
+                            new GpuGddramProvisionerSimple(gddram), new GpuBwProvisionerShared(bw)));
+                }
+                // Pgpu selection policy
+                PgpuSelectionPolicy pgpuSelectionPolicy = new PgpuSelectionPolicyNull();
 
-    }else if (hosttype == DUAL_INTEL_XEON_E5_2690_V4){
+                double performanceLoss = 0.1;
+                PerformanceModel<VgpuScheduler, Vgpu> performanceModel = new PerformanceModelGpuConstant(performanceLoss);
+                // Vgpu Scheduler
+                GridPerformanceVgpuSchedulerFairShare vgpuScheduler = new GridPerformanceVgpuSchedulerFairShare(
+                        GridVideoCardTags.NVIDIA_K2_CARD, pgpus, pgpuSelectionPolicy, performanceModel);
 
-          int numVideoCards = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_NUM_VIDEO_CARDS;
-          // To hold video cards
-          List<VideoCard> videoCards = new ArrayList<VideoCard>(numVideoCards);
-          for (int videoCardId = 0; videoCardId < numVideoCards; videoCardId++) {
-              List<Pgpu> pgpus = new ArrayList<Pgpu>();
-              // Adding an NVIDIA K1 Card
-              double mips = GridVideoCardTags.NVIDIA_K2_CARD_PE_MIPS;
-              int gddram = GridVideoCardTags.NVIDIA_K2_CARD_GPU_MEM;
-              long bw = GridVideoCardTags.NVIDIA_K2_CARD_BW_PER_BUS;
-              for (int pgpuId = 0; pgpuId < GridVideoCardTags.NVIDIA_K2_CARD_GPUS; pgpuId++) {
-                  List<Pe> pes = new ArrayList<Pe>();
-                  for (int peId = 0; peId < GridVideoCardTags.NVIDIA_K2_CARD_GPU_PES; peId++) {
-                      pes.add(peId, new PeSimple(mips));
-                  }
-                  pgpus.add(new Pgpu(pgpuId, GridVideoCardTags.NVIDIA_K2_GPU_TYPE, pes,
-                          new GpuGddramProvisionerSimple(gddram), new GpuBwProvisionerShared(bw)));
-              }
-              // Pgpu selection policy
-              PgpuSelectionPolicy pgpuSelectionPolicy = new PgpuSelectionPolicyNull();
+                // PCI Express Bus Bw Provisioner
+                VideoCardBwProvisioner videoCardBwProvisioner = new VideoCardBwProvisionerShared(BusTags.PCI_E_3_X16_BW);
+                // Video Card Power Model
+                VideoCardPowerModel videoCardPowerModel = new VideoCardPowerModelNvidiaGridK1(false);
+                // Create a video card
+                VideoCard videoCard = new PowerVideoCard(videoCardId, GridVideoCardTags.NVIDIA_K2_CARD, vgpuScheduler,
+                        videoCardBwProvisioner,videoCardPowerModel);
+                videoCards.add(videoCard);
+            }
 
-              double performanceLoss = 0.1;
-              PerformanceModel<VgpuScheduler, Vgpu> performanceModel = new PerformanceModelGpuConstant(performanceLoss);
-              // Vgpu Scheduler
-              GridPerformanceVgpuSchedulerFairShare vgpuScheduler = new GridPerformanceVgpuSchedulerFairShare(
-                      GridVideoCardTags.NVIDIA_K2_CARD, pgpus, pgpuSelectionPolicy, performanceModel);
+            // A Machine contains one or more PEs or CPUs/Cores.
+            List<Pe> peList = new ArrayList<Pe>();
 
-              // PCI Express Bus Bw Provisioner
-              VideoCardBwProvisioner videoCardBwProvisioner = new VideoCardBwProvisionerShared(BusTags.PCI_E_3_X16_BW);
-              // Video Card Power Model
-              VideoCardPowerModel videoCardPowerModel = new VideoCardPowerModelNvidiaGridK1(false);
-              // Create a video card
-              VideoCard videoCard = new PowerVideoCard(videoCardId, GridVideoCardTags.NVIDIA_K2_CARD, vgpuScheduler,
-                      videoCardBwProvisioner,videoCardPowerModel);
-              videoCards.add(videoCard);
-          }
+            // PE's MIPS power
+            double mips = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_PE_MIPS;
 
-          // A Machine contains one or more PEs or CPUs/Cores.
-          List<Pe> peList = new ArrayList<Pe>();
+            for (int peId = 0; peId < GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_NUM_PES; peId++) {
+                // Create PEs and add these into a list.
+                peList.add(0, new PeSimple(mips));
+            }
 
-          // PE's MIPS power
-          double mips = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_PE_MIPS;
+            // Create Host with its id and list of PEs and add them to the list of machines
+            // host memory (MB)
+            long ram = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_RAM;
+            // host storage
+            long storage = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_STORAGE;
+            // host BW
+            long bw = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_BW;
+            // Set VM Scheduler
+            VmScheduler vmScheduler = new VmSchedulerTimeShared();
 
-          for (int peId = 0; peId < GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_NUM_PES; peId++) {
-              // Create PEs and add these into a list.
-              peList.add(0, new PeSimple(mips));
-          }
+            // Video Card Selection Policy
+            VideoCardAllocationPolicy videoCardAllocationPolicy = new VideoCardAllocationPolicyBreadthFirst(videoCards);
+            GpuHost gpuhost =new GpuHost(ram,bw, storage, peList,vmScheduler, videoCardAllocationPolicy);
+            gpuhost.setId(lastHostIndex);
+            lastHostIndex = ++lastHostIndex ;
+            return gpuhost;
 
-          // Create Host with its id and list of PEs and add them to the list of machines
-          // host memory (MB)
-          long ram = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_RAM;
-          // host storage
-          long storage = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_STORAGE;
-          // host BW
-          long bw = GpuHostTags.DUAL_INTEL_XEON_E5_2690_V4_BW;
-          // Set VM Scheduler
-          VmScheduler vmScheduler = new VmSchedulerTimeShared();
-
-          // Video Card Selection Policy
-          VideoCardAllocationPolicy videoCardAllocationPolicy = new VideoCardAllocationPolicyBreadthFirst(videoCards);
-          GpuHost gpuhost =new GpuHost(ram,bw, storage, peList,vmScheduler, videoCardAllocationPolicy);
-          gpuhost.setId(lastHostIndex);
-          lastHostIndex = ++lastHostIndex ;
-          return gpuhost;
-
-    }else
-        System.out.println("Invalide Host Type");
+        }else
+            System.out.println("Invalide Host Type");
         return (GpuHost) GpuHost.NULL;}
 
     /**
@@ -301,7 +301,7 @@ public class GpuExperiment {
 
         for (int i = 0; i < GPUVMS140 ; i++) {
 
-           GpuVm vm = createGpuVm(GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS,2, 4, GridVgpuTags.getK140Q(simulation,i, gpuTaskScheduler));
+            GpuVm vm = createGpuVm(GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS,2, 4, GridVgpuTags.getK140Q(simulation,i, gpuTaskScheduler));
             vm.setId(i);
             lastVmIndex = i+1;
             gpuvmlist.add( vm);

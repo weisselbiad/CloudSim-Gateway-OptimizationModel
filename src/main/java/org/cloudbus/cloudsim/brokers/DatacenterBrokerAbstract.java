@@ -539,7 +539,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
                     break;
                 // other unknown tags are processed by this method
                 default:
-                    processOtherEvent(evt);
+                    processOtherEvent1(evt);
                     break;
 
 
@@ -1176,6 +1176,8 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
     public void startInternal() {
         LOGGER.info("{} is starting...", getName());
         schedule(getSimulation().getCloudInfoService(), 0, CloudSimTag.DC_LIST_REQUEST);
+        schedule(getSimulation().getCloudInfoService(), 0, CloudSimTag.RESOURCE_CHARACTERISTICS_REQUEST);
+
     }
 
     @Override
@@ -1502,8 +1504,8 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
         Log.printConcatLine(getSimulation().clock(), ": ", getName(), ": Cloud Resource List received with ",
                 getDatacenterIdsList().size(), " resource(s)");
 
-        for (Integer datacenterId : getDatacenterIdsList()) {
-            sendNow(ev.getSource(), CloudSimTag.RESOURCE_CHARACTERISTICS, getId());
+        for (Datacenter datacenter : getDatacenterList()) {
+            sendNow(datacenter.getSimulation().getEntityId(ev.getData().toString()), CloudSimTag.RESOURCE_CHARACTERISTICS, getId());
         }
     }
 
@@ -1598,7 +1600,7 @@ public abstract class DatacenterBrokerAbstract extends CloudSimEntity implements
      * @todo to ensure the method will be overridden, it should be defined
      * as abstract in a super class from where new brokers have to be extended.
      */
-    protected void processOtherEvent(SimEvent ev) {
+    protected void processOtherEvent1(SimEvent ev) {
         if (ev == null) {
             Log.printConcatLine(getName(), ".processOtherEvent(): ", "Error - an event is null.");
             return;
