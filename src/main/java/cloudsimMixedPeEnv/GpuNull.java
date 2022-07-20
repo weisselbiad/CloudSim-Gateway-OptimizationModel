@@ -1,28 +1,6 @@
-/*
- * CloudSim Plus: A modern, highly-extensible and easier-to-use Framework for
- * Modeling and Simulation of Cloud Computing Infrastructures and Services.
- * http://cloudsimplus.org
- *
- *     Copyright (C) 2015-2021 Universidade da Beira Interior (UBI, Portugal) and
- *     the Instituto Federal de Educação Ciência e Tecnologia do Tocantins (IFTO, Brazil).
- *
- *     This file is part of CloudSim Plus.
- *
- *     CloudSim Plus is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     CloudSim Plus is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with CloudSim Plus. If not, see <http://www.gnu.org/licenses/>.
- */
-package org.cloudbus.cloudsim.vms;
+package cloudsimMixedPeEnv;
 
+import gpu.GpuVm;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.core.CustomerEntity;
@@ -34,6 +12,7 @@ import org.cloudbus.cloudsim.resources.Resource;
 import org.cloudbus.cloudsim.resources.ResourceManageable;
 import org.cloudbus.cloudsim.schedulers.MipsShare;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletScheduler;
+import org.cloudbus.cloudsim.vms.*;
 import org.cloudsimplus.autoscaling.HorizontalVmScaling;
 import org.cloudsimplus.autoscaling.VerticalVmScaling;
 import org.cloudsimplus.listeners.EventListener;
@@ -43,14 +22,9 @@ import org.cloudsimplus.listeners.VmHostEventInfo;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * A class that implements the Null Object Design Pattern for {@link Vm}
- * objects.
- *
- * @author Manoel Campos da Silva Filho
- * @see Vm#NULL
- */
-public class VmNull implements Vm {
+public class GpuNull extends VmNull implements Vm {
+
+
     @Override public void setId(long id) {/**/}
     @Override public long getId() {
         return -1;
@@ -61,8 +35,8 @@ public class VmNull implements Vm {
     @Override public boolean isDelayed() { return false; }
     @Override public void setSubmissionDelay(double submissionDelay) {/**/}
     @Override public void addStateHistoryEntry(VmStateHistoryEntry entry) {/**/}
-    @Override public Resource getBw() {
-        return Resource.NULL;
+    @Override public ResourceManageable getBw() {
+        return (ResourceManageable) Resource.NULL;
     }
     @Override public CloudletScheduler getCloudletScheduler() { return CloudletScheduler.NULL; }
     @Override public long getFreePesNumber() { return 0; }
@@ -115,8 +89,8 @@ public class VmNull implements Vm {
         return false;
     }
     @Override public boolean removeOnCreationFailureListener(EventListener<VmDatacenterEventInfo> listener) { return false; }
-    @Override public Resource getRam() {
-        return Resource.NULL;
+    @Override public ResourceManageable getRam() {
+        return (ResourceManageable) Resource.NULL;
     }
     @Override public Resource getStorage() {
         return Resource.NULL;
@@ -134,6 +108,12 @@ public class VmNull implements Vm {
     @Override public double getExpectedHostCpuUtilization(double vmCpuUtilizationPercent) { return 0; }
     @Override public double getHostRamUtilization() { return 0; }
     @Override public double getHostBwUtilization() { return 0; }
+
+    @Override
+    public double getHostCpuUtilization() {
+        return 0;
+    }
+
     @Override public double getTotalCpuMipsUtilization() { return 0; }
     @Override public double getTotalCpuMipsUtilization(double time) {
         return 0.0;
@@ -223,4 +203,5 @@ public class VmNull implements Vm {
     @Override public double getTimeZone() { return Integer.MAX_VALUE; }
     @Override public Vm setTimeZone(double timeZone) { return this; }
     @Override public List<ResourceManageable> getResources() { return Collections.emptyList(); }
+
 }

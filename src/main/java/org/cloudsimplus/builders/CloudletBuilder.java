@@ -65,6 +65,7 @@ public class CloudletBuilder implements Builder {
 
     private EventListener<CloudletVmEventInfo> onCloudletFinishListener = EventListener.NULL;
 	private List<String> requiredFiles;
+    private double lifeTime = -1;
 
 	public CloudletBuilder(final BrokerBuilderDecorator brokerBuilder, final DatacenterBrokerSimple broker) {
 	    super();
@@ -115,6 +116,7 @@ public class CloudletBuilder implements Builder {
             cloudlet.setId(cloudletId);
             cloudlet.setBroker(broker);
             cloudlet.addRequiredFiles(requiredFiles);
+            cloudlet.setLifeTime(lifeTime);
             localList.add(cloudlet);
         }
         cloudlets.addAll(localList);

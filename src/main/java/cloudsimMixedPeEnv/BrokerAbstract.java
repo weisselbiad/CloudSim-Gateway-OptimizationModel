@@ -14,6 +14,7 @@ import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmGroup;
 import org.cloudbus.cloudsim.vms.VmSimple;
+import cloudsimMixedPeEnv.GpuVm;
 import org.cloudsimplus.autoscaling.VerticalVmScaling;
 import org.cloudsimplus.listeners.DatacenterBrokerEventInfo;
 import org.cloudsimplus.listeners.EventInfo;
@@ -434,7 +435,7 @@ public abstract class BrokerAbstract extends CloudSimEntity implements Datacente
 
     @Override
     public boolean bindCloudletToVm(final Cloudlet cloudlet, final Vm vm) {
-        if (!this.equals(cloudlet.getBroker())) {
+        if (!this.equals(cloudlet.getBroker())&& !DatacenterBroker.NULL.equals(cloudlet.getBroker())) {
             return false;
         }
 
@@ -1117,6 +1118,16 @@ public abstract class BrokerAbstract extends CloudSimEntity implements Datacente
      */
     protected Vm getVmFromCreatedList(final int vmIndex) {
         return vmIndex >= 0 && vmIndex < vmExecList.size() ? vmExecList.get(vmIndex) : Vm.NULL;
+    }
+
+    protected GpuVm getGpuVmFromCreatedList(final int vmIndex) {
+        List<GpuVm> GpuvmExecList = new ArrayList<>();
+        for (Vm vm: vmExecList){
+            if(vm.getClass().equals(GpuVm.class)){
+                GpuvmExecList.add((GpuVm)vm);
+            }
+        }
+        return vmIndex >= 0 && vmIndex < GpuvmExecList.size() ? GpuvmExecList.get(vmIndex): new GpuVm(1,1,new CloudletSchedulerTimeShared());
     }
 
     /**

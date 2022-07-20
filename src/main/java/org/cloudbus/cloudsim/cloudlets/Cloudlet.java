@@ -758,7 +758,8 @@ public interface Cloudlet extends UniquelyIdentifiable, Comparable<Cloudlet>, Cu
      *              false otherwise
      */
     boolean setWallClockTime(double wallTime, double actualCpuTime);
-
+    Cloudlet setLifeTime(double lifeTime);
+    double getLifeTime();
     /**
      * Sets the {@link #getExecStartTime() latest execution start time} of this Cloudlet.
      *

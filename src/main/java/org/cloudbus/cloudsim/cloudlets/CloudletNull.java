@@ -240,6 +240,17 @@ final class CloudletNull implements Cloudlet {
     @Override public boolean setWallClockTime(double wallTime, double actualCpuTime) {
         return false;
     }
+
+    @Override
+    public Cloudlet setLifeTime(double lifeTime) {
+        return null;
+    }
+
+    @Override
+    public double getLifeTime() {
+        return 0;
+    }
+
     @Override public void setExecStartTime(double clockTime) {/**/}
     @Override public Cloudlet addOnStartListener(EventListener<CloudletVmEventInfo> listener) { return this; }
     @Override public boolean removeOnStartListener(EventListener<CloudletVmEventInfo> listener) { return false; }

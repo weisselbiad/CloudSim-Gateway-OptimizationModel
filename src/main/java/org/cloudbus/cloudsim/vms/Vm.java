@@ -7,6 +7,8 @@
  */
 package org.cloudbus.cloudsim.vms;
 
+import cloudsimMixedPeEnv.GpuNull;
+import cloudsimMixedPeEnv.GpuVm;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.core.AbstractMachine;
@@ -47,11 +49,10 @@ public interface Vm extends AbstractMachine<Resource>, UniquelyIdentifiable, Com
     Logger LOGGER = LoggerFactory.getLogger(Vm.class.getSimpleName());
 
     /**
-     * An attribute that implements the Null Object Design Pattern for {@link Vm}
-     * objects.
+     * An attribute that implements the Null Object Design Pattern for {@link V
      */
     Vm NULL = new VmNull();
-
+  //  GpuVm GPU_VMNULL = new GpuNull();
     static String getUid(long userId, long vmId) {
         return userId + "-" + vmId;
     }

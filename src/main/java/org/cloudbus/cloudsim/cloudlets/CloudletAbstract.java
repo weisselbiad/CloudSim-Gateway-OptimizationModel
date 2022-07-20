@@ -34,7 +34,7 @@ public abstract class CloudletAbstract extends CustomerEntityAbstract implements
 
     /** @see #getJobId() */
     private long jobId;
-
+    private double lifeTime;
     /**
      * The list of every {@link Datacenter} where the cloudlet has been executed.
      * In case it starts and finishes executing in a single Datacenter, without
@@ -217,7 +217,7 @@ public abstract class CloudletAbstract extends CustomerEntityAbstract implements
         setExecStartTime(0.0);
         setArrivedTime(0);
         setCreationTime(0);
-
+        setLifeTime(-1);
         datacenterExecutionList.clear();
 
         this.setLastTriedDatacenter(Datacenter.NULL);
@@ -399,7 +399,17 @@ public abstract class CloudletAbstract extends CustomerEntityAbstract implements
         returnToBrokerIfFinished();
         return true;
     }
+    public double getLifeTime() {
+        return this.lifeTime;
+    }
+    public Cloudlet setLifeTime(final double lifeTime) {
+        if (lifeTime == 0) {
+            throw new IllegalArgumentException("Cloudlet lifeTime cannot be zero.");
+        }
 
+        this.lifeTime = lifeTime;
+        return this;
+    }
     /**
      * Notifies the broker about the end of execution of the Cloudlet,
      * by returning the Cloudlet to it.

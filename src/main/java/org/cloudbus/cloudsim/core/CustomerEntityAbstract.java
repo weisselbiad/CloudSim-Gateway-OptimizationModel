@@ -36,7 +36,7 @@ public abstract class CustomerEntityAbstract implements CustomerEntity {
     }
 
     @Override
-    public final void setBroker(final DatacenterBroker broker) {
+    public void setBroker(final DatacenterBroker broker) {
         this.broker = requireNonNull(broker);
     }
 
@@ -51,7 +51,7 @@ public abstract class CustomerEntityAbstract implements CustomerEntity {
     }
 
     @Override
-    public final void setId(final long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 

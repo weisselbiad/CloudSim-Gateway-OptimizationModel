@@ -3,6 +3,7 @@ package pl.edu.agh.csg;
 
 import cloudsimMixedPeEnv.*;
 import cloudsimMixedPeEnv.allocation.VideoCardAllocationPolicy;
+import cloudsimMixedPeEnv.allocation.VideoCardAllocationPolicyBreadthFirst;
 import cloudsimMixedPeEnv.allocation.VideoCardAllocationPolicyNull;
 import cloudsimMixedPeEnv.hardware_assisted.GridVgpuSchedulerFairShare;
 import cloudsimMixedPeEnv.hardware_assisted.GridVgpuTags;
@@ -13,6 +14,9 @@ import cloudsimMixedPeEnv.provisioners.VideoCardBwProvisioner;
 import cloudsimMixedPeEnv.provisioners.VideoCardBwProvisionerShared;
 import cloudsimMixedPeEnv.selection.PgpuSelectionPolicy;
 import cloudsimMixedPeEnv.selection.PgpuSelectionPolicyNull;
+import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
+import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicyBestFit;
+import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicyFirstFit;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicyRoundRobin;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
@@ -22,6 +26,8 @@ import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
+import org.cloudbus.cloudsim.distributions.ContinuousDistribution;
+import org.cloudbus.cloudsim.distributions.UniformDistr;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.hosts.HostSimple;
 import org.cloudbus.cloudsim.resources.Pe;
@@ -37,6 +43,7 @@ import cloudsimMixedPeEnv.CloudletsTableBuilder;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Comparator.comparingInt;
 import static java.util.Comparator.comparingLong;
@@ -75,6 +82,7 @@ public class BasicFirstExample {
     private List<CloudletSimple> cloudletList;
     private List<GpuCloudlet> gpucloudletList;
     private Datacenter datacenter0;
+    private final ContinuousDistribution random;
 
     public int getClassID (Cloudlet cl){
         if(cl.getClass().toString() == "org.cloudbus.cloudsim.cloudlets.CloudletSimple"){
@@ -94,6 +102,7 @@ public class BasicFirstExample {
         //Log.setLevel(ch.qos.logback.classic.Level.WARN);
 
         simulation = new CloudSim();
+        random = new UniformDistr();
         datacenter0 = createDatacenter();
 
         //Creates a broker that is a software acting on behalf a cloud customer to manage his/her VMs and Cloudlets
@@ -112,7 +121,7 @@ public class BasicFirstExample {
         simulation.start();
 
         final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
-        new CloudletsTableBuilder(finishedCloudlets).build();
+        new org.cloudsimplus.builders.tables.CloudletsTableBuilder(finishedCloudlets).build();
 
     }
 
@@ -128,9 +137,47 @@ public class BasicFirstExample {
             HostSimple host = (HostSimple) createHost();
             hostList.add(host);
         }
+        VmAllocationPolicySimple randomvmAllocationPolicy = new VmAllocationPolicySimple();
+
+        //Replaces the default method that allocates Hosts to VMs by our own implementation
+        randomvmAllocationPolicy.setFindHostForVmFunction(this::findRandomSuitableHostForVm);
+        final VmAllocationPolicySimple bestfitvmAllocationPolicy = new VmAllocationPolicySimple(this::bestFitHostSelectionPolicy);
+        final VmAllocationPolicySimple firstfitvmAllocationPolicy = new VmAllocationPolicySimple(this::bestFitHostSelectionPolicy);
+
 
         //Uses a VmAllocationPolicySimple by default to allocate VMs
-        return new DatacenterSimple(simulation, hostList);
+        return new DatacenterSimple(simulation, hostList, randomvmAllocationPolicy);
+    }
+
+    private Optional<Host> findRandomSuitableHostForVm(final VmAllocationPolicy vmAllocationPolicy, final Vm vm) {
+        final List<Host> hostList = vmAllocationPolicy.getHostList();
+        /* Despite the loop is bound to the number of Hosts inside the List,
+         *  the index "i" is not used to get a Host at that position,
+         *  but just to define that the maximum number of tries to find a
+         *  suitable Host will be the number of available Hosts.*/
+        for (int i = 0; i < hostList.size(); i++){
+            final int randomIndex = (int)(random.sample() * hostList.size());
+            final Host host = hostList.get(randomIndex);
+            if(host.isSuitableForVm(vm)){
+                return Optional.of(host);
+            }
+        }
+
+        return Optional.empty();
+    }
+    private Optional<Host> bestFitHostSelectionPolicy(VmAllocationPolicy allocationPolicy, Vm vm) {
+        return allocationPolicy
+                .getHostList()
+                .stream()
+                .filter(host -> host.isSuitableForVm(vm))
+                .min(Comparator.comparingInt(Host::getFreePesNumber));
+    }
+    private Optional<Host> firstFitHostSelectionPolicy(VmAllocationPolicy allocationPolicy, Vm vm) {
+        return allocationPolicy
+                .getHostList()
+                .stream()
+                .filter(host -> host.isSuitableForVm(vm))
+                .min(Comparator.comparingLong(Host::getId));
     }
 
     private Host createHost() {
@@ -210,7 +257,7 @@ public class BasicFirstExample {
         VmScheduler vmScheduler = new VmSchedulerTimeShared();
 
         // Video Card Selection Policy
-        VideoCardAllocationPolicy videoCardAllocationPolicy = new VideoCardAllocationPolicyNull(videoCards);
+        VideoCardAllocationPolicy videoCardAllocationPolicy = new VideoCardAllocationPolicyBreadthFirst(videoCards);
         return new GpuHost(ram,bw, storage, peList,vmScheduler, videoCardAllocationPolicy);
     }
 

@@ -62,7 +62,7 @@ public abstract class VmAllocationPolicyAbstract implements VmAllocationPolicy {
     /**
      * Creates a VmAllocationPolicy.
      */
-   // public VmAllocationPolicyAbstract() {        this(null);    }
+    public VmAllocationPolicyAbstract() {        this(null);    }
 
     /**
      * Creates a VmAllocationPolicy, changing the {@link BiFunction} to select a Host for a Vm.
@@ -76,13 +76,9 @@ public abstract class VmAllocationPolicyAbstract implements VmAllocationPolicy {
         this.hostCountForParallelSearch = DEF_HOST_COUNT_PARALLEL_SEARCH;
     }
 
-    public VmAllocationPolicyAbstract(List<? extends Host> list) {
-        setgpuHostList(list);
-    }
+    //public VmAllocationPolicyAbstract(List<? extends Host> list) {        setgpuHostList(list);    }
 
-    public VmAllocationPolicyAbstract() {
 
-    }
 
     @Override
     public final <T extends Host> List<T> getHostList() {

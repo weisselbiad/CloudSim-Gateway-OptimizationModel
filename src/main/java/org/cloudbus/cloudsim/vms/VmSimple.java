@@ -553,7 +553,7 @@ public class VmSimple extends CustomerEntityAbstract implements Vm {
     }
 
     @Override
-    public final Vm setRam(final long ramCapacity) {
+    public Vm setRam(final long ramCapacity) {
         if (this.isCreated()) {
             throw new UnsupportedOperationException("RAM capacity can just be changed when the Vm was not created inside a Host yet.");
         }
@@ -577,7 +577,7 @@ public class VmSimple extends CustomerEntityAbstract implements Vm {
     }
 
     @Override
-    public final Vm setBw(final long bwCapacity) {
+    public Vm setBw(final long bwCapacity) {
         if (this.isCreated()) {
             throw new UnsupportedOperationException("Bandwidth capacity can just be changed when the Vm was not created inside a Host yet.");
         }
@@ -600,7 +600,7 @@ public class VmSimple extends CustomerEntityAbstract implements Vm {
     }
 
     @Override
-    public final Vm setSize(final long size) {
+    public Vm setSize(final long size) {
         if (this.isCreated()) {
             throw new UnsupportedOperationException("Storage size can just be changed when the Vm was not created inside a Host yet.");
         }
@@ -643,7 +643,7 @@ public class VmSimple extends CustomerEntityAbstract implements Vm {
     }
 
     @Override
-    public final Vm setCloudletScheduler(final CloudletScheduler cloudletScheduler) {
+    public Vm setCloudletScheduler(final CloudletScheduler cloudletScheduler) {
         requireNonNull(cloudletScheduler);
         if (isCreated()) {
             throw new UnsupportedOperationException("CloudletScheduler can just be changed when the Vm was not created inside a Host yet.");
@@ -660,7 +660,7 @@ public class VmSimple extends CustomerEntityAbstract implements Vm {
     }
 
     @Override
-    public final void setInMigration(final boolean migrating) {
+    public void setInMigration(final boolean migrating) {
         this.inMigration = migrating;
     }
 
@@ -689,7 +689,7 @@ public class VmSimple extends CustomerEntityAbstract implements Vm {
     }
 
     @Override
-    public final boolean isCreated() {
+    public boolean isCreated() {
         return created;
     }
 
@@ -874,7 +874,7 @@ public class VmSimple extends CustomerEntityAbstract implements Vm {
     }
 
     @Override
-    public final void setSubmissionDelay(final double submissionDelay) {
+    public void setSubmissionDelay(final double submissionDelay) {
         if (submissionDelay < 0) {
             return;
         }
@@ -943,25 +943,25 @@ public class VmSimple extends CustomerEntityAbstract implements Vm {
     }
 
     @Override
-    public final Vm setHorizontalScaling(final HorizontalVmScaling horizontalScaling) throws IllegalArgumentException {
+    public Vm setHorizontalScaling(final HorizontalVmScaling horizontalScaling) throws IllegalArgumentException {
         this.horizontalScaling = validateAndConfigureVmScaling(horizontalScaling);
         return this;
     }
 
     @Override
-    public final Vm setRamVerticalScaling(final VerticalVmScaling ramVerticalScaling) throws IllegalArgumentException {
+    public Vm setRamVerticalScaling(final VerticalVmScaling ramVerticalScaling) throws IllegalArgumentException {
         this.ramVerticalScaling = validateAndConfigureVmScaling(ramVerticalScaling);
         return this;
     }
 
     @Override
-    public final Vm setBwVerticalScaling(final VerticalVmScaling bwVerticalScaling) throws IllegalArgumentException {
+    public Vm setBwVerticalScaling(final VerticalVmScaling bwVerticalScaling) throws IllegalArgumentException {
         this.bwVerticalScaling = validateAndConfigureVmScaling(bwVerticalScaling);
         return this;
     }
 
     @Override
-    public final Vm setPeVerticalScaling(final VerticalVmScaling peVerticalScaling) throws IllegalArgumentException {
+    public Vm setPeVerticalScaling(final VerticalVmScaling peVerticalScaling) throws IllegalArgumentException {
         this.peVerticalScaling = validateAndConfigureVmScaling(peVerticalScaling);
         return this;
     }

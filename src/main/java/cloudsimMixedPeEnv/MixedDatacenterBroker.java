@@ -120,7 +120,8 @@ public class MixedDatacenterBroker extends BrokerAbstract {
             col.clear();
             cutVmList.clear();
 
-            return Gpuvm;
+            lastSelectedVmIndex = ++lastSelectedVmIndex % getVmExecList().size();
+            return getGpuVmFromCreatedList(lastSelectedVmIndex);
 
         }else{
             lastSelectedVmIndex = ++lastSelectedVmIndex % getVmExecList().size();

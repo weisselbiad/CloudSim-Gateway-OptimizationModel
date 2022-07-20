@@ -63,6 +63,9 @@ public class VmAllocationPolicyRoundRobin extends VmAllocationPolicyAbstract imp
     public VmAllocationPolicyRoundRobin(BiFunction<VmAllocationPolicy, Vm, Optional<Host>> findHostForVmFunction) {
         super(findHostForVmFunction);
     }
+    public VmAllocationPolicyRoundRobin() {
+        super();
+    }
 
     @Override
     protected Optional<Host> defaultFindHostForVm(final Vm vm) {

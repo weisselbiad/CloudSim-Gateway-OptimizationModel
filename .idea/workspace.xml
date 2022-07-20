@@ -5,18 +5,47 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/GpuNull.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/brokers/DatacenterBrokerAbstract.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/brokers/DatacenterBrokerAbstract.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenterBroker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gpu/GpuDatacenterBroker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/BrokerAbstract$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/BrokerAbstract$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/BrokerAbstract.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/BrokerAbstract.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/MixedDatacenterBroker.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/MixedDatacenterBroker.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyAbstract.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyAbstract.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyRoundRobin.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyRoundRobin.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/cloudlets/Cloudlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/cloudlets/Cloudlet.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/cloudlets/CloudletAbstract.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/cloudlets/CloudletAbstract.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/cloudlets/CloudletNull.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/cloudlets/CloudletNull.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/core/CustomerEntityAbstract.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/core/CustomerEntityAbstract.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/vms/Vm.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/vms/Vm.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/vms/VmNull.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/vms/VmNull.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/vms/VmSimple.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/vms/VmSimple.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudsimplus/builders/CloudletBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudsimplus/builders/CloudletBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudsimplus/builders/tables/HostHistoryTableBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudsimplus/builders/tables/HostHistoryTableBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/BasicFirstExample.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/BasicFirstExample.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/SimProxy.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/SimProxy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/BrokerAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/BrokerAbstract.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/MixedDatacenterBroker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/MixedDatacenterBroker.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyAbstract.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBrokerAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBrokerAbstract.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/GpuExperiment.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/GpuExperiment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyRoundRobin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyRoundRobin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/cloudlets/Cloudlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/cloudlets/Cloudlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/cloudlets/CloudletAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/cloudlets/CloudletAbstract.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/cloudlets/CloudletNull.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/cloudlets/CloudletNull.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/CustomerEntityAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/CustomerEntityAbstract.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/vms/Vm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/vms/Vm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/vms/VmNull.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/vms/VmNull.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/vms/VmSimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/vms/VmSimple.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudsimplus/builders/CloudletBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudsimplus/builders/CloudletBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudsimplus/builders/tables/HostHistoryTableBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudsimplus/builders/tables/HostHistoryTableBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/BasicFirstExample.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/BasicFirstExample.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +157,7 @@
       <command value="gradle run" />
     </option>
   </component>
-  <component name="RunManager" selected="Application.GpuExperiment">
+  <component name="RunManager" selected="Application.Main">
     <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
@@ -217,8 +246,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.BasicFirstExample" />
         <item itemvalue="Application.Main" />
+        <item itemvalue="Application.BasicFirstExample" />
         <item itemvalue="Application.GpuExperiment" />
         <item itemvalue="Application.GpuExperimentFirst" />
         <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [compileJava]" />
@@ -294,6 +323,14 @@
       <workItem from="1657468619902" duration="13104000" />
       <workItem from="1657554080032" duration="16364000" />
       <workItem from="1657626559502" duration="14090000" />
+      <workItem from="1657715233689" duration="747000" />
+      <workItem from="1657727051620" duration="2110000" />
+      <workItem from="1657735190361" duration="1348000" />
+      <workItem from="1657738320159" duration="5927000" />
+      <workItem from="1657909125269" duration="38236000" />
+      <workItem from="1658050939874" duration="19201000" />
+      <workItem from="1658073605365" duration="34000" />
+      <workItem from="1658073713362" duration="87069000" />
     </task>
     <task id="LOCAL-00001" summary="gradle">
       <created>1637948985872</created>
@@ -428,7 +465,14 @@
       <option name="project" value="LOCAL" />
       <updated>1657494587056</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="13.07">
+      <created>1657715299173</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1657715299173</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -459,47 +503,73 @@
     <MESSAGE value="22.06" />
     <MESSAGE value="04.07" />
     <MESSAGE value="11.07" />
-    <option name="LAST_COMMIT_MESSAGE" value="11.07" />
+    <MESSAGE value="13.07" />
+    <option name="LAST_COMMIT_MESSAGE" value="13.07" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint type="java-line">
           <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cloudsimplus/cloudsim-plus/7.1.2/3c6d01bece7d9835501bd28439d948acc52e826b/cloudsim-plus-7.1.2-sources.jar!/org/cloudbus/cloudsim/cloudlets/network/NetworkCloudlet.java</url>
           <line>210</line>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBrokerAbstract.java</url>
           <line>945</line>
           <option name="timeStamp" value="47" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBrokerAbstract.java</url>
           <line>818</line>
           <option name="timeStamp" value="68" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBrokerAbstract.java</url>
           <line>509</line>
           <option name="timeStamp" value="87" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/brokers/DatacenterBrokerAbstract.java</url>
           <line>1603</line>
           <option name="timeStamp" value="89" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/gpu/GpuDatacenterBroker.java</url>
           <line>195</line>
           <option name="timeStamp" value="91" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/core/events/CloudSimEvent.java</url>
-          <line>173</line>
-          <option name="timeStamp" value="92" />
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java</url>
+          <line>723</line>
+          <option name="timeStamp" value="105" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/CloudletSchedulerAbstract.java</url>
+          <line>1311</line>
+          <option name="timeStamp" value="108" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/CloudletSchedulerAbstract.java</url>
+          <line>242</line>
+          <option name="timeStamp" value="113" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/BrokerAbstract.java</url>
+          <line>1109</line>
+          <option name="timeStamp" value="121" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java</url>
+          <line>758</line>
+          <option name="timeStamp" value="125" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java</url>
+          <line>772</line>
+          <option name="timeStamp" value="132" />
+        </line-breakpoint>
+        <line-breakpoint type="java-method">
           <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cloudsimplus/cloudsim-plus/7.1.2/3c6d01bece7d9835501bd28439d948acc52e826b/cloudsim-plus-7.1.2-sources.jar!/org/cloudbus/cloudsim/cloudlets/network/NetworkCloudlet.java</url>
           <line>209</line>
           <properties class="org.cloudbus.cloudsim.cloudlets.network.NetworkCloudlet">

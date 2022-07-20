@@ -60,10 +60,10 @@ public class HostHistoryTableBuilder extends TableBuilderAbstract<HostStateHisto
         addColumnDataFunction(col, HostStateHistoryEntry::time);
 
         final String format = "%9.0f";
-        col = getTable().addColumn("Requested").setFormat(format);
+        col = getTable().addColumn("Requested MiPS").setFormat(format);
         addColumnDataFunction(col, HostStateHistoryEntry::requestedMips);
 
-        col = getTable().addColumn("Allocated").setFormat(format);
+        col = getTable().addColumn("Allocated MIPS").setFormat(format);
         addColumnDataFunction(col, HostStateHistoryEntry::allocatedMips);
 
         col = getTable().addColumn("Used").setFormat("%3.0f%%");
