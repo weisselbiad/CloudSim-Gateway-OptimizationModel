@@ -1,6 +1,7 @@
 package pl.edu.agh.csg;
 
 import cloudsimMixedPeEnv.*;
+
 import cloudsimMixedPeEnv.allocation.VideoCardAllocationPolicy;
 import cloudsimMixedPeEnv.allocation.VideoCardAllocationPolicyBreadthFirst;
 import cloudsimMixedPeEnv.hardware_assisted.GridPerformanceVgpuSchedulerFairShare;
@@ -56,8 +57,8 @@ import org.cloudsimplus.listeners.CloudletVmEventInfo;
 import org.cloudsimplus.listeners.EventInfo;
 import org.cloudsimplus.listeners.EventListener;
 import org.cloudsimplus.listeners.VmHostEventInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -72,7 +73,7 @@ public class  SimProxy {
      * Initialize the Logger
      */
 
-    private  final Logger logger = LoggerFactory.getLogger(SimProxy.class.getName());
+  //  private  final Logger logger = LoggerFactory.getLogger(SimProxy.class.getName());
 
     /**
      * Instantiate and declare needed variables
@@ -183,7 +184,7 @@ public class  SimProxy {
     private final ContinuousDistribution random;
     private static final double INTERVAL = 5;
     Vm vmcopy;
-    Vm temp;
+    long temp;
     public SimProxy(String identifier,
                     Object vmTuple,
                     Object GpuvmTuple,
@@ -249,7 +250,7 @@ public class  SimProxy {
 
 //      this.broker.addOnVmsCreatedListener(this::onVmsCreatedListener);
 
-        info("Creating simulation: " + identifier);
+        //info("Creating simulation: " + identifier);
     }
 
     /**
@@ -597,7 +598,7 @@ public class  SimProxy {
      * @param message
      */
 
-    private void info(String message) { logger.info(getIdentifier() + " " + message);    }
+//    private void info(String message) { logger.info(getIdentifier() + " " + message);    }
 
     /**
      * List of geters. will be called by need from other classes
@@ -750,14 +751,15 @@ public class  SimProxy {
     private List<Cloudlet> createAndbindCPUfirstCloudlets(List<Vm> Cpuvmlist){
         List<Cloudlet> CPUfirstCloudlets = new ArrayList<>();
         for(Vm vm : Cpuvmlist){
-            vm.addOnHostDeallocationListener(eventInfo->this.broker.destroyVm(eventInfo.getVm()));
+            vm.addOnHostDeallocationListener(this::submitNewVmAndCloudletsToBroker);
+
             List<Cloudlet> interCloudletList = createCloudList(6);
             for(Cloudlet cl: interCloudletList){
                 this.broker.bindCloudletToVm(cl,vm);
                 CPUfirstCloudlets.add(cl);
             }
             var testcl = CPUfirstCloudlets.get(CPUfirstCloudlets.size()-1);
-            testcl.addOnFinishListener(this::submitNewVmAndCloudletsToBroker);
+           // testcl.addOnFinishListener(this::submitNewVmAndCloudletsToBroker);
         }
         CPUfirstCloudlets.get(CPUfirstCloudlets.size()-1).setId(19999);
         Cpuvmlist.get(Cpuvmlist.size()-1).setId(91111);
@@ -770,7 +772,7 @@ public class  SimProxy {
      ** @param "Vm"
      */
     private GpuVm convertToGpuVm(Vm vm){
-
+        temp=vm.getId()+10000;
         vmcopy= vm;
 
         //this.broker.destroyVm(vm);
@@ -810,12 +812,14 @@ public class  SimProxy {
      * If so, request the simulation interruption.
      * @param eventInfo object containing data about the happened event
      */
-    private void submitNewVmAndCloudletsToBroker(CloudletVmEventInfo eventInfo) {
+    private void submitNewVmAndCloudletsToBroker(VmHostEventInfo eventInfo) {
         System.out.printf(
-        "%n\t# Cloudlet %d finished. Submitting VM %d to the broker for Migration%n",
-                eventInfo.getCloudlet().getId(), eventInfo.getCloudlet().getVm().getId());
+        "%n\t# Vm %d finished. Submitting VM %d to the broker for Migration%n",
+                eventInfo.getVm().getId(), eventInfo.getVm().getId());
+        Vm vmtemp= eventInfo.getVm();
+ //       this.broker.destroyVm(eventInfo.getVm());
             //convertAndsubmitGpuVmsAndCloudlets(eventInfo.getCloudlet().getVm());
-        createAndSubmitVmsAndCloudlets(eventInfo.getVm());
+        createAndSubmitVmsAndCloudlets(vmtemp);
         vmDestructionRequested=true;
       //  temp =eventInfo.getVm();
     }
@@ -823,7 +827,7 @@ public class  SimProxy {
         List<Cloudlet> newCloudletList = new ArrayList<>();
 
             GpuVm gpuvm =convertToGpuVm(vm) ;
-            //gpuvm.setId(vm.getId()*9999999);
+            gpuvm.setId(temp);
             newCloudletList = createCloudList(3);
             int i = 555555555;
             for (Cloudlet cl: newCloudletList){
@@ -893,4 +897,5 @@ public class  SimProxy {
             this.broker.submitCloudletList(affected);
 
     }
+
 }
