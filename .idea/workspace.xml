@@ -12,7 +12,14 @@
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/datacenters/DatacenterSimple.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/datacenters/DatacenterSimple.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/ListenerApp.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/ListenerApp.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/SimProxy.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/SimProxy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/datacenters/DatacenterSimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/datacenters/DatacenterSimple.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/ListenerApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/ListenerApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -298,7 +305,9 @@
       <workItem from="1657909125269" duration="38236000" />
       <workItem from="1658050939874" duration="19201000" />
       <workItem from="1658073605365" duration="34000" />
-      <workItem from="1658073713362" duration="91858000" />
+      <workItem from="1658073713362" duration="91894000" />
+      <workItem from="1658311561297" duration="17898000" />
+      <workItem from="1658334667346" duration="19284000" />
     </task>
     <task id="LOCAL-00001" summary="gradle">
       <created>1637948985872</created>
@@ -447,7 +456,14 @@
       <option name="project" value="LOCAL" />
       <updated>1658278138710</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="20.07.1">
+      <created>1658282706002</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1658282706003</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -480,7 +496,8 @@
     <MESSAGE value="11.07" />
     <MESSAGE value="13.07" />
     <MESSAGE value="20.07" />
-    <option name="LAST_COMMIT_MESSAGE" value="20.07" />
+    <MESSAGE value="20.07.1" />
+    <option name="LAST_COMMIT_MESSAGE" value="20.07.1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -517,7 +534,7 @@
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java</url>
-          <line>724</line>
+          <line>730</line>
           <option name="timeStamp" value="105" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
@@ -537,13 +554,23 @@
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java</url>
-          <line>760</line>
-          <option name="timeStamp" value="125" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java</url>
-          <line>817</line>
+          <line>827</line>
           <option name="timeStamp" value="134" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy2.java</url>
+          <line>715</line>
+          <option name="timeStamp" value="136" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy2.java</url>
+          <line>259</line>
+          <option name="timeStamp" value="137" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/hosts/HostSimple.java</url>
+          <line>1498</line>
+          <option name="timeStamp" value="143" />
         </line-breakpoint>
         <line-breakpoint type="java-method">
           <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cloudsimplus/cloudsim-plus/7.1.2/3c6d01bece7d9835501bd28439d948acc52e826b/cloudsim-plus-7.1.2-sources.jar!/org/cloudbus/cloudsim/cloudlets/network/NetworkCloudlet.java</url>
@@ -564,6 +591,7 @@
     <watches-manager>
       <configuration name="GradleRunConfiguration">
         <watch expression="cutVmList" language="JAVA" />
+        <watch expression="((java.util.ArrayList)((MixedDatacenterBroker)((VmSimple)((CloudletSchedulerTimeShared)this).vm).broker).cloudletsFinishedList).get(68)" custom="cloudsimMixedPeEnv.MixedDatacenterBroker,org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerTimeShared,org.cloudbus.cloudsim.vms.VmSimple,java.util.ArrayList" />
       </configuration>
     </watches-manager>
   </component>

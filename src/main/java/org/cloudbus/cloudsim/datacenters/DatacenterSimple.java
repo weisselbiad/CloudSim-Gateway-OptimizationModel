@@ -326,7 +326,7 @@ public class DatacenterSimple extends CloudSimEntity implements Datacenter {
         return switch (evt.getTag()) {
             case VM_CREATE_ACK -> processVmCreate(evt);
             case VM_VERTICAL_SCALING  -> requestVmVerticalScaling(evt);
-            case VM_DESTROY -> processVmDestroy(evt, false);
+            case VM_DESTROY -> processVmDestroy(evt, true);
             case VM_DESTROY_ACK -> processVmDestroy(evt, true);
             case VM_MIGRATE -> finishVmMigration(evt, false);
             case VM_MIGRATE_ACK -> finishVmMigration(evt, true);

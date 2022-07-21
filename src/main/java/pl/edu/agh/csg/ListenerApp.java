@@ -21,7 +21,7 @@ public class ListenerApp {
 
     public Object gpuhosTuple;
 
-    SimProxy simulation;
+    SimProxy2 simulation;
 
     /**
      * Init methode instantiate SimProxy, checking the Path value,
@@ -29,7 +29,7 @@ public class ListenerApp {
      * from the host parameters array
      * @return simulation
      */
-    public SimProxy Init(){
+    public SimProxy2 Init(){
         Lock lock=new ReentrantLock();
         Condition cond=lock.newCondition();
         Gson gson = new Gson();
@@ -60,7 +60,7 @@ public class ListenerApp {
             e.printStackTrace();
         }
         //after you change it
-        return simulation = new SimProxy("Sim1", vmTuple, gpuvmTuple, hosTuple, gpuhosTuple);
+        return simulation = new SimProxy2("Sim1", vmTuple, gpuvmTuple, hosTuple, gpuhosTuple);
     }
 
     /**
@@ -80,7 +80,7 @@ public class ListenerApp {
     public Object setHostTuple(Object obj){ return hosTuple = obj; }
     public Object setgpuHostTuple(Object obj){ return gpuhosTuple = obj; }
 
-    public SimProxy getSimulation(){
+    public SimProxy2 getSimulation(){
         return simulation;
     }
 
