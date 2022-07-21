@@ -28,6 +28,7 @@ public final class CloudSimEvent implements SimEvent {
     private Simulation simulation;
 
     private final Type type;
+//    private final Sys sys;
 
     /**
      * The actual simulation time that this event was scheduled to (at which it should occur).
@@ -158,6 +159,7 @@ public final class CloudSimEvent implements SimEvent {
      * @param data the data attached to the message, that depends on the message tag
      */
     public CloudSimEvent(
+           // final Sys sys,
         final Type type, final double delay,
         final SimEntity src, final SimEntity dest,
         final CloudSimTag tag, final Object data)
@@ -165,7 +167,7 @@ public final class CloudSimEvent implements SimEvent {
         if (delay < 0) {
             throw new IllegalArgumentException("Delay can't be negative.");
         }
-
+      //  this.sys= sys;
         this.type = type;
         this.setSource(src);
         this.setDestination(dest);
@@ -195,6 +197,8 @@ public final class CloudSimEvent implements SimEvent {
     public Type getType() {
         return type;
     }
+
+    //public Sys getSys(){        return sys;    }
 
     @Override
     public int compareTo(final SimEvent that) {

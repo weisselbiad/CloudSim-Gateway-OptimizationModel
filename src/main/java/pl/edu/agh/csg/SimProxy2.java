@@ -268,7 +268,7 @@ public class  SimProxy2 {
         new org.cloudsimplus.builders.tables.CloudletsTableBuilder(finishedCloudlets).build();
         System.out.printf("%nHosts CPU usage History (when the allocated MIPS is lower than the requested, it is due to VM migration overhead)%n");
 
-        this.datacenter.getHostList().forEach(this::printHostHistory);
+        //this.datacenter.getHostList().forEach(this::printHostHistory);
         System.out.printf("Number of VM migrations: %d%n", migrationsNumber);
         System.out.println(getClass().getSimpleName() + " finished!");
     }
@@ -709,7 +709,7 @@ public class  SimProxy2 {
         //VmHostEventInfo
         //CloudletVmEventInfo
         System.out.printf(
-                "%n\t# last cloudlet %d finished. Submitting VM %d to the broker for Migration%n",
+                "%n\t# last cloudlet %d finished. Submitting GpuVM %d to the broker for Migration%n",
                 eventInfo.getCloudlet().getId()/*getVm().getCloudletScheduler().getCloudletFinishedList().get(5).getCloudletId()*/, eventInfo.getVm().getId());
         Vm vmtemp= eventInfo.getVm();
 
@@ -754,7 +754,8 @@ public class  SimProxy2 {
         this.broker.submitVm(gpuvm);
         this.broker.submitCloudletList(newCloudletList);
         //newCloudletList.forEach(cl-> this.broker.bindCloudletToVm(cl, gpuvm));
-        System.out.printf("%n\t# Submit GpuVm %d and last cloudlet of new cloudlest list %d to the broker %n",gpuvm.getId(),newCloudletList.get(newCloudletList.size()-1).getId());
+        System.out.printf("%n\t# Submit GpuVm %d and last Gpucloudlet of new cloudlest list %d to the broker %n",gpuvm.getId(),newCloudletList.get(newCloudletList.size()-1).getId());
+        migrationsNumber++;
     }
 
     private void SubmitSimpleVmsAndCloudlets(Vm vm) {
@@ -778,7 +779,8 @@ public class  SimProxy2 {
         this.broker.submitVm(newvm);
         this.broker.submitCloudletList(newCloudletList);
         //newCloudletList.forEach(cl-> this.broker.bindCloudletToVm(cl, gpuvm));
-        System.out.printf("%n\t# Submit GpuVm %d and last cloudlet of new cloudlet list %d to the broker %n",newvm.getId(),newCloudletList.get(newCloudletList.size()-1).getId());
+        System.out.printf("%n\t# Submit Vm %d and last cloudlet of new cloudlet list %d to the broker %n",newvm.getId(),newCloudletList.get(newCloudletList.size()-1).getId());
+        migrationsNumber++;
     }
 
     private void printsecondVmssHistory(VmHostEventInfo eventInfo) {

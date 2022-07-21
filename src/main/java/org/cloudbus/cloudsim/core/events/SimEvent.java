@@ -31,6 +31,7 @@ public interface SimEvent extends Comparable<SimEvent>, EventInfo {
      * Internal event types
      */
     enum Type {NULL, SEND, HOLD_DONE, CREATE}
+    enum Sys {SIMPLE, GPU}
 
     /**
      * Sets the simulation the event belongs to
@@ -45,7 +46,7 @@ public interface SimEvent extends Comparable<SimEvent>, EventInfo {
      * @return
      */
     Type getType();
-
+  //  Sys getSys();
     /**
      * Gets the entity which received this event.
      *
@@ -93,7 +94,7 @@ public interface SimEvent extends Comparable<SimEvent>, EventInfo {
      *
      * @return a reference to the data object
      */
-    Object  getData();
+    Object getData();
 
     /**
      * Sets the source entity of this event, that defines its sender.
