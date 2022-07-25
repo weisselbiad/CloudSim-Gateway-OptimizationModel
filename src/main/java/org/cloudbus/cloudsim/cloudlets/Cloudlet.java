@@ -852,4 +852,10 @@ public interface Cloudlet extends UniquelyIdentifiable, Comparable<Cloudlet>, Cu
      * @return
      */
     Cloudlet reset();
+    /**
+     * identifier deffine the sequence path of a List of Cloudlets
+     * @return
+     */
+    void setpathid(int id);
+    int getpathid();
 }

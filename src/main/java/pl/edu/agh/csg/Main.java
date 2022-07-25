@@ -29,7 +29,7 @@ public class Main {
      * @return simulation and ListenerApp
      */
 
-    public SimProxy2 getsimulation() {return this.listenerApp.getSimulation();}
+    public SimProxy3 getsimulation() {return this.listenerApp.getSimulation();}
     public ListenerApp getListenerApp() {return  this.listenerApp;}
     public static void main(String[] args) {
 

@@ -120,4 +120,6 @@ public class CloudletSimple extends CloudletAbstract {
     public int getgpuStatus() {
         return 0;
     }
+
+
 }

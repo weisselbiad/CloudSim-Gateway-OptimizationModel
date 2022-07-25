@@ -8,8 +8,8 @@ import cloudsimMixedPeEnv.GpuHostTags;
 
 public class SimSettings {
 
-    private int cloudletCnt = 1500;
-    private int gpucloudletCnt = 1000;
+    private int cloudletCnt = 4;
+    private int gpucloudletCnt = 4;
     private int cloudletLength =10000;
     private int cloudletPes = 4;
     private long cloudletSize = 1024;

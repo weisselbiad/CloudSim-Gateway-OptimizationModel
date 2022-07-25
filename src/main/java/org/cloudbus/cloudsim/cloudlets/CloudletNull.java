@@ -258,4 +258,14 @@ final class CloudletNull implements Cloudlet {
         return -1;
     }
     @Override public Cloudlet reset() { return this; }
+
+    @Override
+    public void setpathid(int id) {
+
+    }
+
+    @Override
+    public int getpathid() {
+        return 0;
+    }
 }

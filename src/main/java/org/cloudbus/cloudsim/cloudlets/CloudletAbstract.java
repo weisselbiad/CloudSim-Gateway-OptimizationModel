@@ -108,6 +108,8 @@ public abstract class CloudletAbstract extends CustomerEntityAbstract implements
     /** @see #getSubmissionDelay() */
     private double submissionDelay;
 
+    private int pathid;
+
     /**
      * Creates a Cloudlet with no priority or id. The id is defined when the Cloudlet is
      * submitted to a {@link DatacenterBroker}. The file size and output size is defined as 1.
@@ -894,4 +896,19 @@ public abstract class CloudletAbstract extends CustomerEntityAbstract implements
     public double getLastDatacenterArrivalTime() {
         return getLastExecutionInDatacenterInfo().getArrivalTime();
     }
-}
+
+    @Override
+    public void setpathid(int id) {
+        if (id<1||id>10) {
+                throw new IllegalArgumentException("pathid should be between 1 && 6.");
+            }
+
+             this.pathid = id;
+
+    }
+
+    @Override
+    public int getpathid() {
+        return this.pathid;
+        }
+    }
