@@ -21,6 +21,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
+import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigration;
+import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigrationWorstFitStaticThreshold;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import org.cloudbus.cloudsim.core.CloudSim;
@@ -35,6 +37,7 @@ import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerSpaceShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
+import org.cloudbus.cloudsim.selectionpolicies.VmSelectionPolicyMinimumUtilization;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
 import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
@@ -43,7 +46,7 @@ import org.cloudbus.cloudsim.vms.VmCost;
 import org.cloudbus.cloudsim.vms.VmSimple;
 import org.cloudbus.cloudsim.vms.VmStateHistoryEntry;
 import org.cloudsimplus.listeners.CloudletVmEventInfo;
-import org.cloudsimplus.listeners.VmHostEventInfo;
+import org.cloudsimplus.slametrics.SlaContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +84,10 @@ public class  SimProxy3 {
     private int migrationsNumber;
 
     public SimSettings settings = new SimSettings();
+
+    private static final String CUSTOMER_SLA_CONTRACT = "CustomerSLA.json";
+
+    private SlaContract contract;
 
     /**
      * Class declaration of the Cloud Components and Simulation
@@ -152,8 +159,9 @@ public class  SimProxy3 {
     }
 
     public SimProxy3(String identifier,
-                    Object vmTuple
-                     ){
+                    Object Result){
+
+        this.contract = SlaContract.getInstance(CUSTOMER_SLA_CONTRACT);
 
         /**
          * Simulation identifier in case of instancing more than one simulation
@@ -204,8 +212,8 @@ public class  SimProxy3 {
         this.Cloudletlist.addAll(this.gpucloudletList);
         this.broker.submitCloudletList(this.Cloudletlist);*/
         int[][] arr2 = { { 1, 1}, { 2, 1 },  { 3, 1 } };
-        this.broker.submitVmList(createVmList(toArray( (JsonArray) this.vmTuple)));
-        this.broker.submitVmList(createGpuVmList( toArray( (JsonArray) this.GpuvmTuple)));
+        this.broker.submitVmList(createVmList(toArray( (JsonArray) this.Result)));
+      //  this.broker.submitVmList(createGpuVmList( toArray( (JsonArray) this.GpuvmTuple)));
 
         info("Creating simulation: " + identifier);
 
@@ -250,7 +258,12 @@ public class  SimProxy3 {
                 System.out.println(gpuhost.getClass()+" "+gpuhost);
                 hostList.add(gpuhost);
             }}
-        final var datacenter = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
+        final VmAllocationPolicyMigration allocationPolicy
+                = new VmAllocationPolicyMigrationWorstFitStaticThreshold(
+                new VmSelectionPolicyMinimumUtilization(),
+                contract.getCpuUtilizationMetric().getMaxDimension().getValue());
+        allocationPolicy.setUnderUtilizationThreshold(contract.getCpuUtilizationMetric().getMinDimension().getValue());
+        final var datacenter = new DatacenterSimple(simulation, hostList, allocationPolicy);
         datacenter.setSchedulingInterval(10)
                 // Those are monetary values. Consider any currency you want (such as Dollar)
                 .getCharacteristics()
@@ -431,16 +444,15 @@ public class  SimProxy3 {
      */
 
     private List<Vm> createVmList(int[][] vmTuple) {
-        this.vmTuple = vmTuple;
+        this.Result = vmTuple;
         final List<Vm> list = new ArrayList<>();
         for (int i = 0; i < vmTuple.length; i++) {
             int factor = getSizeFactor(vmTuple[i][0]);
 
-            for (int j = 0; j < vmTuple[i][1]; j++) {
+               Vm vm = createAndbindsequentialVm(factor,vmTuple[i][1]);
 
-               Vm vm = createAndbindsequentialVm(factor,1);
                 list.add(vm);
-            }
+
         }return list;
    }
 
@@ -451,7 +463,7 @@ public class  SimProxy3 {
         lastVmIndex = ++lastVmIndex ;
         return vm;
     }
-    private List<GpuVm> createGpuVmList(int[][] gpuvmTuple) {
+/*    private List<GpuVm> createGpuVmList(int[][] gpuvmTuple) {
         this.GpuvmTuple = gpuvmTuple;
         final List<GpuVm> gpuvmlist = new ArrayList<>();
         for (int i = 0; i < gpuvmTuple.length; i++) {
@@ -459,11 +471,11 @@ public class  SimProxy3 {
 
             for (int j = 0; j < gpuvmTuple[i][1] ; j++) {
 
-                GpuVm gvm = (GpuVm) createAndbindsequentialVm(factor,3);
+                GpuVm gvm = (GpuVm) createAndbindsequentialVm(factor,6);
                 gpuvmlist.add(gvm);
             }}
         return gpuvmlist;
-    }
+    }*/
 
     private GpuVm createGpuVm(int factor){
         String vmm = "vSphere";
@@ -590,10 +602,13 @@ public class  SimProxy3 {
             for(Cloudlet cl: interCloudletList){
                 cl.setId(lastCloudletindex);
                 lastCloudletindex = ++lastCloudletindex;
-                this.broker.bindCloudletToVm(cl,Cpuvm);
 
+                this.broker.bindCloudletToVm(cl,Cpuvm);
+                this.broker.submitCloudlet(cl);
                 CPUfirstCloudlets.add(cl);
             }
+
+            this.broker.submitVm(Cpuvm);
             var testcl = CPUfirstCloudlets.get(CPUfirstCloudlets.size()-1);
             testcl.addOnFinishListener(this::Listener5);
 
@@ -607,9 +622,13 @@ public class  SimProxy3 {
             for(GpuCloudlet cl: interCloudletList){
                 cl.setId(lastCloudletindex);
                 lastCloudletindex = ++lastCloudletindex;
+
                 this.broker.bindCloudletToVm(cl,Gpuvm);
+                this.broker.submitCloudlet(cl);
                 GPUfirstCloudlets.add(cl);
+
             }
+            this.broker.submitVm(Gpuvm);
             var testcl = GPUfirstCloudlets.get(GPUfirstCloudlets.size()-1);
             testcl.addOnFinishListener(this::Listener6);
 
@@ -807,19 +826,21 @@ public class  SimProxy3 {
         Vm vmtemp= eventInfo.getVm();
         this.broker.destroyVm(eventInfo.getVm());
 
+        List<GpuCloudlet> CloudletList = new ArrayList<>();
         List<GpuCloudlet> newCloudletList = new ArrayList<>();
         GpuVm gpuvm =convertToGpuVm(vmtemp) ;
 
         newCloudletList = createGpuCloudletList(2);
         int i = 555555;
-        for (Cloudlet cl: newCloudletList){
+        for (GpuCloudlet cl: newCloudletList){
             cl.setId(lastCloudletindex+i);
             lastCloudletindex = ++lastCloudletindex;
             this.broker.bindCloudletToVm(cl, gpuvm);
+            CloudletList.add(cl);
             i++;
         }
         this.broker.submitVm(gpuvm);
-        this.broker.submitCloudletList(newCloudletList);
+        this.broker.submitCloudletList(CloudletList);
         System.out.printf("%n\t# Submit GpuVm %d and last Gpucloudlet of new cloudlest list %d to the broker %n",gpuvm.getId(),newCloudletList.get(newCloudletList.size()-1).getId());
         migrationsNumber++;
     }
@@ -833,7 +854,7 @@ public class  SimProxy3 {
         Vm vmtemp= eventInfo.getVm();
 
         this.broker.destroyVm(eventInfo.getVm());
-
+        List<Cloudlet> CloudletList = new ArrayList<>();
         List<Cloudlet> newCloudletList = new ArrayList<>();
         Vm newvm =convertToSimpleVm(vmtemp) ;
 
@@ -843,10 +864,11 @@ public class  SimProxy3 {
             cl.setId(lastCloudletindex+i);
             lastCloudletindex = ++lastCloudletindex;
             this.broker.bindCloudletToVm(cl, newvm);
+            CloudletList.add(cl);
             i++;
         }
         this.broker.submitVm(newvm);
-        this.broker.submitCloudletList(newCloudletList);
+        this.broker.submitCloudletList(CloudletList);
         System.out.printf("%n\t# Submit Vm %d and last cloudlet of new cloudlet list %d to the broker %n",newvm.getId(),newCloudletList.get(newCloudletList.size()-1).getId());
         migrationsNumber++;
     }
