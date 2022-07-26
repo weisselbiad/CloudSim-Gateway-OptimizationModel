@@ -103,10 +103,7 @@ public class  SimProxy3 {
      * Initializing variables from the Setting Class
      */
 
-    private Object hostTuple;
-    private Object GpuhostTuple;
-    private Object vmTuple;
-    private Object GpuvmTuple;
+    private Object Result;
 
     private int cloudletCnt = settings.getCloudletCnt();
     private  int gpuclouletCnt = settings.getGpucloudletCnt();
@@ -155,20 +152,15 @@ public class  SimProxy3 {
     }
 
     public SimProxy3(String identifier,
-                    Object vmTuple,
-                    Object GpuvmTuple,
-                    Object hostTuple,
-                    Object GpuhostTuple){
+                    Object vmTuple
+                     ){
 
         /**
          * Simulation identifier in case of instancing more than one simulation
          */
 
         this.identifier = identifier;
-        this.vmTuple = vmTuple;
-        this.hostTuple = hostTuple;
-        this.GpuhostTuple = GpuhostTuple;
-        this.GpuvmTuple = GpuvmTuple;
+        this.Result = Result;
 
         /**
          * Initializing the Simulation, as parameter a double should be passed which is the minimum
@@ -180,16 +172,16 @@ public class  SimProxy3 {
         /**
          * Creating the Datacenter and calling the Broker
          */
-        //int[][] hostTuple = { { 1, 1}, { 2, 1},  { 3, 1} };
-        //int[][] GpuhostTuple = { { 1, 1}, { 2, 1},  { 3, 1} };
-        this.datacenter =  createDatacenter (toArray( (JsonArray) this.hostTuple),  toArray ((JsonArray) this.GpuhostTuple) ) ;
+        int[][] hostTuple = { { 1, 1}, { 2, 1},  { 3, 1} };
+        int[][] GpuhostTuple = { { 1, 1}, { 2, 1},  { 3, 1} };
+        this.datacenter =  createDatacenter (hostTuple,  GpuhostTuple)  ;
         this.broker = new MixedDatacenterBroker(this.simulation);
 
         /**
          * Creating a List of Virtual machines and Cloudlets
          */
 
-        System.out.println("vm Tuple from Proxy: "+this.vmTuple+ " GpuVm Tuple from Proxy: "+this.GpuvmTuple);
+        System.out.println("Result from Proxy: "+this.Result);
 /*
         this.vmList = createVmList( toArray( (JsonArray) this.vmTuple));
         this.gpuvmList = createGpuVmList( toArray( (JsonArray) this.GpuvmTuple));
@@ -241,7 +233,7 @@ public class  SimProxy3 {
      */
 
     private Datacenter createDatacenter(int[][] hostTuple, int[][] gpuhostTuple) {
-        this.hostTuple = hostTuple;
+
         final List<Host> hostList = new ArrayList<>();
         System.out.println("Hlength: "+hostTuple.length);
         for (int i = 0; i< hostTuple.length; i++ ){

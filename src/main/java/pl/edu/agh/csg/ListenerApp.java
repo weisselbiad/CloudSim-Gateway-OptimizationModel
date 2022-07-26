@@ -14,12 +14,8 @@ public class ListenerApp {
      */
 
     public Object FilePath;
-    public Object vmTuple;
+    public Object result;
 
-    public Object gpuvmTuple;
-    public Object hosTuple;
-
-    public Object gpuhosTuple;
 
     SimProxy3 simulation;
 
@@ -52,16 +48,14 @@ public class ListenerApp {
             System.out.println("From Java Path : "+ file);
             BufferedReader br = new BufferedReader(new FileReader(file));
             JsonObject obj = gson.fromJson(br, JsonObject.class);
-            setVmTuple(obj.get("Vm"));
-            setgpuVmTuple(obj.get("GpuVm"));
-            setHostTuple(obj.get("Host"));
-            setgpuHostTuple(obj.get("GpuHost"));
+            setResults(obj.get("Results"));
+
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         //after you change it
-        return simulation = new SimProxy3("Sim1", vmTuple, gpuvmTuple, hosTuple, gpuhosTuple);
+        return simulation = new SimProxy3("Sim1", result);
     }
 
     /**
@@ -76,10 +70,7 @@ public class ListenerApp {
     /**
      * set vm and host parameters array
      */
-    public Object setVmTuple(Object obj){ return vmTuple = obj; }
-    public Object setgpuVmTuple(Object obj){ return gpuvmTuple = obj; }
-    public Object setHostTuple(Object obj){ return hosTuple = obj; }
-    public Object setgpuHostTuple(Object obj){ return gpuhosTuple = obj; }
+    public Object setResults(Object obj){ return result = obj; }
 
     public SimProxy3 getSimulation(){
         return simulation;
