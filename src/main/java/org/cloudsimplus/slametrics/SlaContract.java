@@ -94,7 +94,7 @@ public class SlaContract {
      * @param inputStream a {@link InputStream} to read the file
      * @return a {@link SlaContract} read from the JSON file
      */
-    private static SlaContract getInstanceInternal(final InputStream inputStream) {
+    public static SlaContract getInstanceInternal(final InputStream inputStream) {
         return new Gson().fromJson(new InputStreamReader(inputStream), SlaContract.class);
     }
 
