@@ -5,21 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/CustomerSLA.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/resourceHashesCache.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudsimplus/slametrics/SlaContract.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudsimplus/slametrics/SlaContract.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/ListenerApp.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/ListenerApp.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudsimplus/slametrics/SlaContract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudsimplus/slametrics/SlaContract.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/cloudlets/CloudletAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/cloudlets/CloudletAbstract.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/vms/Vm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/vms/Vm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/vms/VmSimple.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/vms/VmSimple.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy3.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -339,7 +328,9 @@
       <workItem from="1650545174199" duration="25049000" />
       <workItem from="1658570829261" duration="45013000" />
       <workItem from="1658774875277" duration="2011000" />
-      <workItem from="1659036415123" duration="448000" />
+      <workItem from="1659036415123" duration="682000" />
+      <workItem from="1659271959492" duration="3490000" />
+      <workItem from="1659344790312" duration="10812000" />
     </task>
     <task id="LOCAL-00001" summary="gradle">
       <created>1637948985872</created>
@@ -523,7 +514,14 @@
       <option name="project" value="LOCAL" />
       <updated>1658740621093</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="28.07.1">
+      <created>1659036990487</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1659036990487</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -561,7 +559,8 @@
     <MESSAGE value="21.07.2" />
     <MESSAGE value="21.07.3" />
     <MESSAGE value="26.07.1" />
-    <option name="LAST_COMMIT_MESSAGE" value="26.07.1" />
+    <MESSAGE value="28.07.1" />
+    <option name="LAST_COMMIT_MESSAGE" value="28.07.1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -625,11 +624,6 @@
           <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy.java</url>
           <line>183</line>
           <option name="timeStamp" value="147" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy3.java</url>
-          <line>846</line>
-          <option name="timeStamp" value="163" />
         </line-breakpoint>
         <line-breakpoint type="java-method">
           <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cloudsimplus/cloudsim-plus/7.1.2/3c6d01bece7d9835501bd28439d948acc52e826b/cloudsim-plus-7.1.2-sources.jar!/org/cloudbus/cloudsim/cloudlets/network/NetworkCloudlet.java</url>

@@ -112,7 +112,7 @@ public class VmSimple extends CustomerEntityAbstract implements Vm {
     private double timeZone;
     private MipsShare allocatedMips;
     private MipsShare requestedMips;
-
+    private int vmallocationid;
     /**
      * A copy constructor that creates a VM based on the configuration of another one.
      * The created VM will have the same MIPS capacity, number of PEs,
@@ -1104,5 +1104,20 @@ public class VmSimple extends CustomerEntityAbstract implements Vm {
 
     public void setRequestedMips(final MipsShare requestedMips) {
         this.requestedMips = requireNonNull(requestedMips);
+    }
+
+    @Override
+    public void setvmallocationid(int id) {
+        if (id<1||id>3) {
+            throw new IllegalArgumentException("vmallocationid should be between 1 && 3.");
+        }
+
+        this.vmallocationid = id;
+
+    }
+
+    @Override
+    public int getvmallocationid() {
+        return this.vmallocationid;
     }
 }

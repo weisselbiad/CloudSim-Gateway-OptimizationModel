@@ -49,7 +49,7 @@ public interface Vm extends AbstractMachine<Resource>, UniquelyIdentifiable, Com
     Logger LOGGER = LoggerFactory.getLogger(Vm.class.getSimpleName());
 
     /**
-     * An attribute that implements the Null Object Design Pattern for {@link V
+     * An attribute that implements the Null Object Design Pattern for {@link
      */
     Vm NULL = new VmNull();
   //  GpuVm GPU_VMNULL = new GpuNull();
@@ -754,4 +754,10 @@ public interface Vm extends AbstractMachine<Resource>, UniquelyIdentifiable, Com
      */
     @Override
     Vm setTimeZone(double timeZone);
+
+
+  void setvmallocationid(int id) ;
+
+
+  int getvmallocationid() ;
 }
