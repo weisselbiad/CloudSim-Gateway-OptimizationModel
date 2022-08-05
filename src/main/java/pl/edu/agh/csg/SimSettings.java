@@ -11,7 +11,7 @@ public class SimSettings {
     private int cloudletCnt = 4;
     private int gpucloudletCnt = 4;
     private int cloudletLength =10000;
-    private int cloudletPes = 4;
+    private int cloudletPes = 1;
     private long cloudletSize = 1024;
 
     private int hostCnt = 20;
@@ -20,8 +20,8 @@ public class SimSettings {
     private long hostRam = 64 * 1024;
     private long hostBw = 50000*3;
     private long hostSize = 1000000*3;
-    private int hostPes = 12;
-    private long hostPeMips = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS;;
+    private int hostPes = 64;
+    private long hostPeMips =20*GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS;;
 
     private long gpumips = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS;
 
@@ -35,8 +35,8 @@ public class SimSettings {
     private long gpuvmbw = 100;
     private long vmSize = 1000;
 
-    private int gpuvmsize = 10;
-    private long vmPes= 1;
+    private int gpuvmsize = 100;
+    private long vmPes= 4;
 
 
   /*  public SimSettings() {

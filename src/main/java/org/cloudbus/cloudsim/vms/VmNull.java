@@ -222,5 +222,16 @@ public class VmNull implements Vm {
     @Override public VmGroup getGroup() { return null; }
     @Override public double getTimeZone() { return Integer.MAX_VALUE; }
     @Override public Vm setTimeZone(double timeZone) { return this; }
+
+    @Override
+    public void setvmallocationid(int id) {
+
+    }
+
+    @Override
+    public int getvmallocationid() {
+        return 0;
+    }
+
     @Override public List<ResourceManageable> getResources() { return Collections.emptyList(); }
 }
