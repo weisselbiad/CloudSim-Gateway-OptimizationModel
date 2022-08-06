@@ -7,8 +7,7 @@
  */
 package org.cloudbus.cloudsim.vms;
 
-import cloudsimMixedPeEnv.GpuNull;
-import cloudsimMixedPeEnv.GpuVm;
+import cloudsimMixedPeEnv.Vgpu;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.core.AbstractMachine;
@@ -760,4 +759,8 @@ public interface Vm extends AbstractMachine<Resource>, UniquelyIdentifiable, Com
 
 
   int getvmallocationid() ;
+
+  cloudsimMixedPeEnv.Vgpu getcVgpu();
+
+  gpu.Vgpu getVgpu();
 }

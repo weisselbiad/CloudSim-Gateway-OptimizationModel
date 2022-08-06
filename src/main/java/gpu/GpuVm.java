@@ -1,6 +1,5 @@
 package gpu;
 
-import org.cloudbus.cloudsim.resources.ResourceManageable;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletScheduler;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.cloudbus.cloudsim.vms.VmSimple;
@@ -86,7 +85,7 @@ public class GpuVm extends VmSimple implements Vm {
 	/**
 	 * @return the vgpu
 	 */
-	public Vgpu getVgpu() {
+	public gpu.Vgpu getVgpu() {
 		return vgpu;
 	}
 
@@ -119,6 +118,12 @@ public class GpuVm extends VmSimple implements Vm {
 		}
 		return 0.0;
 	}
+
+	@Override
+	public cloudsimMixedPeEnv.Vgpu getcVgpu() {
+		return null;
+	}
+
 	public void setCurrentAllocatedBw(long currentAllocatedBw) {
 		this.currentAllocatedBw = currentAllocatedBw;
 	}

@@ -49,7 +49,7 @@ public class GridGpuVmAllocationPolicyBestFit extends GpuVmAllocationPolicy {
 	public HostSuitability allocateHostForVm(Vm vm) {
 		if (!getVmTable().containsKey(vm.getUid())) {
 			GpuVm gpuVm = (GpuVm) vm;
-			Vgpu vgpu = gpuVm.getVgpu();
+			Vgpu vgpu = gpuVm.getcVgpu();
 			// Case 1 - VM with GPU tasks
 			if (vgpu != null) {
 				memoryAwareSortGpuHost(getGpuHostList());

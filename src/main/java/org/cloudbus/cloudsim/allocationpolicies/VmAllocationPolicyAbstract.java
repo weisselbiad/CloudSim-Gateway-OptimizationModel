@@ -86,6 +86,7 @@ public abstract class VmAllocationPolicyAbstract implements VmAllocationPolicy {
     }
 
     public final <T extends Host> List<T>getSimpleHostList(){
+
         return datacenter.getSimpleHostList();
     }
 

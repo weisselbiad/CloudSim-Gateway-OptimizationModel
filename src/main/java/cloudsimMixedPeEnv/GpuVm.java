@@ -1,25 +1,7 @@
 package cloudsimMixedPeEnv;
 
-import org.cloudbus.cloudsim.brokers.DatacenterBroker;
-import org.cloudbus.cloudsim.cloudlets.Cloudlet;
-import org.cloudbus.cloudsim.core.AbstractMachine;
-import org.cloudbus.cloudsim.core.CustomerEntity;
-import org.cloudbus.cloudsim.core.Simulation;
-import org.cloudbus.cloudsim.datacenters.Datacenter;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.resources.Processor;
-import org.cloudbus.cloudsim.resources.Resource;
-import org.cloudbus.cloudsim.resources.ResourceManageable;
-import org.cloudbus.cloudsim.schedulers.MipsShare;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletScheduler;
 import org.cloudbus.cloudsim.vms.*;
-import org.cloudsimplus.autoscaling.HorizontalVmScaling;
-import org.cloudsimplus.autoscaling.VerticalVmScaling;
-import org.cloudsimplus.listeners.EventListener;
-import org.cloudsimplus.listeners.VmDatacenterEventInfo;
-import org.cloudsimplus.listeners.VmHostEventInfo;
-
-import java.util.List;
 
 /**
  * 
@@ -85,8 +67,13 @@ public class GpuVm extends VmSimple implements Vm {
 	/**
 	 * @return the vgpu
 	 */
-	public Vgpu getVgpu() {
+	public  Vgpu getcVgpu() {
 		return vgpu;
+	}
+
+	@Override
+	public gpu.Vgpu getVgpu() {
+		return null;
 	}
 
 	/**

@@ -23,6 +23,7 @@
  */
 package org.cloudbus.cloudsim.vms;
 
+import cloudsimMixedPeEnv.Vgpu;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.core.CustomerEntity;
@@ -231,6 +232,16 @@ public class VmNull implements Vm {
     @Override
     public int getvmallocationid() {
         return 0;
+    }
+
+    @Override
+    public Vgpu getcVgpu() {
+        return null;
+    }
+
+    @Override
+    public gpu.Vgpu getVgpu() {
+        return null;
     }
 
     @Override public List<ResourceManageable> getResources() { return Collections.emptyList(); }

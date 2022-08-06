@@ -30,7 +30,7 @@ public abstract class GpuVmAllocationPolicySimple extends GpuVmAllocationPolicy 
 				HostSuitability result = allocateHostForVm(vm, host);
 				if (result!=null) {
 					continue;
-				} else if (!gpuVm.hasVgpu() || allocateGpuForVgpu(gpuVm.getVgpu(), (GpuHost) host)) {
+				} else if (!gpuVm.hasVgpu() || allocateGpuForVgpu(gpuVm.getcVgpu(), (GpuHost) host)) {
 					return result;
 				}
 				deallocateHostForVm(gpuVm);

@@ -85,7 +85,7 @@ public abstract class GridGpuVmAllocationPolicyBreadthFirst extends GpuVmAllocat
 							.getGddram()) {
 						continue;
 					}
-					if (allocateGpuHostForVgpu(vm.getVgpu(), gpuHost, pgpuEntity.getKey())!=null) {
+					if (allocateGpuHostForVgpu(vm.getcVgpu(), gpuHost, pgpuEntity.getKey())!=null) {
 						pgpuEntities.remove(pgpuEntity);
 						pgpuEntities.add(Pair.of(pgpuEntity.getKey(), pgpuEntity.getValue() + 1));
 						pgpuProfileMap.put(pgpuEntity.getLeft(), vm.getVgpu().getGddram());

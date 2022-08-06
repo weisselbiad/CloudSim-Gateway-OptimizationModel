@@ -6,6 +6,7 @@
  */
 package org.cloudbus.cloudsim.vms;
 
+import cloudsimMixedPeEnv.Vgpu;
 import org.apache.commons.lang3.StringUtils;
 import org.cloudbus.cloudsim.brokers.DatacenterBroker;
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
@@ -1119,5 +1120,15 @@ public class VmSimple extends CustomerEntityAbstract implements Vm {
     @Override
     public int getvmallocationid() {
         return this.vmallocationid;
+    }
+
+    @Override
+    public Vgpu getcVgpu() {
+        return null;
+    }
+
+    @Override
+    public gpu.Vgpu getVgpu() {
+        return null;
     }
 }

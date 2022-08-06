@@ -138,7 +138,7 @@ public class GpuTask {
 	// //////////////////////////////////////////
 	// Below are CONSTANTS attributes
 
-	enum Status {
+	public enum Status {
 		/**
 		 * The task has been created.
 		 */

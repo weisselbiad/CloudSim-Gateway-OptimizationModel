@@ -65,6 +65,8 @@ dependencies {
     implementation 'commons-validator:commons-validator:1.6'
     implementation 'org.apache.commons:commons-math3:3.6.1'
     implementation group: 'com.opencsv', name: 'opencsv', version: '5.5.2'
+    // https://mavenlibs.com/maven/dependency/de.vandermeer/asciitable
+    implementation group: 'de.vandermeer', name: 'asciitable', version: '0.3.2'
 }
 
 docker {

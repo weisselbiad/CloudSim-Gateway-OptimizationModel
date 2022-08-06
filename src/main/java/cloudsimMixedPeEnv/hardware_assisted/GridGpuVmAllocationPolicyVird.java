@@ -131,7 +131,7 @@ public abstract class GridGpuVmAllocationPolicyVird extends GpuVmAllocationPolic
 		GpuHost pgpuHost = pgpuGpuHostMap.get(pgpu);
 		HostSuitability result = allocateHostForVm(vm, pgpuHost);
 		if (result!=null) {
-			result = allocateGpuHostForVgpu(vm.getVgpu(), pgpuHost, pgpu);
+			result = allocateGpuHostForVgpu(vm.getcVgpu(), pgpuHost, pgpu);
 			if (result!=null) {
 				return result;
 			}
