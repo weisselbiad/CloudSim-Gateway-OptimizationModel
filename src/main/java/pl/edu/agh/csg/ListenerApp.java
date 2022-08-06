@@ -55,6 +55,7 @@ public class ListenerApp {
             e.printStackTrace();
         }
         //after you change it
+        System.out.println("New Simulation Instance");
         return simulation = new SimProxy3("Sim1", result);
     }
 

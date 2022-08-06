@@ -17,26 +17,27 @@ public class SimSettings {
     private int hostCnt = 20;
 
     private int gpuhostCnt = 10;
-    private long hostRam = 64 * 1024;
-    private long hostBw = 50000*3;
-    private long hostSize = 1000000*3;
-    private int hostPes = 64;
-    private long hostPeMips =20*GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS;;
+    private long hostRam = 262144;
+    private long hostBw = 10000;
+    private long hostSize = 100*50*1024;
+    private int hostPes = 12;
+    private long hostPeMips =GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS;
 
     private long gpumips = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS;
 
     private int vmCnt= 3;
     private int gpuvmCnt = 2;
-    private long vmRam= 2048;
+    private long vmRam= 4096;
 
-    private long gpuvmram = 2048;
+    private long gpuvmram = 8192;
     private long vmBw = 100;
 
-    private long gpuvmbw = 100;
-    private long vmSize = 1000;
+    private long gpuvmbw = 200;
+    private long vmSize = 50*1024;
 
-    private int gpuvmsize = 100;
+    private int gpuvmsize = 100*1024;
     private long vmPes= 4;
+    private long gpuvmPes= 8;
 
 
   /*  public SimSettings() {
@@ -122,7 +123,9 @@ public class SimSettings {
     public long getVmPes() {
         return this.vmPes;
     }
-
+    public long getGpuvmPes() {
+        return this.gpuvmPes;
+    }
     public  long getDatacenterCores() {
         return getHostCnt() * hostPes;
     }

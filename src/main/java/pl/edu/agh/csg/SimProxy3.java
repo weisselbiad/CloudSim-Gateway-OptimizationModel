@@ -107,8 +107,14 @@ public class  SimProxy3 {
     private MixedDatacenterBroker broker;
 
     List<Integer> CloudletMips = Arrays.asList(5000, 40000, 30000,10000,50000);
+    List<Integer> gpuCloudletMips = Arrays.asList(150000, 350000, 450000,600000,550000);
+    List<Integer> CloudletSize = Arrays.asList(512,1024,1536);
+    List<Integer> gpuCloudletSize = Arrays.asList(1024,2048,3096);
     List<Long> GpuTaskMips = Arrays.asList((long) (GridVideoCardTags.NVIDIA_K1_CARD_PE_MIPS ),(long) (GridVideoCardTags.NVIDIA_K2_CARD_PE_MIPS ),(long) (GridVideoCardTags.getGpuPeMipsFromFrequency(GridVideoCardTags.NVIDIA_K80_CARD,1000) ),(long) (GridVideoCardTags.getGpuPeMipsFromFrequency(GridVideoCardTags.NVIDIA_M60_CARD,850) ));
     Random randMips = new Random();
+    Random gpurandMips = new Random();
+    Random randSize = new Random();
+    Random gpurandSize = new Random();
     private static final double CLOUDLET_CPU_USAGE_INCREMENT_PER_SECOND = 0.05;
     /**
      * The file containing the Customer's SLA Contract in JSON format.
@@ -125,7 +131,8 @@ public class  SimProxy3 {
     private int cloudletCnt = settings.getCloudletCnt();
     private  int gpuclouletCnt = settings.getGpucloudletCnt();
     private int cloudletLength = settings.getCloudletLength();
-    private long cloudletSize = settings.getCloudletSize();
+    private long cloudletSize = CloudletSize.get(randSize.nextInt(CloudletSize.size()));
+    private long gpucloudletSize = gpuCloudletSize.get(gpurandSize.nextInt(gpuCloudletSize.size()));
     private int cloudletPes = settings.getCloudletPes();
 
     private long hostRam = settings.getHostRam();
@@ -148,6 +155,7 @@ public class  SimProxy3 {
 
     private int gpuvmSize = settings.getGpuvmsize();
     private long vmPes = settings.getVmPes();
+    private long gpuvmPes = settings.getGpuvmPes();
 
 
     private List<Double> getPower(int factor){
@@ -191,8 +199,8 @@ public class  SimProxy3 {
         /**
          * Creating the Datacenter and calling the Broker
          */
-        int[][] hostTuple = { { 1, 1}, { 2, 1},  { 3, 1} };
-        int[][] GpuhostTuple = { { 1, 1}, { 2, 1},  { 3, 1} };
+        int[][] hostTuple = { { 1, 15}, { 2, 15},  { 3, 15} };
+        int[][] GpuhostTuple = { { 1, 15}, { 2, 15},  { 3, 15} };
         this.datacenter =  createDatacenter (hostTuple,  GpuhostTuple)  ;
         this.broker = new MixedDatacenterBroker(this.simulation);
 
@@ -252,6 +260,10 @@ public class  SimProxy3 {
 
     }
 
+    public void terminateSim(){
+
+        this.simulation.terminate();}
+
     /**
      * Creation of the Datacenter using a List of Hosts, which will be passed as a parameter
      * Uses a VmAllocationPolicySimple by default to allocate VMs
@@ -305,7 +317,7 @@ public class  SimProxy3 {
         int factor = getSizeFactor(type);
 
         final List<Pe> peList = new ArrayList<>(hostPes*factor);
-        for (int i = 0; i < hostPes; i++) {
+        for (int i = 0; i < 16*factor/*hostPes*factor*/; i++) {
             peList.add(new PeSimple(hostPeMips));
         }
         final var vmScheduler = new VmSchedulerSpaceShared();
@@ -372,7 +384,7 @@ public class  SimProxy3 {
         // PE's MIPS power
         double mips = GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS;
 
-        for (int peId = 0; peId < GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_NUM_PES*factor; peId++) {
+        for (int peId = 0; peId < 32*factor; peId++) {
             // Create PEs and add these into a list.
             peList.add(0, new PeSimple(mips));
         }
@@ -412,8 +424,10 @@ public class  SimProxy3 {
                 System.out.println("created Vm :" + vm.getId());
   //              cl.addOnFinishListener(this::Listener1);
  //               vm.setvmallocationid(vmallocationid);
-
-                finalVm = bindAndSubmitCtoVm(cl,vm) ; }
+                this.broker.bindCloudletToVm(cl,vm);
+                this.broker.submitCloudlet(cl);
+                this.broker.submitVm(vm);
+                finalVm = vm; }
                     break;
             case 2 :{
                 Cloudlet cl = createCloudlet(cloudletPes,cloudletSize);
@@ -424,22 +438,24 @@ public class  SimProxy3 {
                 System.out.println("created Vm :" + vm.getId());
 //                cl.addOnFinishListener(this::Listener2);
  //               vm.setvmallocationid(vmallocationid);
-                /*this.broker.bindCloudletToVm(cl,vm);
+                this.broker.bindCloudletToVm(cl,vm);
                 this.broker.submitCloudlet(cl);
-                this.broker.submitVm(vm);*/
-                finalVm = bindAndSubmitCtoVm(cl,vm);}
+                this.broker.submitVm(vm);
+                finalVm = vm;}
             break;
             case 3 :{
                 GpuCloudlet gcl = createGpuCloudlet(1, (int)this.broker.getId());
                 gcl.setpathid(3);
                 GpuVm gvm = createGpuVm(factor);
-                //               gvm.setvmallocationid(vmallocationid);
+//               gvm.setvmallocationid(vmallocationid);
                 System.out.println("created Gpucloudlet :" + gcl.getId()+" sequence: "+gcl.getpathid());
                 System.out.println("created GpuVm :" + gvm.getId());
  //               gcl.addOnFinishListener(this::Listener3);
-                //              gvm.setvmallocationid(vmallocationid);
-
-                finalVm = bindAndSubmitCtoVm(gcl,gvm);}
+//              gvm.setvmallocationid(vmallocationid);
+                this.broker.bindCloudletToVm(gcl,gvm);
+                this.broker.submitCloudlet(gcl);
+                this.broker.submitVm(gvm);
+                finalVm = gvm;}
             break;
             case 4: {
                 GpuCloudlet gcl = createGpuCloudlet(1, (int)this.broker.getId());
@@ -450,8 +466,10 @@ public class  SimProxy3 {
                 System.out.println("created GpuVm :" + gvm.getId());
   //              gcl.addOnFinishListener(this::Listener4);
   //               gvm.setvmallocationid(vmallocationid);
-
-                finalVm  = bindAndSubmitCtoVm(gcl,gvm);
+                this.broker.bindCloudletToVm(gcl,gvm);
+                this.broker.submitCloudlet(gcl);
+                this.broker.submitVm(gvm);
+                finalVm = gvm;
             }
             break;
             case 5 :{ Vm vm =createVm(factor);
@@ -479,8 +497,7 @@ public class  SimProxy3 {
         this.Result = vmTuple;
         final List<Vm> list = new ArrayList<>();
         for (int i = 0; i < vmTuple.length; i++) {
-            int factor = 1;
-                    //getSizeFactor(vmTuple[i][0]);
+            int factor = vmTuple[i][0];
 
               vmList.add(createAndbindsequentialVm(factor,vmTuple[i][1]));
                      // ,vmTuple[i][2]));
@@ -488,10 +505,11 @@ public class  SimProxy3 {
    }
 
     private Vm createVm(int factor){
-        final Vm vm = new VmSimple(hostPeMips*factor,vmPes*factor);
+        final Vm vm = new VmSimple(hostPeMips,vmPes*factor);
         vm.setRam(vmRam*factor).setBw(vmBw*factor).setSize(vmSize*factor).enableUtilizationStats();
         vm.setId(lastVmIndex);
         lastVmIndex = ++lastVmIndex ;
+        System.out.println(vm+" factor: "+factor +" Pes number"+ vm.getProcessor().getCapacity());
         return vm;
     }
 /*    private List<GpuVm> createGpuVmList(int[][] gpuvmTuple) {
@@ -513,7 +531,7 @@ public class  SimProxy3 {
         //GpuCloudletSchedulerTimeShared GCSTS = new GpuCloudletSchedulerTimeShared();
 
         // Create a VM
-        GpuVm vm = new GpuVm( gpuMips*factor, vmPes*factor, new CloudletSchedulerSpaceShared());
+        GpuVm vm = new GpuVm( hostPeMips, gpuvmPes*factor, new CloudletSchedulerSpaceShared());
         vm.setRam(gpuvmRam*factor);
         vm.setBw(gpuvmBw*factor);
         vm.setSize(gpuvmSize*factor);
@@ -575,7 +593,7 @@ public class  SimProxy3 {
                         0.2,1,
                         true);*/
          Cloudlet cloudlet =
-                new CloudletSimple(cloudletLength,pes)
+                new CloudletSimple(randomlength,pes)
                         .setFileSize(1024)
                         .setOutputSize(1024)
                         .setUtilizationModelCpu(new UtilizationModelFull())
@@ -603,8 +621,8 @@ public class  SimProxy3 {
     private GpuCloudlet createGpuCloudlet(int gpuTaskId, int brokerId){
         // Cloudlet properties
         long length = (long) (400 * GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS);
-        long fileSize = 300;
-        long outputSize = 300;
+        long fileSize = 1024;
+        long outputSize = 1024;
         int pesNumber = 2;
         UtilizationModel cpuUtilizationModel = new UtilizationModelFull();
         UtilizationModel ramUtilizationModel = new UtilizationModelFull();
@@ -630,9 +648,10 @@ public class  SimProxy3 {
         UtilizationModel gddramBwUtilizationModel = new UtilizationModelFull();
         GpuTask gpuTask = new GpuTask(simulation, gpuTaskId, taskLength, numberOfBlocks, taskInputSize, taskOutputSize,
                 requestedGddramSize, 0, gpuUtilizationModel, gddramUtilizationModel, gddramBwUtilizationModel);
-        int randomlength = CloudletMips.get(randMips.nextInt(CloudletMips.size()));
-        GpuCloudlet gpuCloudlet = new GpuCloudlet(50000, pesNumber,fileSize, outputSize,cpuUtilizationModel,ramUtilizationModel,bwUtilizationModel, gpuTask);
+        int randomlength = gpuCloudletMips.get(gpurandMips.nextInt(gpuCloudletMips.size()));
+        GpuCloudlet gpuCloudlet = new GpuCloudlet(randomlength, pesNumber,fileSize, outputSize,cpuUtilizationModel,ramUtilizationModel,bwUtilizationModel, gpuTask);
         gpuCloudlet.setUserId(brokerId);
+        gpuCloudlet.setSizes(gpucloudletSize);
         gpuCloudlet.setId(lastCloudletindex);
         lastCloudletindex = ++lastCloudletindex;
         System.out.println("created Gpucloudlet :" + gpuCloudlet.getId());
@@ -730,7 +749,7 @@ public class  SimProxy3 {
         vmcopy= vm;
 
         //this.broker.destroyVm(vm);
-        GpuVm gpuvm =  new GpuVm((long) vmcopy.getMips(), vmPes, new CloudletSchedulerSpaceShared());
+        GpuVm gpuvm =  new GpuVm((long) vmcopy.getMips(), gpuvmPes, new CloudletSchedulerSpaceShared());
         gpuvm.setRam(vmcopy.getRam().getCapacity()).setBw(vmcopy.getBw().getCapacity()).setSize(vmcopy.getStorage().getCapacity()).enableUtilizationStats();
         GpuTaskSchedulerLeftover gpuTaskScheduler = new GpuTaskSchedulerLeftover();
         // Create a Vgpu
