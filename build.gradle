@@ -67,6 +67,7 @@ dependencies {
     implementation group: 'com.opencsv', name: 'opencsv', version: '5.5.2'
     // https://mavenlibs.com/maven/dependency/de.vandermeer/asciitable
     implementation group: 'de.vandermeer', name: 'asciitable', version: '0.3.2'
+    implementation 'org.json:json:20211205'
 }
 
 docker {

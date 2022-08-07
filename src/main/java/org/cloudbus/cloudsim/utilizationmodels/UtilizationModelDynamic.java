@@ -258,6 +258,7 @@ public class UtilizationModelDynamic extends UtilizationModelAbstract {
         validateUtilizationField("currentUtilization", currentUtilization);
         this.currentUtilization = currentUtilization;
     }
+    public double getCurrentUtilization(){return currentUtilization;}
 
     /**
      * Gets the maximum amount of resource that will be used.

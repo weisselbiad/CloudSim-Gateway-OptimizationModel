@@ -218,6 +218,17 @@ public class VmNull implements Vm {
     @Override public VerticalVmScaling getBwVerticalScaling() { return VerticalVmScaling.NULL; }
     @Override public VerticalVmScaling getPeVerticalScaling() { return VerticalVmScaling.NULL; }
     @Override public Processor getProcessor() { return Processor.NULL; }
+
+    @Override
+    public void setCloudletSequence(List<Cloudlet> CloudletSequenceList) {
+
+    }
+
+    @Override
+    public List<Cloudlet> getCloudletSequence() {
+        return null;
+    }
+
     @Override public String getDescription() { return ""; }
     @Override public Vm setDescription(String description) { return this; }
     @Override public VmGroup getGroup() { return null; }

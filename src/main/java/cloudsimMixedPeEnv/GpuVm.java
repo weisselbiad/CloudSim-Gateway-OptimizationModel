@@ -1,7 +1,11 @@
 package cloudsimMixedPeEnv;
 
+import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletScheduler;
-import org.cloudbus.cloudsim.vms.*;
+import org.cloudbus.cloudsim.vms.Vm;
+import org.cloudbus.cloudsim.vms.VmSimple;
+
+import java.util.List;
 
 /**
  * 
@@ -11,6 +15,8 @@ import org.cloudbus.cloudsim.vms.*;
  * 
  */
 public class GpuVm extends VmSimple implements Vm {
+
+			public List<Cloudlet> CloudletSequenceList;
 	private int userId;
 	/**
 	 * Describes vm's type. A type can be associated with a configuration, therefore
@@ -62,6 +68,16 @@ public class GpuVm extends VmSimple implements Vm {
 	 */
 	protected void setType(String type) {
 		this.type = type;
+	}
+
+	@Override
+	public void setCloudletSequence(List<Cloudlet> CloudletSequenceList) {
+		this.CloudletSequenceList = CloudletSequenceList;
+	}
+
+	@Override
+	public List<Cloudlet> getCloudletSequence() {
+		return CloudletSequenceList;
 	}
 
 	/**

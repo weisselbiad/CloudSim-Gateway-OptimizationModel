@@ -8,6 +8,13 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import java.io.FileWriter;
+import java.io.IOException;
+
+
 public class Main {
     /**
      * Initializing SimProxy which build the Simulation and ListenerApp which
@@ -17,18 +24,27 @@ public class Main {
     ListenerApp listenerApp ;
 
 
+    static JobsSet jobsSet = JobsSet.getInstance(200);
     public Main() {
 
         listenerApp = new ListenerApp();
 
     }
 
+
+    /**Generating CloudLets Queue
+     * Problem formulation
+    * */
+
+
     /**
      * returning simulation and ListenerApp so it is possible to call there
      * Methodes using the Gateway Py4j
      * @return simulation and ListenerApp
      */
-
+    public JobsSet getJobsSet(){
+        return jobsSet;
+    }
     public SimProxy3 getsimulation() {return this.listenerApp.getSimulation();}
     public ListenerApp getListenerApp() {return  this.listenerApp;}
     public static void main(String[] args) {
@@ -42,7 +58,8 @@ public class Main {
 
         GatewayServer gatewayServer = new GatewayServer(new Main());
         gatewayServer.start(true);
-     System.out.println("Initialising Simulation ......");
+
+        System.out.println("Initialising Simulation .............");
     }
 }
 

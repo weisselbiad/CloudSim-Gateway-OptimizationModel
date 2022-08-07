@@ -36,6 +36,7 @@ import org.cloudbus.cloudsim.vms.Vm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * A minimal but organized, structured and re-usable CloudSim Plus example
@@ -122,7 +123,11 @@ public class GpuExperiment {
 
         final List<Cloudlet> finishedCloudlets = broker0.getCloudletFinishedList();
         new CloudletsTableBuilder(finishedCloudlets).build();
-
+        Random rand = new Random();
+        for(int i = 0; i<10; i++){
+            int random = rand.nextInt((10 - 0) + 1) + 0;
+            System.out.println("Random "+i+" = "+random);
+        }
     }
 
 

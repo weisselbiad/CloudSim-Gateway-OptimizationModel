@@ -52,6 +52,8 @@ public interface Vm extends AbstractMachine<Resource>, UniquelyIdentifiable, Com
      */
     Vm NULL = new VmNull();
   //  GpuVm GPU_VMNULL = new GpuNull();
+    void setCloudletSequence(List<Cloudlet> CloudletSequenceList);
+    List<Cloudlet> getCloudletSequence();
     static String getUid(long userId, long vmId) {
         return userId + "-" + vmId;
     }

@@ -7,7 +7,6 @@ import cloudsimMixedPeEnv.hardware_assisted.GridPerformanceVgpuSchedulerFairShar
 import cloudsimMixedPeEnv.hardware_assisted.GridVgpuTags;
 import cloudsimMixedPeEnv.hardware_assisted.GridVideoCardTags;
 import cloudsimMixedPeEnv.hardware_assisted.VideoCardPowerModelNvidiaGridK1;
-import cloudsimMixedPeEnv.lists.VmList;
 import cloudsimMixedPeEnv.performance.models.PerformanceModel;
 import cloudsimMixedPeEnv.performance.models.PerformanceModelGpuConstant;
 import cloudsimMixedPeEnv.power.PowerVideoCard;
@@ -17,14 +16,12 @@ import cloudsimMixedPeEnv.provisioners.GpuGddramProvisionerSimple;
 import cloudsimMixedPeEnv.provisioners.VideoCardBwProvisioner;
 import cloudsimMixedPeEnv.provisioners.VideoCardBwProvisionerShared;
 import cloudsimMixedPeEnv.selection.PgpuSelectionPolicy;
-import cloudsimMixedPeEnv.selection.PgpuSelectionPolicyNull;
 import cloudsimMixedPeEnv.selection.PgpuSelectionPolicySimple;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import de.vandermeer.asciitable.AsciiTable;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicy;
-import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicyBestFit;
 import org.cloudbus.cloudsim.allocationpolicies.VmAllocationPolicySimple;
 import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigration;
 import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigrationWorstFitStaticThreshold;
@@ -130,7 +127,8 @@ public class  SimProxy3 {
      * Initializing variables from the Setting Class
      */
 
-    private Object Result;
+    private Object Indiv;
+    private JobsSet jobsSet;
 
     private int cloudletCnt = settings.getCloudletCnt();
     private  int gpuclouletCnt = settings.getGpucloudletCnt();
@@ -182,7 +180,8 @@ public class  SimProxy3 {
     private final ContinuousDistribution random;
 
     public SimProxy3(String identifier,
-                     Object Result){
+                     Object Indiv,
+                        JobsSet jobsSet){
 
         this.contract = SlaContract.getInstance(CUSTOMER_SLA_CONTRACT);
         random = new UniformDistr();
@@ -191,7 +190,8 @@ public class  SimProxy3 {
          */
 
         this.identifier = identifier;
-        this.Result = Result;
+        this.Indiv = Indiv;
+        this.jobsSet = jobsSet;
 
         /**
          * Initializing the Simulation, as parameter a double should be passed which is the minimum
@@ -212,34 +212,16 @@ public class  SimProxy3 {
          * Creating a List of Virtual machines and Cloudlets
          */
 
-        System.out.println("Result from Proxy: "+this.Result);
-/*
-        this.vmList = createVmList( toArray( (JsonArray) this.vmTuple));
-        this.gpuvmList = createGpuVmList( toArray( (JsonArray) this.GpuvmTuple));
-        int[][] arr = { { 1, 2}, { 2, 2 },  { 3, 2 } };
-        this.CPUfirstvmList = createVmList(arr);
-        int[][] arr2 = { { 1, 1}, { 2, 1 },  { 3, 1 } };
-        Vm testCpufirstVm= createVm(2);
-        this.CPUfirstCloudletList = createCPUfirstCloudList(5);
-        HashMap<Vm, List<Cloudlet>> hm1 = new HashMap<>();
+        System.out.println("Individual from Proxy: "+this.Indiv);
 
-        this.Cloudletlist = createCloudList(cloudletCnt);
-        this.gpucloudletList = createGpuCloudletList(gpuclouletCnt);
-
-        /***
-         * Submition of the Lists to the Broker
-         */
-      /*  this.vmList.addAll(this.gpuvmList);
-        this.broker.submitVmList(this.vmList);
-
-        this.Cloudletlist.addAll(this.gpucloudletList);
-        this.broker.submitCloudletList(this.Cloudletlist);*/
-        int[][] arr2 = { { 1, 1}, { 2, 1 },  { 3, 1 } };
-        createVmList(toArray( (JsonArray) this.Result));
-        //  this.broker.submitVmList(createGpuVmList( toArray( (JsonArray) this.GpuvmTuple)));
+        createVmList(toArray( (JsonArray) this.Indiv), this.jobsSet);
 
         info("Creating simulation: " + identifier);
 
+    }
+    public int[][] toArray(JsonArray obj){
+        int[][] intArray = gson.fromJson(obj, int[][].class);
+        return intArray;
     }
 
     /**
@@ -283,13 +265,11 @@ public class  SimProxy3 {
         for (int i = 0; i< hostTuple.length; i++ ){
             for(int j = 0; j < hostTuple[i][1]; j++) {
                 Host host = createHost(hostTuple[i][0]);
-                System.out.println(host.getClass()+" "+ host);
                 hostList.add(host);
             }}
         for (int i = 0; i< gpuhostTuple.length; i++ ){
             for(int j = 0; j < gpuhostTuple[i][1]; j++) {
                 Host gpuhost = createGpuHost(gpuhostTuple[i][0]);
-                System.out.println(gpuhost.getClass()+" "+gpuhost);
                 hostList.add(gpuhost);
             }}
         final VmAllocationPolicyMigration allocationPolicy
@@ -297,7 +277,7 @@ public class  SimProxy3 {
                 new VmSelectionPolicyMinimumUtilization(),
                 contract.getCpuUtilizationMetric().getMaxDimension().getValue());
         allocationPolicy.setUnderUtilizationThreshold(contract.getCpuUtilizationMetric().getMinDimension().getValue());
-//        allocationPolicy.setFindHostForVmFunction(this::bestFitHostSelectionPolicy);
+        allocationPolicy.setFindHostForVmFunction(this::bestFitHostSelectionPolicy);
         final var datacenter = new DatacenterSimple(simulation, hostList, new VmAllocationPolicySimple());
         datacenter.setSchedulingInterval(10)
                 // Those are monetary values. Consider any currency you want (such as Dollar)
@@ -411,80 +391,7 @@ public class  SimProxy3 {
     }
 
 
-    private Vm createAndbindsequentialVm(int factor, int clSequence, int vmallocationid){
 
-        Vm finalVm = Vm.NULL;
-
-
-        switch(clSequence)
-        {
-            case 1 :{
-                Cloudlet cl = createCloudlet(cloudletPes,cloudletSize);
-                cl.setpathid(1);
-                Vm vm =createVm(factor);
-                vm.setvmallocationid(vmallocationid);
-                System.out.println("created cloudlet :" + cl.getId()+" sequence: "+cl.getpathid());
-                System.out.println("created Vm :" + vm.getId());
-                cl.addOnFinishListener(this::Listener1);
-                this.broker.bindCloudletToVm(cl,vm);
-                this.broker.submitCloudlet(cl);
-                this.broker.submitVm(vm);
-                finalVm = vm; }
-            break;
-            case 2 :{
-                Cloudlet cl = createCloudlet(cloudletPes,cloudletSize);
-                cl.setpathid(2);
-                Vm vm =createVm(factor);
-                vm.setvmallocationid(vmallocationid);
-                System.out.println("created cloudlet :" + cl.getId()+" sequence: "+cl.getpathid());
-                System.out.println("created Vm :" + vm.getId());
-                cl.addOnFinishListener(this::Listener2);
-                this.broker.bindCloudletToVm(cl,vm);
-                this.broker.submitCloudlet(cl);
-                this.broker.submitVm(vm);
-                finalVm = vm;}
-            break;
-            case 3 :{
-                GpuCloudlet gcl = createGpuCloudlet(1, (int)this.broker.getId());
-                gcl.setpathid(3);
-                GpuVm gvm = createGpuVm(factor);
-                gvm.setvmallocationid(vmallocationid);
-                System.out.println("created Gpucloudlet :" + gcl.getId()+" sequence: "+gcl.getpathid());
-                System.out.println("created GpuVm :" + gvm.getId());
-                gcl.addOnFinishListener(this::Listener3);
-                this.broker.bindCloudletToVm(gcl,gvm);
-                this.broker.submitCloudlet(gcl);
-                this.broker.submitVm(gvm);
-                finalVm = gvm;}
-            break;
-            case 4: {
-                GpuCloudlet gcl = createGpuCloudlet(1, (int)this.broker.getId());
-                gcl.setpathid(4);
-                GpuVm gvm = createGpuVm(factor);
-                System.out.println("created Gpucloudlet :" + gcl.getId()+" sequence: "+gcl.getpathid());
-                System.out.println("created GpuVm :" + gvm.getId());
-                gcl.addOnFinishListener(this::Listener4);
-                gvm.setvmallocationid(vmallocationid);
-                this.broker.bindCloudletToVm(gcl,gvm);
-                this.broker.submitCloudlet(gcl);
-                this.broker.submitVm(gvm);
-                finalVm = gvm;
-            }
-            break;
-            case 5 :{ Vm vm =createVm(factor);
-                vm.setvmallocationid(vmallocationid);
-                finalVm= createAndbindCPUfirstVms(vm);}
-            break;
-            case 6:{  GpuVm gvm = createGpuVm(factor);
-                gvm.setvmallocationid(vmallocationid);
-                finalVm= createAndbindGPUfirstVms(gvm);}
-            break;
-            default:{
-                System.out.println("Illegal Cloudlets Sequence ");
-                break;
-            } }
-        return finalVm;
-    }
 
     /**
      * Creating a List of virtual machines with a randomly passed hardware configuration
@@ -492,14 +399,48 @@ public class  SimProxy3 {
      * @param vmTuple
      */
 
-    private void createVmList(int[][] vmTuple) {
-        this.Result = vmTuple;
-        final List<Vm> list = new ArrayList<>();
-        for (int i = 0; i < vmTuple.length; i++) {
-            int factor = vmTuple[i][0];
+    private void createVmList(int[][] vmTuple, JobsSet jobsSet) {
+        this.Indiv = vmTuple;
+        this.jobsSet = jobsSet;
+        for (int i = 0; i < vmTuple.length;) {
 
-            vmList.add(createAndbindsequentialVm(factor,vmTuple[i][1],vmTuple[i][2]));
-            // ,vmTuple[i][2]));
+//            ((GpuCloudlet)jobsSet.getSeqList6().get(0).get(0)).getGpuTask().updateSimulation(this.simulation);
+            for (int j = 0; j < jobsSet.getSeqList1().size(); j++) {
+                int factor = vmTuple[i][0];
+                int vmAllocationid = vmTuple[i][2];
+                vmList.add(createAndbindsequentialVm(factor, 1, vmAllocationid,jobsSet.getSeqList1().get(j)));
+                i++;
+            }
+            for (int j = 0; j < jobsSet.getSeqList2().size(); j++) {
+                int factor = vmTuple[i][0];
+                int vmAllocationid = vmTuple[i][2];
+                vmList.add(createAndbindsequentialVm(factor, 2, vmAllocationid,jobsSet.getSeqList2().get(j)));
+                i++;
+            }
+            for (int j = 0; j < jobsSet.getSeqList3().size(); j++) {
+                int factor = vmTuple[i][0];
+                int vmAllocationid = vmTuple[i][2];
+                vmList.add(createAndbindsequentialVm(factor, 3, vmAllocationid,jobsSet.getSeqList3().get(j)));
+                i++;
+            }
+            for (int j = 0; j < jobsSet.getSeqList4().size(); j++) {
+                int factor = vmTuple[i][0];
+                int vmAllocationid = vmTuple[i][2];
+                vmList.add(createAndbindsequentialVm(factor, 4, vmAllocationid,jobsSet.getSeqList4().get(j)));
+                i++;
+            }
+            for (int j = 0; j < jobsSet.getSeqList5().size(); j++) {
+                int factor = vmTuple[i][0];
+                int vmAllocationid = vmTuple[i][2];
+                vmList.add(createAndbindsequentialVm(factor, 5, vmAllocationid,jobsSet.getSeqList5().get(j)));
+                i++;
+            }
+            for (int j = 0; j < jobsSet.getSeqList6().size(); j++) {
+                int factor = vmTuple[i][0];
+                int vmAllocationid = vmTuple[i][2];
+                vmList.add(createAndbindsequentialVm(factor, 6, vmAllocationid,jobsSet.getSeqList6().get(j)));
+                i++;
+            }
         }
     }
 
@@ -508,26 +449,12 @@ public class  SimProxy3 {
         vm.setRam(vmRam*factor).setBw(vmBw*factor).setSize(vmSize*factor).enableUtilizationStats();
         vm.setId(lastVmIndex);
         lastVmIndex = ++lastVmIndex ;
-        System.out.println(vm+" factor: "+factor +" Pes number"+ vm.getProcessor().getCapacity());
         return vm;
     }
-/*    private List<GpuVm> createGpuVmList(int[][] gpuvmTuple) {
-        this.GpuvmTuple = gpuvmTuple;
-        final List<GpuVm> gpuvmlist = new ArrayList<>();
-        for (int i = 0; i < gpuvmTuple.length; i++) {
-            int factor = getSizeFactor(gpuvmTuple[i][0]);
 
-            for (int j = 0; j < gpuvmTuple[i][1] ; j++) {
-
-                GpuVm gvm = (GpuVm) createAndbindsequentialVm(factor,6);
-                gpuvmlist.add(gvm);
-            }}
-        return gpuvmlist;
-    }*/
 
     private GpuVm createGpuVm(int factor){
         String vmm = "vSphere";
-        //GpuCloudletSchedulerTimeShared GCSTS = new GpuCloudletSchedulerTimeShared();
 
         // Create a VM
         GpuVm vm = new GpuVm( hostPeMips, gpuvmPes*factor, new CloudletSchedulerSpaceShared());
@@ -584,24 +511,23 @@ public class  SimProxy3 {
         return list;
     }
     private Cloudlet createCloudlet(int pes,long clSize ){
-        // final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(UtilizationModel.Unit.ABSOLUTE,0.2);
-        final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.2);
+         final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(UtilizationModel.Unit.ABSOLUTE,0.2);
+        //final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.2);
         int randomlength = CloudletMips.get(randMips.nextInt(CloudletMips.size()));
-        /*UtilizationModelDynamic cpuUtilizationModel =
+        UtilizationModelDynamic cpuUtilizationModel =
                 createUtilizationModel(
                         0.2,1,
-                        true);*/
+                        true);
         Cloudlet cloudlet =
                 new CloudletSimple(randomlength,pes)
                         .setFileSize(1024)
                         .setOutputSize(1024)
-                        .setUtilizationModelCpu(new UtilizationModelFull())
+                        .setUtilizationModelCpu(cpuUtilizationModel)
                         .setUtilizationModelRam(utilizationModel)
                         .setUtilizationModelBw(utilizationModel)
                         .setSizes(clSize);
         cloudlet.setId(lastCloudletindex);
         lastCloudletindex = ++lastCloudletindex;
-        System.out.println("created cloudlet :" + cloudlet.getId());
         return cloudlet;
     }
 
@@ -611,7 +537,6 @@ public class  SimProxy3 {
         for (int j = 0; j < cnt; j++) {
 
             GpuCloudlet gpuCloudlet= createGpuCloudlet(1,(int)this.broker.getId());
-
             list.add(gpuCloudlet);
         }
 
@@ -653,7 +578,6 @@ public class  SimProxy3 {
         gpuCloudlet.setSizes(gpucloudletSize);
         gpuCloudlet.setId(lastCloudletindex);
         lastCloudletindex = ++lastCloudletindex;
-        System.out.println("created Gpucloudlet :" + gpuCloudlet.getId());
         return gpuCloudlet;
 
     }
@@ -697,20 +621,15 @@ public class  SimProxy3 {
     private Vm createAndbindCPUfirstVms(Vm Cpuvm){
         List<Cloudlet> CPUfirstCloudlets = new ArrayList<>();
 
-        List<Cloudlet> interCloudletList = createCloudList(2);
-        for(Cloudlet cl: interCloudletList){
+            this.broker.bindCloudletToVm(Cpuvm.getCloudletSequence().get(0),Cpuvm);
+            this.broker.bindCloudletToVm(Cpuvm.getCloudletSequence().get(1),Cpuvm);
+            CPUfirstCloudlets.add(Cpuvm.getCloudletSequence().get(0));
+            CPUfirstCloudlets.add(Cpuvm.getCloudletSequence().get(1));
 
-            this.broker.bindCloudletToVm(cl,Cpuvm);
-
-            CPUfirstCloudlets.add(cl);
-        }
-        var testcl = CPUfirstCloudlets.get(CPUfirstCloudlets.size()-1);
+        var testcl = Cpuvm.getCloudletSequence().get(1);
         testcl.addOnFinishListener(this::Listener5);
-        System.out.println("created cloudlet :" + testcl.getId()+" sequence: "+testcl.getpathid());
-        System.out.println("created Vm :" + Cpuvm.getId());
-        this.broker.submitCloudletList(interCloudletList);
+        this.broker.submitCloudletList(CPUfirstCloudlets);
         this.broker.submitVm(Cpuvm);
-
 
         return Cpuvm;
     }
@@ -718,23 +637,15 @@ public class  SimProxy3 {
     private GpuVm createAndbindGPUfirstVms(GpuVm Gpuvm){
         List<GpuCloudlet> GPUfirstCloudlets = new ArrayList<>();
 
-        List<GpuCloudlet> interCloudletList = createGpuCloudletList(2);
-        for(GpuCloudlet cl: interCloudletList){
+        this.broker.bindCloudletToVm(Gpuvm.getCloudletSequence().get(0),Gpuvm);
+        this.broker.bindCloudletToVm(Gpuvm.getCloudletSequence().get(1),Gpuvm);
+        GPUfirstCloudlets.add((GpuCloudlet) Gpuvm.getCloudletSequence().get(0));
+        GPUfirstCloudlets.add((GpuCloudlet) Gpuvm.getCloudletSequence().get(1));
 
-            this.broker.bindCloudletToVm(cl,Gpuvm);
-
-            GPUfirstCloudlets.add(cl);
-
-        }
-        var testcl = GPUfirstCloudlets.get(GPUfirstCloudlets.size()-1);
+        var testcl = Gpuvm.getCloudletSequence().get(1);
         testcl.addOnFinishListener(this::Listener6);
-        System.out.println("created Gpucloudlet :" + testcl.getId()+" sequence: "+testcl.getpathid());
-        System.out.println("created GpuVm :" + Gpuvm.getId());
-        this.broker.submitCloudletList(interCloudletList);
+        this.broker.submitCloudletList(GPUfirstCloudlets);
         this.broker.submitVm(Gpuvm);
-
-
-
         return Gpuvm;
     }
 
@@ -747,7 +658,6 @@ public class  SimProxy3 {
         Vm vmcopy;
         vmcopy= vm;
 
-        //this.broker.destroyVm(vm);
         GpuVm gpuvm =  new GpuVm((long) vmcopy.getMips(), gpuvmPes, new CloudletSchedulerSpaceShared());
         gpuvm.setRam(vmcopy.getRam().getCapacity()).setBw(vmcopy.getBw().getCapacity()).setSize(vmcopy.getStorage().getCapacity()).enableUtilizationStats();
         GpuTaskSchedulerLeftover gpuTaskScheduler = new GpuTaskSchedulerLeftover();
@@ -763,6 +673,7 @@ public class  SimProxy3 {
         gpuvm.setTimeZone(vmcopy.getTimeZone()).setArrivedTime(vmcopy.getArrivedTime());
         gpuvm.setDescription(vmcopy.getDescription());
         gpuvm.setvmallocationid(vmcopy.getvmallocationid());
+        gpuvm.setCloudletSequence(vmcopy.getCloudletSequence());
         vmList.add(gpuvm);
         return gpuvm;
     }
@@ -780,35 +691,110 @@ public class  SimProxy3 {
         Svm.setTimeZone(vmcopy.getTimeZone()).setArrivedTime(vmcopy.getArrivedTime());
         Svm.setDescription(vmcopy.getDescription());
         Svm.setvmallocationid(vmcopy.getvmallocationid());
+        Svm.setCloudletSequence(vmcopy.getCloudletSequence());
         vmList.add(Svm);
         return Svm;
     }
+    private Vm createAndbindsequentialVm(int factor, int clSequence, int vmallocationid, List<Cloudlet> CloudletList){
 
+        Vm finalVm = Vm.NULL;
+
+
+        switch(clSequence)
+        {
+            case 1 :{
+                Cloudlet cl = CloudletList.get(0);
+                cl.setpathid(1);
+                Vm vm =createVm(factor);
+                vm.setCloudletSequence(CloudletList);
+                vm.setvmallocationid(vmallocationid);
+                cl.addOnFinishListener(this::Listener1);
+                this.broker.bindCloudletToVm(cl,vm);
+                this.broker.submitCloudlet(cl);
+                this.broker.submitVm(vm);
+                finalVm = vm; }
+            break;
+            case 2 :{
+                Cloudlet cl = CloudletList.get(0);
+                cl.setpathid(2);
+                Vm vm =createVm(factor);
+                vm.setvmallocationid(vmallocationid);
+                vm.setCloudletSequence(CloudletList);
+                cl.addOnFinishListener(this::Listener2);
+                this.broker.bindCloudletToVm(cl,vm);
+                this.broker.submitCloudlet(cl);
+                this.broker.submitVm(vm);
+                finalVm = vm;}
+            break;
+            case 3 :{
+                GpuCloudlet gcl = (GpuCloudlet) CloudletList.get(0);
+                gcl.getGpuTask().updateSimulation(this.simulation);
+                gcl.setpathid(3);
+                GpuVm gvm = createGpuVm(factor);
+                gvm.setvmallocationid(vmallocationid);
+                gvm.setCloudletSequence(CloudletList);
+                gcl.addOnFinishListener(this::Listener3);
+                this.broker.bindCloudletToVm(gcl,gvm);
+                this.broker.submitCloudlet(gcl);
+                this.broker.submitVm(gvm);
+                finalVm = gvm;}
+            break;
+            case 4: {
+                GpuCloudlet gcl = (GpuCloudlet) CloudletList.get(0);
+                gcl.getGpuTask().updateSimulation(this.simulation);
+                gcl.setpathid(4);
+                GpuVm gvm = createGpuVm(factor);
+                gvm.setvmallocationid(vmallocationid);
+                gvm.setCloudletSequence(CloudletList);
+                gcl.addOnFinishListener(this::Listener4);
+                this.broker.bindCloudletToVm(gcl,gvm);
+                this.broker.submitCloudlet(gcl);
+                this.broker.submitVm(gvm);
+                finalVm = gvm;
+            }
+            break;
+            case 5 :{ Vm vm =createVm(factor);
+                vm.setvmallocationid(vmallocationid);
+                vm.setCloudletSequence(CloudletList);
+                finalVm= createAndbindCPUfirstVms(vm);}
+            break;
+            case 6:{  GpuVm gvm = createGpuVm(factor);
+                gvm.setvmallocationid(vmallocationid);
+                gvm.setCloudletSequence(CloudletList);
+                finalVm= createAndbindGPUfirstVms(gvm);}
+            break;
+            default:{
+                System.out.println("Illegal Cloudlets Sequence ");
+                break;
+            } }
+        return finalVm;
+    }
 
     private void Listener1(CloudletVmEventInfo eventInfo) {
         //VmHostEventInfo
         //CloudletVmEventInfo
-        System.out.printf(
+/*        System.out.printf(
                 "%n\t#  cloudlet %d finished. Submitting VM %d to the broker for Migration%n",
-                eventInfo.getCloudlet().getId(), eventInfo.getVm().getId());
+                eventInfo.getCloudlet().getId(), eventInfo.getVm().getId());*/
         int Cpathid = eventInfo.getCloudlet().getpathid();
         Vm vm= eventInfo.getVm();
         CheckSla(vm);
-        //this.broker.destroyVm(eventInfo.getVm());
         if (Cpathid ==1){
-            Cloudlet cl =createGpuCloudlet(1,(int)this.broker.getId());
+            GpuCloudlet cl = (GpuCloudlet) vm.getCloudletSequence().get(1);
+            cl.getGpuTask().updateSimulation(this.simulation);
             cl.addOnFinishListener(this::Listener1);
             cl.setpathid(5);
             bindAndSubmitCtoVm(cl,vm);
             migrationsNumber++;
         } else if (Cpathid ==5) {
-            Cloudlet cl =createCloudlet(cloudletPes,cloudletSize);
+            Cloudlet cl =vm.getCloudletSequence().get(2);
             cl.addOnFinishListener(this::Listener1);
             cl.setpathid(7);
             bindAndSubmitCtoVm(cl,vm);
             migrationsNumber++;
         } else if (Cpathid == 7) {
-            Cloudlet cl = createGpuCloudlet(1, (int)this.broker.getId());
+            GpuCloudlet cl = (GpuCloudlet) vm.getCloudletSequence().get(3);
+            cl.getGpuTask().updateSimulation(this.simulation);
             bindAndSubmitCtoVm(cl,vm);
             migrationsNumber++;
         } else System.out.printf(
@@ -819,16 +805,18 @@ public class  SimProxy3 {
     private void Listener2(CloudletVmEventInfo eventInfo) {
         //VmHostEventInfo
         //CloudletVmEventInfo
-        System.out.printf(
+/*        System.out.printf(
                 "%n\t#  cloudlet %d finished. Submitting VM %d to the broker for Migration%n",
-                eventInfo.getCloudlet().getId(), eventInfo.getVm().getId());
+                eventInfo.getCloudlet().getId(), eventInfo.getVm().getId());*/
         int Cpathid = eventInfo.getCloudlet().getpathid();
         Vm vm= eventInfo.getVm();
         CheckSla(vm);
         //this.broker.destroyVm(eventInfo.getVm());
         if (Cpathid ==2){
-            Cloudlet cl1 =createGpuCloudlet(1,(int)this.broker.getId());
-            Cloudlet cl2 =createGpuCloudlet(1,(int)this.broker.getId());
+            GpuCloudlet cl1 = (GpuCloudlet) vm.getCloudletSequence().get(1);
+            cl1.getGpuTask().updateSimulation(this.simulation);
+            GpuCloudlet cl2 = (GpuCloudlet) vm.getCloudletSequence().get(2);
+            cl2.getGpuTask().updateSimulation(this.simulation);
             cl2.addOnFinishListener(this::Listener2);
             cl2.setpathid(9);
             Vm gvm = convertToGpuVm(vm);
@@ -839,7 +827,7 @@ public class  SimProxy3 {
             this.broker.submitCloudlet(cl2);
             migrationsNumber++;
         }else if (Cpathid == 9) {
-            Cloudlet cl = createCloudlet(cloudletPes,cloudletSize);
+            Cloudlet cl =vm.getCloudletSequence().get(3);
             bindAndSubmitCtoVm(cl,vm);
             migrationsNumber++;
         }else System.out.printf(
@@ -849,27 +837,28 @@ public class  SimProxy3 {
     private void Listener3(CloudletVmEventInfo eventInfo) {
         //VmHostEventInfo
         //CloudletVmEventInfo
-        System.out.printf(
+/*        System.out.printf(
                 "%n\t#  cloudlet %d finished. Submitting VM %d to the broker for Migration%n",
-                eventInfo.getCloudlet().getId(), eventInfo.getVm().getId());
+                eventInfo.getCloudlet().getId(), eventInfo.getVm().getId());*/
         int Cpathid = eventInfo.getCloudlet().getpathid();
         Vm vm= eventInfo.getVm();
         CheckSla(vm);
         //this.broker.destroyVm(eventInfo.getVm());
         if (Cpathid ==3){
-            Cloudlet cl =createCloudlet(cloudletPes,cloudletSize);
+            Cloudlet cl =vm.getCloudletSequence().get(1);
             cl.addOnFinishListener(this::Listener3);
             cl.setpathid(6);
             bindAndSubmitCtoVm(cl,vm);
             migrationsNumber++;
         }  else if (Cpathid ==6) {
-            Cloudlet cl =createGpuCloudlet(1,(int)this.broker.getId());
+            GpuCloudlet cl = (GpuCloudlet) vm.getCloudletSequence().get(2);
+            cl.getGpuTask().updateSimulation(this.simulation);
             cl.addOnFinishListener(this::Listener3);
             cl.setpathid(8);
             bindAndSubmitCtoVm(cl,vm);
             migrationsNumber++;
         }else if (Cpathid == 8) {
-            Cloudlet cl = createCloudlet(cloudletPes,cloudletSize);
+            Cloudlet cl =vm.getCloudletSequence().get(3);
             bindAndSubmitCtoVm(cl,vm);
             migrationsNumber++;
         }else System.out.printf(
@@ -879,16 +868,14 @@ public class  SimProxy3 {
     private void Listener4(CloudletVmEventInfo eventInfo) {
         //VmHostEventInfo
         //CloudletVmEventInfo
-        System.out.printf(
-                "%n\t#  cloudlet %d finished. Submitting VM %d to the broker for Migration%n",
-                eventInfo.getCloudlet().getId(), eventInfo.getVm().getId());
+ //       System.out.printf( "%n\t#  cloudlet %d finished. Submitting VM %d to the broker for Migration%n", eventInfo.getCloudlet().getId(), eventInfo.getVm().getId());
         int Cpathid = eventInfo.getCloudlet().getpathid();
         Vm vm= eventInfo.getVm();
         CheckSla(vm);
         //this.broker.destroyVm(eventInfo.getVm());
         if (Cpathid ==4){
-            Cloudlet cl1 =createCloudlet(cloudletPes,cloudletSize);
-            Cloudlet cl2 =createCloudlet(cloudletPes,cloudletSize);
+            Cloudlet cl1 =vm.getCloudletSequence().get(1);
+            Cloudlet cl2 =vm.getCloudletSequence().get(1);
             cl2.addOnFinishListener(this::Listener4);
             cl2.setpathid(10);
             Vm Svm = convertToSimpleVm(vm);
@@ -899,7 +886,8 @@ public class  SimProxy3 {
             this.broker.submitCloudlet(cl2);
             migrationsNumber++;
         }else if (Cpathid == 10) {
-            Cloudlet cl = createGpuCloudlet(1,(int)this.broker.getId());
+            GpuCloudlet cl = (GpuCloudlet) vm.getCloudletSequence().get(3);
+            cl.getGpuTask().updateSimulation(this.simulation);
             bindAndSubmitCtoVm(cl,vm);
             migrationsNumber++;
         }else System.out.printf(
@@ -916,56 +904,54 @@ public class  SimProxy3 {
     private void Listener5(CloudletVmEventInfo eventInfo) {
         //VmHostEventInfo
         //CloudletVmEventInfo
-        System.out.printf(
+        /*System.out.printf(
                 "%n\t# last cloudlet %d finished. Submitting GpuVM %d to the broker for Migration%n",
-                eventInfo.getCloudlet().getId(), eventInfo.getVm().getId());
+                eventInfo.getCloudlet().getId(), eventInfo.getVm().getId());*/
         Vm vmtemp= eventInfo.getVm();
         CheckSla(vmtemp);
         this.broker.destroyVm(eventInfo.getVm());
 
         List<GpuCloudlet> CloudletList = new ArrayList<>();
-        List<GpuCloudlet> newCloudletList = new ArrayList<>();
         GpuVm gpuvm =convertToGpuVm(vmtemp) ;
-        setVmallocation(gpuvm.getvmallocationid(),gpuvm);
-        newCloudletList = createGpuCloudletList(2);
-        for (GpuCloudlet cl: newCloudletList){
-            cl.setId(lastCloudletindex);
-            lastCloudletindex = ++lastCloudletindex;
-            this.broker.bindCloudletToVm(cl, gpuvm);
-            CloudletList.add(cl);
+ //       setVmallocation(gpuvm.getvmallocationid(),gpuvm);
+        GpuCloudlet cl3 = (GpuCloudlet) vmtemp.getCloudletSequence().get(2);
+        cl3.getGpuTask().updateSimulation(this.simulation);
+        this.broker.bindCloudletToVm(cl3, gpuvm);
+        GpuCloudlet cl4 = (GpuCloudlet) vmtemp.getCloudletSequence().get(3);
+        cl4.getGpuTask().updateSimulation(this.simulation);
+        this.broker.bindCloudletToVm(cl4, gpuvm);
+        CloudletList.add(cl3);
+        CloudletList.add(cl4);
 
-        }
         this.broker.submitVm(gpuvm);
         this.broker.submitCloudletList(CloudletList);
-        System.out.printf("%n\t# Submit GpuVm %d and last Gpucloudlet of new cloudlet list %d to the broker %n",gpuvm.getId(),newCloudletList.get(newCloudletList.size()-1).getId());
+//        System.out.printf("%n\t# Submit GpuVm %d and last Gpucloudlet of new cloudlet list %d to the broker %n",gpuvm.getId(),newCloudletList.get(newCloudletList.size()-1).getId());
         migrationsNumber++;
     }
 
     private void Listener6(CloudletVmEventInfo eventInfo) {
         //VmHostEventInfo
         //CloudletVmEventInfo
-        System.out.printf(
+/*        System.out.printf(
                 "%n\t# last cloudlet %d finished. Submitting VM %d to the broker for Migration%n",
-                eventInfo.getCloudlet().getId()/*getVm().getCloudletScheduler().getCloudletFinishedList().get(5).getCloudletId()*/, eventInfo.getVm().getId());
+                eventInfo.getCloudlet().getId(), eventInfo.getVm().getId());*/
         Vm vmtemp= eventInfo.getVm();
         CheckSla(vmtemp);
         this.broker.destroyVm(eventInfo.getVm());
         List<Cloudlet> CloudletList = new ArrayList<>();
-        List<Cloudlet> newCloudletList = new ArrayList<>();
+
         Vm newvm =convertToSimpleVm(vmtemp) ;
-        setVmallocation(newvm.getvmallocationid(),newvm);
-        newCloudletList = createCloudList(2);
+ //       setVmallocation(newvm.getvmallocationid(),newvm);
+        Cloudlet cl3 = vmtemp.getCloudletSequence().get(2);
+        this.broker.bindCloudletToVm(cl3, newvm);
+        Cloudlet cl4 = vmtemp.getCloudletSequence().get(2);
+        this.broker.bindCloudletToVm(cl4, newvm);
+        CloudletList.add(cl3);
+        CloudletList.add(cl4);
 
-        for (Cloudlet cl: newCloudletList){
-            cl.setId(lastCloudletindex);
-            lastCloudletindex = ++lastCloudletindex;
-            this.broker.bindCloudletToVm(cl, newvm);
-            CloudletList.add(cl);
-
-        }
         this.broker.submitVm(newvm);
         this.broker.submitCloudletList(CloudletList);
-        System.out.printf("%n\t# Submit Vm %d and last cloudlet of new cloudlet list %d to the broker %n",newvm.getId(),newCloudletList.get(newCloudletList.size()-1).getId());
+//        System.out.printf("%n\t# Submit Vm %d and last cloudlet of new cloudlet list %d to the broker %n",newvm.getId(),newCloudletList.get(newCloudletList.size()-1).getId());
         migrationsNumber++;
     }
 
@@ -977,71 +963,52 @@ public class  SimProxy3 {
         } else if (cl.getClass().equals(GpuCloudlet.class)){
             newvm =convertToGpuVm(vm);
         }else System.out.println("Illegale Cloudlet Class Type");
-        setVmallocation(vm.getvmallocationid(),newvm);
+ //       setVmallocation(vm.getvmallocationid(),newvm);
         this.broker.bindCloudletToVm(cl,newvm);
         this.broker.submitVm(newvm);
         this.broker.submitCloudlet(cl);
         return newvm;
     }
 
-    private List<Cloudlet> createCPUfirstCloudList(int listsize){
-        final List<Cloudlet> list = new ArrayList<>();
-        list.add(createCloudlet(cloudletPes,cloudletSize));
-        for (int i=0; i< listsize; i++ ){
-            int randbin =(int)Math.round(Math.random());
-            if(randbin==0){list.add(createCloudlet(cloudletPes,cloudletSize));}
-            else {list.add(createGpuCloudlet(1,(int)this.broker.getId()));}
-        }return list;
-    }
-    private List<Cloudlet> createGPUfirstCloudList(int listsize){
-        final List<Cloudlet> list = new ArrayList<>();
-        list.add(createGpuCloudlet(1,(int)this.broker.getId()));
-        for (int i=0; i< listsize; i++ ){
-            int randbin =(int)Math.round(Math.random());
-            if(randbin==0){list.add(createCloudlet(cloudletPes,cloudletSize));}
-            else {list.add(createGpuCloudlet(1,(int)this.broker.getId()));}
-        }return list;
-    }
 
-    public int[][] toArray(JsonArray obj){
-        int[][] intArray = gson.fromJson(obj, int[][].class);
-        return intArray;
-    }
-
-    public boolean CheckSla(Vm vm){
-        boolean TaskCompletionTime = false,CpuUtilization = false, WaitTime = false,Price = false;
+    public void CheckSla(Vm vm){
+        boolean TaskCompletionTime = false;
+        boolean CpuUtilization = false;
+        boolean WaitTime= false ;
+        boolean Price= false ;
         for (Cloudlet cl : vm.getCloudletScheduler().getCloudletList()){
-            if(cl.getLifeTime()< contract.getTaskCompletionTimeMetric().getMaxDimension().getValue()){
-                TaskCompletionTime =false;
-            }else
+            double TaskCompletionTimeMetric = Math.abs(cl.getFinishTime()-cl.getCreationTime());
+            if(Math.abs(cl.getFinishTime()-cl.getCreationTime())> contract.getTaskCompletionTimeMetric().getMaxDimension().getValue()){
                 System.out.println("Cloudlet "+cl.getId()+" in Vm "+vm.getId()+" has violated the SLA in term of TaskCompletionTime");
-            TaskCompletionTime =true;
-            SLAviolationnumber++;
+                TaskCompletionTime =true;
+                SLAviolationnumber++;
+            }
         }
         for (Cloudlet cl : vm.getCloudletScheduler().getCloudletList()){
-            if(cl.getUtilizationOfCpu()< contract.getCpuUtilizationMetric().getMaxDimension().getValue()){
-                CpuUtilization =false;
-            }else
+            double CpuUtilizationMetric = cl.getUtilizationModelCpu().getCurrentUtilization();
+            if(cl.getUtilizationModelCpu().getCurrentUtilization()> contract.getCpuUtilizationMetric().getMaxDimension().getValue()){
                 System.out.println("Cloudlet "+cl.getId()+" in Vm "+vm.getId()+" has violated the SLA in term of CpuUtilization");
-            CpuUtilization =true;
-            SLAviolationnumber++;
+                CpuUtilization =true;
+                SLAviolationnumber++;
+            }
+
         }
         for (Cloudlet cl : vm.getCloudletScheduler().getCloudletList()){
-            if(cl.getWaitingTime()< contract.getWaitTimeMetric().getMaxDimension().getValue()){
-                WaitTime =false;
-            }else
+            double WaitTimeMetric = cl.getWaitingTime();
+            if(cl.getWaitingTime()> contract.getWaitTimeMetric().getMaxDimension().getValue()){
                 System.out.println("Cloudlet "+cl.getId()+" in Vm "+vm.getId()+" has violated the SLA in term of WaitTime");
-            WaitTime =true;
+                WaitTime =true;
+                SLAviolationnumber++;}
+           }
+        for (Cloudlet cl : vm.getCloudletScheduler().getCloudletList()){
+        double PriceMetric = cl.getCostPerBw();
+        if( cl.getCostPerBw()> contract.getPriceMetric().getMaxDimension().getValue()){
+            System.out.println("Cloudlet "+cl.getId()+" in Vm "+vm.getId()+" has violated the SLA in term of Price");
+            Price =true;
             SLAviolationnumber++;
-        }
-        if( new VmCost(vm).getTotalCost()< contract.getPriceMetric().getMaxDimension().getValue()){
-            Price =false;
-        }else
-            System.out.println(" Vm "+vm.getId()+" has violated the SLA in term of Price");
-        Price =true;
-        SLAviolationnumber++;
-        if(TaskCompletionTime && CpuUtilization && WaitTime && Price){return true;}else
-            return false;
+        }}
+
+       // if(TaskCompletionTime && CpuUtilization && WaitTime && Price){return true;}else return false;
     }
 
     /**
@@ -1180,7 +1147,8 @@ public class  SimProxy3 {
                     .stream()
                     .filter(host -> host.isSuitableForVm(vm))
                     .min(Comparator.comparingInt(Host::getFreePesNumber));
-        }if(vm.getClass().equals(GpuVm.class)){return allocationPolicy
+        }if(vm.getClass().equals(GpuVm.class)){
+            return allocationPolicy
                 .getGpuHostList()
                 .stream()
                 .filter(host -> host.isSuitableForVm(vm))
@@ -1192,15 +1160,15 @@ public class  SimProxy3 {
         switch (id){
             case 1:{
                 datacenter.getVmAllocationPolicy().allocateHostForVm(vm, findRandomSuitableHostForVm(datacenter.getVmAllocationPolicy(),vm).get());
-//                datacenter.getVmAllocationPolicy().setFindHostForVmFunction(this::findRandomSuitableHostForVm);
+
             }
             case 2:{
                 datacenter.getVmAllocationPolicy().allocateHostForVm(vm, FirstFitFindHostForVm(datacenter.getVmAllocationPolicy(),vm).get());
-//                datacenter.getVmAllocationPolicy().setFindHostForVmFunction(this::FirstFitFindHostForVm);
+
             }
             case 3:{
                 datacenter.getVmAllocationPolicy().allocateHostForVm(vm, bestFitHostSelectionPolicy(datacenter.getVmAllocationPolicy(),vm).get());
-//                datacenter.getVmAllocationPolicy().setFindHostForVmFunction(this::bestFitHostSelectionPolicy);
+
             }
         }
     }

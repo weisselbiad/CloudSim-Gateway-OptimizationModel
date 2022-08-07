@@ -57,6 +57,11 @@ public class UtilizationModelGaussian implements UtilizationModel{
 	}
 
 	@Override
+	public double getCurrentUtilization() {
+		return 0;
+	}
+
+	@Override
 	public boolean isOverCapacityRequestAllowed() {
 		return false;
 	}

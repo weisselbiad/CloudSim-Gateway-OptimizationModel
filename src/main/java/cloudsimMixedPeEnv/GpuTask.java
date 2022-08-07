@@ -18,12 +18,12 @@ import java.util.List;
 
 /**
  * {@link GpuTask} represents a process that is executed within a {@link Vgpu}.
- * 
+ *
  * @author Ahmad Siavashi
- * 
+ *
  */
 public class GpuTask {
-	
+
 	private CloudSim simulation ;
 
 	/**
@@ -67,7 +67,7 @@ public class GpuTask {
 	/**
 	 * Total number of task block. The length of the task is
 	 * {@link #getBlockLength()} * {@link #numberOfBlocks}
-	 * 
+	 *
 	 * @see #blockLength
 	 */
 	private int numberOfBlocks;
@@ -192,7 +192,7 @@ public class GpuTask {
 		 */
 		//public static final int FAILED_RESOURCE_UNAVAILABLE = 9;
 		FAILED_RESOURCE_UNAVAILABLE;
-		}
+	}
 	// Utilization
 	/**
 	 * The utilization model that defines how the task will use the PEs of the GPU.
@@ -214,7 +214,7 @@ public class GpuTask {
 	 * Allocates a new task object. The task length, input and output sizes should
 	 * be greater than or equal to 1. By default this constructor sets the history
 	 * of this object.
-	 * 
+	 *
 	 * @param taskId                 the unique ID of this task
 	 * @param blockLength            the length or size (in MI) of a single task
 	 *                               block
@@ -224,7 +224,7 @@ public class GpuTask {
 	 * @param utilizationModelGpu    the utilization model of gpu
 	 * @param utilizationModelGddram the utilization model of gddram
 	 * @param utilizationModelBw     the utilization model of gddram bw
-	 * 
+	 *
 	 * @pre taskID >= 0
 	 * @pre blockLength >= 0.0
 	 * @pre taskInputSize >= 1
@@ -232,9 +232,9 @@ public class GpuTask {
 	 * @post $none
 	 */
 	public GpuTask(CloudSim simulation, final int taskId, final long blockLength, final int numberOfBlocks, final long inputSize,
-			final long outputSize, final long requestedGddramSize, final float communicationOverhead,
-			final UtilizationModel utilizationModelGpu, final UtilizationModel utilizationModelGddram,
-			final UtilizationModel utilizationModelBw) {
+				   final long outputSize, final long requestedGddramSize, final float communicationOverhead,
+				   final UtilizationModel utilizationModelGpu, final UtilizationModel utilizationModelGddram,
+				   final UtilizationModel utilizationModelBw) {
 		this(simulation, taskId, blockLength, numberOfBlocks, inputSize, outputSize, requestedGddramSize, communicationOverhead,
 				utilizationModelGpu, utilizationModelGddram, utilizationModelBw, false);
 
@@ -243,7 +243,7 @@ public class GpuTask {
 	/**
 	 * Allocates a new GPUTask object. The task length, input and output file sizes
 	 * should be greater than or equal to 1.
-	 * 
+	 *
 	 * @param taskId                 the unique ID of this task
 	 * @param blockLength            the length or size (in MI) of a single task
 	 *                               block
@@ -254,7 +254,7 @@ public class GpuTask {
 	 * @param utilizationModelGpu    the utilization model of gpu
 	 * @param utilizationModelGddram the utilization model of gddram
 	 * @param utilizationModelBw     the utilization model of gddram BW
-	 * 
+	 *
 	 * @pre taskID >= 0
 	 * @pre blockLength >= 0.0
 	 * @pre taskInputSize >= 1
@@ -262,9 +262,9 @@ public class GpuTask {
 	 * @post $none
 	 */
 	public GpuTask(CloudSim simulation, final int taskId, final long blockLength, final int numberOfBlocks, final long inputSize,
-			final long outputSize, final long requestedGddramSize, final float communicationOverhead,
-			final UtilizationModel utilizationModelGpu, final UtilizationModel utilizationModelGddram,
-			final UtilizationModel utilizationModelBw, final boolean record) {
+				   final long outputSize, final long requestedGddramSize, final float communicationOverhead,
+				   final UtilizationModel utilizationModelGpu, final UtilizationModel utilizationModelGddram,
+				   final UtilizationModel utilizationModelBw, final boolean record) {
 		status = GpuTask.Status.CREATED;
 		this.simulation = simulation;
 		this.taskId = taskId;
@@ -343,11 +343,11 @@ public class GpuTask {
 	 * Sets the length or size (in MI) of this task to be executed in a
 	 * CloudResource. It has to be the length for each individual Pe, <tt>not</tt>
 	 * the total length (the sum of length to be executed by each Pe).
-	 * 
+	 *
 	 * @param blockLength the length or size (in MI) of this task to be executed in
 	 *                    a CloudResource
 	 * @return <tt>true</tt> if it is successful, <tt>false</tt> otherwise
-	 * 
+	 *
 	 * @see #getTaskTotalLength()
 	 * @pre blockLength > 0
 	 * @post $none
@@ -377,7 +377,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the time the task had to wait before start executing on a resource.
-	 * 
+	 *
 	 * @return the waiting time
 	 * @pre $none
 	 * @post $none
@@ -394,10 +394,10 @@ public class GpuTask {
 
 	/**
 	 * Sets the classType or priority of this task for scheduling on a resource.
-	 * 
+	 *
 	 * @param classType classType of this task
 	 * @return <tt>true</tt> if it is successful, <tt>false</tt> otherwise
-	 * 
+	 *
 	 * @pre classType > 0
 	 * @post $none
 	 */
@@ -413,7 +413,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the classtype or priority of this task for scheduling on a resource.
-	 * 
+	 *
 	 * @return classtype of this task
 	 * @pre $none
 	 * @post $none
@@ -427,10 +427,10 @@ public class GpuTask {
 	 * NOTE: The task length is computed only for 1 Pe for simplicity. <br>
 	 * For example, consider a task that has a length of 500 MI and requires 2 PEs.
 	 * This means each Pe will execute 500 MI of this task.
-	 * 
+	 *
 	 * @param numberOfBlocks number of Pe
 	 * @return <tt>true</tt> if it is successful, <tt>false</tt> otherwise
-	 * 
+	 *
 	 * @pre numPE > 0
 	 * @post $none
 	 */
@@ -444,9 +444,9 @@ public class GpuTask {
 
 	/**
 	 * Gets the number of PEs required to run this task.
-	 * 
+	 *
 	 * @return number of PEs
-	 * 
+	 *
 	 * @pre $none
 	 * @post $none
 	 */
@@ -457,7 +457,7 @@ public class GpuTask {
 	/**
 	 * Gets the transaction history of this task. The layout of this history is in a
 	 * readable table column with <tt>time</tt> and <tt>description</tt> as headers.
-	 * 
+	 *
 	 * @return a String containing the history of this task object.
 	 * @pre $none
 	 * @post $result != null
@@ -477,7 +477,7 @@ public class GpuTask {
 	 * Gets the length of this task that has been executed so far from the latest
 	 * CloudResource. This method is useful when trying to move this task into
 	 * different CloudResources or to cancel it.
-	 * 
+	 *
 	 * @return the length of a partially executed task or the full task length if it
 	 *         is completed
 	 * @pre $none
@@ -498,7 +498,7 @@ public class GpuTask {
 
 	/**
 	 * Checks whether this task has finished execution or not.
-	 * 
+	 *
 	 * @return <tt>true</tt> if this task has finished execution, <tt>false</tt>
 	 *         otherwise
 	 * @pre $none
@@ -525,7 +525,7 @@ public class GpuTask {
 	 * Sets the length of this task that has been executed so far. This method is
 	 * used by ResGpuTask class when an application is decided to cancel or to move
 	 * this task into different CloudResources.
-	 * 
+	 *
 	 * @param length length of this task
 	 * @pre length >= 0.0
 	 * @post $none
@@ -546,7 +546,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the latest resource ID that processes this task.
-	 * 
+	 *
 	 * @return the resource ID or <tt>-1</tt> if none
 	 * @pre $none
 	 * @post $result >= -1
@@ -560,7 +560,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the input size of this task.
-	 * 
+	 *
 	 * @return the input size of this task
 	 * @pre $none
 	 * @post $result >= 1
@@ -571,7 +571,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the output size of this task.
-	 * 
+	 *
 	 * @return the task output size
 	 * @pre $none
 	 * @post $result >= 1
@@ -588,13 +588,13 @@ public class GpuTask {
 	 * Sets the resource parameters for which the task is going to be executed. From
 	 * the second time this method is called, every call make the task to be
 	 * migrated to the indicated resource.<br>
-	 * 
+	 *
 	 * NOTE: This method <tt>should</tt> be called only by a resource entity, not
 	 * the user or owner of this task.
-	 * 
+	 *
 	 * @param resourceID the CloudResource ID
 	 * @param cost       the cost running this CloudResource per second
-	 * 
+	 *
 	 * @pre resourceID >= 0
 	 * @pre cost > 0.0
 	 * @post $none
@@ -603,7 +603,7 @@ public class GpuTask {
 		final Resource res = new Resource();
 		res.resourceId = resourceID;
 		res.costPerSec = cost;
-	//	res.resourceName = CloudSim.getEntityName(resourceID);
+		//	res.resourceName = CloudSim.getEntityName(resourceID);
 
 		// add into a list if moving to a new grid resource
 		resList.add(res);
@@ -623,7 +623,7 @@ public class GpuTask {
 
 	/**
 	 * Sets the submission (arrival) time of this task into a CloudResource.
-	 * 
+	 *
 	 * @param clockTime the submission time
 	 * @pre clockTime >= 0.0
 	 * @post $none
@@ -644,7 +644,7 @@ public class GpuTask {
 	/**
 	 * Gets the submission (arrival) time of this task from the latest
 	 * CloudResource.
-	 * 
+	 *
 	 * @return the submission time or <tt>0.0</tt> if none
 	 * @pre $none
 	 * @post $result >= 0.0
@@ -661,7 +661,7 @@ public class GpuTask {
 	 * <b>NOTE:</b> With new functionalities, such as being able to cancel / to
 	 * pause / to resume this task, the execution start time only holds the latest
 	 * one. Meaning, all previous execution start time are ignored.
-	 * 
+	 *
 	 * @param clockTime the latest execution start time
 	 * @pre clockTime >= 0.0
 	 * @post $none
@@ -676,7 +676,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the latest execution start time.
-	 * 
+	 *
 	 * @return the latest execution start time
 	 * @pre $none
 	 * @post $result >= 0.0
@@ -688,14 +688,14 @@ public class GpuTask {
 	/**
 	 * Sets the task's execution parameters. These parameters are set by the
 	 * CloudResource before departure or sending back to the original task's owner.
-	 * 
+	 *
 	 * @param wallTime   the time of this task resides in a CloudResource (from
 	 *                   arrival time until departure time).
 	 * @param actualTime the total execution time of this task in a CloudResource.
-	 * 
+	 *
 	 * @see Resource#wallClockTime
 	 * @see Resource#actualGpuTime
-	 * 
+	 *
 	 * @pre wallTime >= 0.0
 	 * @pre actualTime >= 0.0
 	 * @post $none
@@ -717,11 +717,11 @@ public class GpuTask {
 
 	/**
 	 * Sets the execution status code of this task.
-	 * 
+	 *
 	 * @param newStatus the status code of this task
 	 * @throws Exception Invalid range of task status
 	 * @pre newStatus >= 0 && newStatus <= 8 @ post $none
-	 * 
+	 *
 	 * @todo It has to throw an specific (unckecked) exception
 	 */
 	public void setTaskStatus(final Status newStatus) throws Exception {
@@ -748,7 +748,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the status code of this task.
-	 * 
+	 *
 	 * @return the status code of this task
 	 * @pre $none
 	 * @post $result >= 0
@@ -761,7 +761,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the string representation of the current task status code.
-	 * 
+	 *
 	 * @return the task status code as a string or <tt>null</tt> if the status code
 	 *         is unknown
 	 * @pre $none
@@ -773,7 +773,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the string representation of the given task status code.
-	 * 
+	 *
 	 * @param status the task status code
 	 * @return the task status code as a string or <tt>null</tt> if the status code
 	 *         is unknown
@@ -783,47 +783,47 @@ public class GpuTask {
 	public static String getStatusString(final Status status) {
 		String statusString = null;
 		switch (status) {
-		case CREATED:
-			statusString = "Created";
-			break;
+			case CREATED:
+				statusString = "Created";
+				break;
 
-		case READY:
-			statusString = "Ready";
-			break;
+			case READY:
+				statusString = "Ready";
+				break;
 
-		case INEXEC:
-			statusString = "InExec";
-			break;
+			case INEXEC:
+				statusString = "InExec";
+				break;
 
-		case SUCCESS:
-			statusString = "Success";
-			break;
+			case SUCCESS:
+				statusString = "Success";
+				break;
 
-		case QUEUED:
-			statusString = "Queued";
-			break;
+			case QUEUED:
+				statusString = "Queued";
+				break;
 
-		case FAILED:
-			statusString = "Failed";
-			break;
+			case FAILED:
+				statusString = "Failed";
+				break;
 
-		case CANCELED:
-			statusString = "Canceled";
-			break;
+			case CANCELED:
+				statusString = "Canceled";
+				break;
 
-		case PAUSED:
-			statusString = "Paused";
-			break;
+			case PAUSED:
+				statusString = "Paused";
+				break;
 
-		case RESUMED:
-			statusString = "Resumed";
-			break;
+			case RESUMED:
+				statusString = "Resumed";
+				break;
 
-		case FAILED_RESOURCE_UNAVAILABLE:
-			statusString = "Failed_resource_unavailable";
-			break;
-		default:
-			break;
+			case FAILED_RESOURCE_UNAVAILABLE:
+				statusString = "Failed_resource_unavailable";
+				break;
+			default:
+				break;
 		}
 
 		return statusString;
@@ -831,7 +831,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the length of this task.
-	 * 
+	 *
 	 * @return the length of this task
 	 * @pre $none
 	 * @post $result >= 0.0
@@ -844,14 +844,14 @@ public class GpuTask {
 	 * Gets the total length (across all PEs) of this task. It considers the
 	 * {@link #blockLength} of the task to be executed in each Pe and the
 	 * {@link #numberOfBlocks}.<br/>
-	 * 
+	 *
 	 * For example, setting the taskLenght as 10000 MI and {@link #numberOfBlocks}
 	 * to 4, each Pe will execute 10000 MI. Thus, the entire task has a total length
 	 * of 40000 MI.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return the total length of this task
-	 * 
+	 *
 	 * @see #setBlockLength(long)
 	 * @pre $none
 	 * @post $result >= 0.0
@@ -862,7 +862,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the cost/sec of running the task in the latest CloudResource.
-	 * 
+	 *
 	 * @return the cost associated with running this task or <tt>0.0</tt> if none
 	 * @pre $none
 	 * @post $result >= 0.0
@@ -878,7 +878,7 @@ public class GpuTask {
 	/**
 	 * Gets the time of this task resides in the latest CloudResource (from arrival
 	 * time until departure time).
-	 * 
+	 *
 	 * @return the time of this task resides in a CloudResource
 	 * @pre $none
 	 * @post $result >= 0.0
@@ -892,7 +892,7 @@ public class GpuTask {
 
 	/**
 	 * Gets all the CloudResource names that executed this task.
-	 * 
+	 *
 	 * @return an array of CloudResource names or <tt>null</tt> if it has none
 	 * @pre $none
 	 * @post $none
@@ -913,7 +913,7 @@ public class GpuTask {
 
 	/**
 	 * Gets all the CloudResource IDs that executed this task.
-	 * 
+	 *
 	 * @return an array of CloudResource IDs or <tt>null</tt> if it has none
 	 * @pre $none
 	 * @post $none
@@ -934,7 +934,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the total execution time of this task in a given CloudResource ID.
-	 * 
+	 *
 	 * @param resId a CloudResource entity ID
 	 * @return the total execution time of this task in a CloudResource or
 	 *         <tt>0.0</tt> if not found
@@ -951,7 +951,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the cost running this task in a given CloudResource ID.
-	 * 
+	 *
 	 * @param resId a CloudResource entity ID
 	 * @return the cost associated with running this task or <tt>0.0</tt> if not
 	 *         found
@@ -970,7 +970,7 @@ public class GpuTask {
 	 * Gets the length of this task that has been executed so far in a given
 	 * CloudResource ID. This method is useful when trying to move this task into
 	 * different CloudResources or to cancel it.
-	 * 
+	 *
 	 * @param resId a CloudResource entity ID
 	 * @return the length of a partially executed task or the full task length if it
 	 *         is completed or <tt>0.0</tt> if not found
@@ -988,7 +988,7 @@ public class GpuTask {
 	/**
 	 * Gets the submission (arrival) time of this task in the given CloudResource
 	 * ID.
-	 * 
+	 *
 	 * @param resId a CloudResource entity ID
 	 * @return the submission time or <tt>0.0</tt> if not found
 	 * @pre resId >= 0
@@ -1005,7 +1005,7 @@ public class GpuTask {
 	/**
 	 * Gets the time of this task resides in a given CloudResource ID (from arrival
 	 * time until departure time).
-	 * 
+	 *
 	 * @param resId a CloudResource entity ID
 	 * @return the time of this task resides in the CloudResource or <tt>0.0</tt> if
 	 *         not found
@@ -1022,7 +1022,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the CloudResource name based on its ID.
-	 * 
+	 *
 	 * @param resId a CloudResource entity ID
 	 * @return the CloudResource name or <tt>null</tt> if not found
 	 * @pre resId >= 0
@@ -1038,7 +1038,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the resource by id.
-	 * 
+	 *
 	 * @param resourceId the resource id
 	 * @return the resource by id
 	 */
@@ -1053,7 +1053,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the finish time of this task in a CloudResource.
-	 * 
+	 *
 	 * @return the finish or completion time of this task or <tt>-1</tt> if not
 	 *         finished yet.
 	 * @pre $none
@@ -1066,7 +1066,7 @@ public class GpuTask {
 	// //////////////////////// PROTECTED METHODS //////////////////////////////
 	/**
 	 * Writes this particular history transaction of this task into a log.
-	 * 
+	 *
 	 * @param str a history transaction of this task
 	 * @pre str != null
 	 * @post $none
@@ -1098,11 +1098,11 @@ public class GpuTask {
 
 	/**
 	 * Get the status of the task.
-	 * 
+	 *
 	 * @return status of the task
 	 * @pre $none
 	 * @post $none
-	 * 
+	 *
 	 */
 	public Status getStatus() {
 		return status;
@@ -1110,7 +1110,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the ID of this task.
-	 * 
+	 *
 	 * @return task Id
 	 * @pre $none
 	 * @post $none
@@ -1138,7 +1138,7 @@ public class GpuTask {
 
 	/**
 	 * Returns the execution time of the task.
-	 * 
+	 *
 	 * @return time in which the task was running
 	 * @pre $none
 	 * @post $none
@@ -1152,11 +1152,11 @@ public class GpuTask {
 	 * <br>
 	 * NOTE: This method <tt>should</tt> be called only by a resource entity, not
 	 * the user or owner of this task.
-	 * 
+	 *
 	 * @param resourceID the CloudResource ID
 	 * @param *costPerCPU the cost per second of running this task
 	 * @param costPerBw  the cost per byte of data transfer to the GPU
-	 * 
+	 *
 	 * @pre resourceID >= 0
 	 * @pre cost > 0.0
 	 * @post $none
@@ -1167,7 +1167,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the utilization model of gpu.
-	 * 
+	 *
 	 * @return the utilization model gpu
 	 */
 	public UtilizationModel getUtilizationModelGpu() {
@@ -1176,7 +1176,7 @@ public class GpuTask {
 
 	/**
 	 * Sets the utilization model of gpu.
-	 * 
+	 *
 	 * @param*utilizationModelCpu the new utilization model of gpu
 	 */
 	public void setUtilizationModelGpu(final UtilizationModel utilizationModelGpu) {
@@ -1185,7 +1185,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the utilization model of GDDRAM.
-	 * 
+	 *
 	 * @return the utilization model gddram
 	 */
 	public UtilizationModel getUtilizationModelGddram() {
@@ -1194,7 +1194,7 @@ public class GpuTask {
 
 	/**
 	 * Sets the utilization model of GDDRAM.
-	 * 
+	 *
 	 * @param *utilizationModelCpu the new utilization model of gddram
 	 */
 	public void setUtilizationModelGddram(final UtilizationModel utilizationModelGddram) {
@@ -1203,7 +1203,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the utilization model of GDDRAM BW.
-	 * 
+	 *
 	 * @return the utilization model GDDRAM BW
 	 */
 	public UtilizationModel getUtilizationModelBw() {
@@ -1223,7 +1223,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the utilization percentage of gpu.
-	 * 
+	 *
 	 * @param time the time
 	 * @return the utilization of gpu
 	 */
@@ -1233,7 +1233,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the utilization percentage of memory.
-	 * 
+	 *
 	 * @param time the time
 	 * @return the utilization of memory
 	 */
@@ -1243,7 +1243,7 @@ public class GpuTask {
 
 	/**
 	 * Gets the utilization percentage of GDDRAM bw.
-	 * 
+	 *
 	 * @param time the time
 	 * @return the utilization of GDDRAM bw
 	 */
@@ -1259,4 +1259,7 @@ public class GpuTask {
 		return requestedGddramSize;
 	}
 
+	public void updateSimulation(CloudSim sim){
+		this.simulation = sim;
+	}
 }

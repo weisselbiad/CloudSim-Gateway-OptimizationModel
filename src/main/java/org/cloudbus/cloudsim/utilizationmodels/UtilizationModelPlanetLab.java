@@ -384,6 +384,11 @@ public class UtilizationModelPlanetLab extends UtilizationModelAbstract {
         return (utilization[prevIndex] + utilization[nextIndex]) / 2.0;
     }
 
+    @Override
+    public double getCurrentUtilization() {
+        return 0;
+    }
+
     /**
      * Gets the index of the {@link #utilization} inside the trace file that corresponds to a given time.
      * The trace file contains utilization according to a {@link #getSchedulingInterval()}.

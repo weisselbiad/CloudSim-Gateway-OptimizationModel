@@ -179,6 +179,11 @@ public class UtilizationModelStochastic extends UtilizationModelAbstract {
         return utilization;
     }
 
+    @Override
+    public double getCurrentUtilization() {
+        return 0;
+    }
+
     private Double getOrGenerateUtilization(final double time) {
         if(time > this.maxPreviousTime || alwaysGenNewRandUtilization){
             return generateUtilization(time);

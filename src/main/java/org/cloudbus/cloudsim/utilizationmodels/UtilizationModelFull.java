@@ -30,4 +30,9 @@ public class UtilizationModelFull extends UtilizationModelAbstract {
     protected final double getUtilizationInternal(final double time) {
         return HUNDRED_PERCENT;
     }
+
+    @Override
+    public double getCurrentUtilization() {
+        return 0;
+    }
 }

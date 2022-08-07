@@ -93,7 +93,7 @@ public interface UtilizationModel {
      * @see #getUnit()
      */
     double getUtilization();
-
+     double getCurrentUtilization();
     /**
      * Checks if the resource utilization requested by a Cloudlet is allowed to exceed 100% or not.
      * <p><b>WARNING:</b> This attribute is just considered when the {@link #getUnit()}

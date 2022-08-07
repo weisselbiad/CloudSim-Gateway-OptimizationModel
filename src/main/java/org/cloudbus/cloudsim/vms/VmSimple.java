@@ -41,6 +41,7 @@ import static java.util.Objects.requireNonNull;
  * @since CloudSim Toolkit 1.0
  */
 public class VmSimple extends CustomerEntityAbstract implements Vm {
+    public List<Cloudlet> CloudletSequenceList;
     /** @see #setDefaultRamCapacity(long) */
     private static long defaultRamCapacity = 1024;
     /** @see #setDefaultBwCapacity(long) */
@@ -995,6 +996,16 @@ public class VmSimple extends CustomerEntityAbstract implements Vm {
         vmScaling.setVm(this);
         this.addOnUpdateProcessingListener(vmScaling::requestUpScalingIfPredicateMatches);
         return vmScaling;
+    }
+
+    @Override
+    public void setCloudletSequence(List<Cloudlet> CloudletSequenceList) {
+        this.CloudletSequenceList =CloudletSequenceList;
+    }
+
+    @Override
+    public List<Cloudlet> getCloudletSequence() {
+        return CloudletSequenceList;
     }
 
     @Override

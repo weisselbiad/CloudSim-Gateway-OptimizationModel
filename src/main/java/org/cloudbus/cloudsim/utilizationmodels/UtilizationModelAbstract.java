@@ -80,7 +80,7 @@ public abstract class UtilizationModelAbstract implements UtilizationModel {
     }
 
     protected abstract double getUtilizationInternal(double time);
-
+     public abstract double getCurrentUtilization();
     /**
      * Checks if a given field has a valid value, considering that the minimum value is zero.
      * @param fieldName the name of the field to display at the Exception when the value is invalid
