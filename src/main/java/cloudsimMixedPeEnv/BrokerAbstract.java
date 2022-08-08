@@ -351,7 +351,6 @@ public abstract class BrokerAbstract extends CloudSimEntity implements Datacente
         LOGGER.info(
                 "{}: {}: List of {} Cloudlets submitted to the broker during simulation execution.",
                 getSimulation().clockStr(), getName(), list.size());
-
         if (allNonDelayedVmsCreated()) {
             LOGGER.info("Cloudlets creation request sent to Datacenter.");
             requestDatacentersToCreateWaitingCloudlets();

@@ -14,7 +14,7 @@ public class ListenerApp {
      */
     public Object FilePath;
     public Object indiv;
- //   JobsSet jobsSet = JobsSet.getInstance(200);
+    JobsSet jobsSet;
     int NumofJobs;
     SimProxy3 simulation;
 
@@ -25,7 +25,7 @@ public class ListenerApp {
      *
      * @return simulation
      */
-    public SimProxy3 Init(JobsSet jobset){
+    public SimProxy3 Init(){
         Lock lock=new ReentrantLock();
         Condition cond=lock.newCondition();
         Gson gson = new Gson();
@@ -53,16 +53,16 @@ public class ListenerApp {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        /*JobsSet jobset = getJobsSet();
-        System.out.println("First Cl in Seq1: "+jobset.getSeqList1().get(0)+ " first length: "+jobset.getSeqList1().get(0).get(0).getLength()+
-                " First Cls in Seq2: "+jobset.getSeqList2().get(0)+ " first length: "+jobset.getSeqList2().get(0).get(0).getLength()+
-                " First Cls in Seq3: "+jobset.getSeqList3().get(0)+" first length: "+jobset.getSeqList3().get(0).get(0).getLength()+
-                " First Cls in Seq4: "+jobset.getSeqList4().get(0)+" first length: "+jobset.getSeqList4().get(0).get(0).getLength()+
-                " First Cls in Seq5: "+jobset.getSeqList5().get(0)+" first length: "+jobset.getSeqList5().get(0).get(0).getLength()+
-                "First Cls in Seq6: "+jobset.getSeqList6().get(0)+" first length: "+jobset.getSeqList6().get(0).get(0).getLength());*/
+
+        System.out.println("First Cl in Seq1: "+jobsSet.getSeqList1().get(0)+ " first length: "+jobsSet.getSeqList1().get(0).get(0).getLength()+
+                " First Cls in Seq2: "+jobsSet.getSeqList2().get(0)+ " first length: "+jobsSet.getSeqList2().get(0).get(0).getLength()+
+                " First Cls in Seq3: "+jobsSet.getSeqList3().get(0)+" first length: "+jobsSet.getSeqList3().get(0).get(0).getLength()+
+                " First Cls in Seq4: "+jobsSet.getSeqList4().get(0)+" first length: "+jobsSet.getSeqList4().get(0).get(0).getLength()+
+                " First Cls in Seq5: "+jobsSet.getSeqList5().get(0)+" first length: "+jobsSet.getSeqList5().get(0).get(0).getLength()+
+                "First Cls in Seq6: "+jobsSet.getSeqList6().get(0)+" first length: "+jobsSet.getSeqList6().get(0).get(0).getLength());
         //after you change it
         System.out.println("New Simulation Instance");
-        return simulation = new SimProxy3("Sim1", indiv, jobset);
+        return simulation = new SimProxy3("Sim1", indiv, jobsSet);
 
     }
 
@@ -83,7 +83,7 @@ public class ListenerApp {
      * set vm and host parameters array
      */
     public Object setIndiv(Object obj){ return indiv = obj; }
-
+    public JobsSet setJobset(JobsSet jobset){return this.jobsSet = jobset;}
     public SimProxy3 getSimulation(){
         return simulation;
     }

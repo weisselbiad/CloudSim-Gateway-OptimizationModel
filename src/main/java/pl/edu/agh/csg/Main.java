@@ -22,20 +22,13 @@ public class Main {
      * using the Listener interface
      */
     ListenerApp listenerApp ;
+    JobsSet jobsSetcopy;
+    static JobsSet jobsSet = JobsSet.getInstance(199);
 
-
-    static JobsSet jobsSet = JobsSet.getInstance(200);
     public Main() {
-
         listenerApp = new ListenerApp();
-
+        jobsSetcopy = jobsSet;
     }
-
-
-    /**Generating CloudLets Queue
-     * Problem formulation
-    * */
-
 
     /**
      * returning simulation and ListenerApp so it is possible to call there
@@ -43,10 +36,12 @@ public class Main {
      * @return simulation and ListenerApp
      */
     public JobsSet getJobsSet(){
-        return jobsSet;
+        return this.jobsSetcopy;
     }
     public SimProxy3 getsimulation() {return this.listenerApp.getSimulation();}
     public ListenerApp getListenerApp() {return  this.listenerApp;}
+    public void setJobsSet(){this.listenerApp.setJobset(jobsSetcopy);}
+
     public static void main(String[] args) {
 
         /**

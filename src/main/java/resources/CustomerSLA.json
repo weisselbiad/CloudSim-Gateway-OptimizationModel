@@ -81,8 +81,7 @@
       "dimensions": [
         {
           "name": "maxValue",
-          "value": 10
-
+          "value": 0.017
         }
       ]
     },
