@@ -62,7 +62,9 @@ public class ListenerApp {
                 "First Cls in Seq6: "+jobsSet.getSeqList6().get(0)+" first length: "+jobsSet.getSeqList6().get(0).get(0).getLength());
         //after you change it
         System.out.println("New Simulation Instance");
-        return simulation = new SimProxy3("Sim1", indiv, jobsSet);
+        simulation = new SimProxy3("Sim1", indiv, jobsSet);
+
+        return  simulation.getInstance();
 
     }
 
@@ -84,8 +86,5 @@ public class ListenerApp {
      */
     public Object setIndiv(Object obj){ return indiv = obj; }
     public JobsSet setJobset(JobsSet jobset){return this.jobsSet = jobset;}
-    public SimProxy3 getSimulation(){
-        return simulation;
-    }
 
 }

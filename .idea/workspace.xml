@@ -4,23 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="26.07.4">
-      <change afterPath="$PROJECT_DIR$/src/main/java/resources/CustomerSLA.json" afterDir="false" />
+    <list default="true" id="054c0f91-217a-494e-a14b-46fd70494f25" name="Default Changelist" comment="firstWorkingVersion">
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.2/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.2/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/md5-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/BrokerAbstract$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/BrokerAbstract$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/BrokerAbstract.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/cloudsimMixedPeEnv/BrokerAbstract.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/cloudlets/CloudletAbstract.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/cloudbus/cloudsim/cloudlets/CloudletAbstract.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/ListenerApp.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/ListenerApp.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/pl/edu/agh/csg/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/BrokerAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/BrokerAbstract.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/CustomerSLA.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/CustomerSLA.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/cloudlets/CloudletAbstract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/cloudlets/CloudletAbstract.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/ListenerApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/ListenerApp.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy3.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy3.java" afterDir="false" />
@@ -72,14 +70,13 @@
         <option value="Enum" />
         <option value="JUnit5 Test Class" />
         <option value="Interface" />
-        <option value="Class" />
         <option value="package.json" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitSEFilterConfiguration">
     <file-type-list>
@@ -100,6 +97,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;JavaMethodFindUsagesOptions.isImplementingMethods&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;ToolWindowRun.ShowToolbar&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/shadow01/Documents/3bi9a/CloudSim-Gateway-OptimizationModel/src/main/java&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Global Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  }
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/java" />
@@ -117,10 +129,10 @@
   </component>
   <component name="RunAnythingCache">
     <option name="myCommands">
-      <command value="gradle clean" />
       <command value="gradle build" />
-      <command value="gradle compileJava" />
       <command value="gradle run" />
+      <command value="gradle clean" />
+      <command value="gradle compileJava" />
     </option>
   </component>
   <component name="RunManager" selected="Gradle.CloudSim-Gateway-OptimizationModel [run]">
@@ -137,8 +149,8 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="pl.edu.agh.csg.Main" />
+    <configuration name="BasicFirstExample" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="pl.edu.agh.csg.BasicFirstExample" />
       <module name="CloudSim-Gateway-OptimizationModel.main" />
       <extension name="coverage">
         <pattern>
@@ -150,28 +162,20 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="CloudSim-Gateway-OptimizationModel [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="build" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <method v="2" />
+    <configuration name="GpuExperiment" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="pl.edu.agh.csg.GpuExperiment" />
+      <module name="CloudSim-Gateway-OptimizationModel.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="pl.edu.agh.csg.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
-    <configuration name="CloudSim-Gateway-OptimizationModel [clean]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="CloudSim-Gateway-OptimizationModel [clean]" type="GradleRunConfiguration" factoryName="Gradle">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -238,9 +242,8 @@
       <list>
         <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [run]" />
         <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [compileJava]" />
-        <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [build]" />
-        <item itemvalue="Gradle.CloudSim-Gateway-OptimizationModel [clean]" />
-        <item itemvalue="Application.Main" />
+        <item itemvalue="Application.GpuExperiment" />
+        <item itemvalue="Application.BasicFirstExample" />
       </list>
     </recent_temporary>
   </component>
@@ -331,7 +334,26 @@
       <workItem from="1658774875277" duration="2011000" />
       <workItem from="1659036415123" duration="682000" />
       <workItem from="1659271959492" duration="3490000" />
-      <workItem from="1659344790312" duration="10812000" />
+      <workItem from="1659344790312" duration="12988000" />
+      <workItem from="1659378953908" duration="189000" />
+      <workItem from="1659379180905" duration="1299000" />
+      <workItem from="1659380872336" duration="114000" />
+      <workItem from="1659381012362" duration="517000" />
+      <workItem from="1659382553670" duration="1129000" />
+      <workItem from="1659436813958" duration="1390000" />
+      <workItem from="1659519236607" duration="3087000" />
+      <workItem from="1659557006974" duration="175000" />
+      <workItem from="1659557512993" duration="68000" />
+      <workItem from="1659557604255" duration="41000" />
+      <workItem from="1659557663624" duration="3185000" />
+      <workItem from="1659598927503" duration="6699000" />
+      <workItem from="1659643522582" duration="18621000" />
+      <workItem from="1659706757333" duration="7903000" />
+      <workItem from="1659713687048" duration="26928000" />
+      <workItem from="1659778261808" duration="26917000" />
+      <workItem from="1659819298179" duration="19176000" />
+      <workItem from="1659860825955" duration="33685000" />
+      <workItem from="1660145788917" duration="3546000" />
     </task>
     <task id="LOCAL-00001" summary="gradle">
       <created>1637948985872</created>
@@ -522,7 +544,35 @@
       <option name="project" value="LOCAL" />
       <updated>1659036990487</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="01.08">
+      <created>1659365065883</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1659365065883</updated>
+    </task>
+    <task id="LOCAL-00029" summary="05.08">
+      <created>1659711496340</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1659711496340</updated>
+    </task>
+    <task id="LOCAL-00030" summary="06.08">
+      <created>1659744271562</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1659744271562</updated>
+    </task>
+    <task id="LOCAL-00031" summary="firstWorkingVersion">
+      <created>1659792074989</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1659792074989</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -538,7 +588,6 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="gradle" />
@@ -562,7 +611,11 @@
     <MESSAGE value="21.07.3" />
     <MESSAGE value="26.07.1" />
     <MESSAGE value="28.07.1" />
-    <option name="LAST_COMMIT_MESSAGE" value="28.07.1" />
+    <MESSAGE value="01.08" />
+    <MESSAGE value="05.08" />
+    <MESSAGE value="06.08" />
+    <MESSAGE value="firstWorkingVersion" />
+    <option name="LAST_COMMIT_MESSAGE" value="firstWorkingVersion" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -628,14 +681,89 @@
           <option name="timeStamp" value="147" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/BrokerAbstract.java</url>
+          <line>455</line>
+          <option name="timeStamp" value="156" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyAbstract.java</url>
+          <line>94</line>
+          <option name="timeStamp" value="165" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/cloudbus/cloudsim/allocationpolicies/VmAllocationPolicyAbstract.java</url>
+          <line>89</line>
+          <option name="timeStamp" value="166" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/JobsSet.java</url>
+          <line>70</line>
+          <option name="timeStamp" value="203" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/JobsSet.java</url>
+          <line>107</line>
+          <option name="timeStamp" value="205" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy3.java</url>
+          <line>1160</line>
+          <option name="timeStamp" value="206" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy3.java</url>
+          <line>452</line>
+          <option name="timeStamp" value="207" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy3.java</url>
+          <line>441</line>
+          <option name="timeStamp" value="208" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy3.java</url>
+          <line>428</line>
+          <option name="timeStamp" value="209" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy3.java</url>
+          <line>422</line>
+          <option name="timeStamp" value="210" />
+        </line-breakpoint>
+        <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/ListenerApp.java</url>
-          <line>64</line>
-          <option name="timeStamp" value="168" />
+          <line>63</line>
+          <option name="timeStamp" value="219" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/cloudsimMixedPeEnv/BrokerAbstract.java</url>
-          <line>350</line>
-          <option name="timeStamp" value="170" />
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/Main.java</url>
+          <line>25</line>
+          <option name="timeStamp" value="231" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/Main.java</url>
+          <line>29</line>
+          <option name="timeStamp" value="232" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/ListenerApp.java</url>
+          <line>87</line>
+          <option name="timeStamp" value="233" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/ListenerApp.java</url>
+          <line>66</line>
+          <option name="timeStamp" value="234" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy3.java</url>
+          <line>183</line>
+          <option name="timeStamp" value="235" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/SimProxy3.java</url>
+          <line>193</line>
+          <option name="timeStamp" value="236" />
         </line-breakpoint>
         <line-breakpoint type="java-method">
           <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.cloudsimplus/cloudsim-plus/7.1.2/3c6d01bece7d9835501bd28439d948acc52e826b/cloudsim-plus-7.1.2-sources.jar!/org/cloudbus/cloudsim/cloudlets/network/NetworkCloudlet.java</url>
@@ -646,11 +774,21 @@
           </properties>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
+        <line-breakpoint type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/pl/edu/agh/csg/Main.java</url>
+          <line>37</line>
+          <properties class="pl.edu.agh.csg.Main" method="getJobsSet">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="220" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="org.cloudbus.cloudsim.hosts.HostSimple" memberName="vmList" />
+        <PinnedItemInfo parentTag="java.lang.reflect.InvocationTargetException" memberName="target" />
       </pinned-members>
     </pin-to-top-manager>
     <watches-manager>

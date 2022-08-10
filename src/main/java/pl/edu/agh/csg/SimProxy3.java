@@ -28,6 +28,7 @@ import org.cloudbus.cloudsim.allocationpolicies.migration.VmAllocationPolicyMigr
 import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.cloudlets.CloudletSimple;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.datacenters.Datacenter;
 import org.cloudbus.cloudsim.datacenters.DatacenterSimple;
 import org.cloudbus.cloudsim.distributions.ContinuousDistribution;
@@ -40,11 +41,9 @@ import org.cloudbus.cloudsim.resources.PeSimple;
 import org.cloudbus.cloudsim.schedulers.cloudlet.CloudletSchedulerSpaceShared;
 import org.cloudbus.cloudsim.schedulers.vm.VmScheduler;
 import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerSpaceShared;
+import org.cloudbus.cloudsim.schedulers.vm.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.selectionpolicies.VmSelectionPolicyMinimumUtilization;
 import org.cloudbus.cloudsim.util.TimeUtil;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModel;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelDynamic;
-import org.cloudbus.cloudsim.utilizationmodels.UtilizationModelFull;
 import org.cloudbus.cloudsim.vms.*;
 import org.cloudsimplus.listeners.CloudletVmEventInfo;
 import org.cloudsimplus.slametrics.SlaContract;
@@ -53,6 +52,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class  SimProxy3 {
 
@@ -65,7 +65,7 @@ public class  SimProxy3 {
      * Initialize the Logger
      */
 
-    private final Logger logger = LoggerFactory.getLogger(SimProxy.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(SimProxy3.class.getName());
 
     /**
      * Instantiate and declare needed variables
@@ -118,7 +118,7 @@ public class  SimProxy3 {
     /**
      * The file containing the Customer's SLA Contract in JSON format.
      */
-    private static final String CUSTOMER_SLA_CONTRACT = "C:\\Users\\youssef\\IdeaProjects\\CloudSim-Gateway-OptimizationModel\\src\\main\\java\\pl\\edu\\agh\\csg\\CustomerSLA.json";
+    private static final String CUSTOMER_SLA_CONTRACT = "/home/shadow01/Documents/3bi9a/CloudSim-Gateway-OptimizationModel/src/main/java/pl/edu/agh/csg/CustomerSLA.json";
     private final CloudSim simulation;
 
     /**
@@ -175,6 +175,7 @@ public class  SimProxy3 {
         return power;
 
     }
+    private static final double INTERVAL = 3;
 
     private final ContinuousDistribution random;
     final double startSecs;
@@ -198,7 +199,7 @@ public class  SimProxy3 {
          * time between events
          */
 
-        this.simulation = new CloudSim(0.1);
+        this.simulation = new CloudSim(0.3);
 
         /**
          * Creating the Datacenter and calling the Broker
@@ -234,10 +235,16 @@ public class  SimProxy3 {
 
         this.simulation.start();
 
+       /* simulation.startSync();
+        while(this.simulation.isRunning() &&this.broker.getCloudletWaitingList().size()< this.jobsSet.getJobSeqList().size()*4 ){
+            simulation.runFor(INTERVAL);
+        }*/
+
         final List<Cloudlet> finishedCloudlets = this.broker.getCloudletFinishedList();
+                //getCloudletFinishedList();
         new org.cloudsimplus.builders.tables.CloudletsTableBuilder(finishedCloudlets).build();
         System.out.println(this.broker.getCloudletFinishedList());
-
+        System.out.println(this.broker.getCloudletSubmittedList());
         System.out.println(this.broker.getVmCreatedList());
 
         List<GpuCloudlet> GpuCloudletList = new ArrayList<>();
@@ -248,12 +255,10 @@ public class  SimProxy3 {
             }
         }
         printCloudletList(GpuCloudletList);
+
     }
 
-    public void terminateSim() {
 
-        this.simulation.terminate();
-    }
 
     /**
      * Creation of the Datacenter using a List of Hosts, which will be passed as a parameter
@@ -311,7 +316,7 @@ public class  SimProxy3 {
         for (int i = 0; i < 16 * factor/*hostPes*factor*/; i++) {
             peList.add(new PeSimple(hostPeMips));
         }
-        final var vmScheduler = new VmSchedulerSpaceShared();
+        final var vmScheduler = new VmSchedulerTimeShared();
         final var host = new HostSimple(hostRam * factor, hostBw * factor, hostSize * factor, peList);
 
 
@@ -321,8 +326,8 @@ public class  SimProxy3 {
                 .setStartupPower(5)
                 .setShutDownPower(3)
                 ;
-
-        host.setVmScheduler(vmScheduler).setPowerModel(powerModel);
+        host.setPowerModel(powerModel);
+        host.setVmScheduler(vmScheduler);
         host.enableUtilizationStats();
         host.setId(lastHostIndex);
         lastHostIndex = ++lastHostIndex;
@@ -502,160 +507,30 @@ public class  SimProxy3 {
         return factor;
     }
 
-    /**
-     * Creating a List of cloudlets
-     * UtilizationModel defining the Cloudlets use only 50% of any resource all the time
-     *
-     * @return List of Cloudlets
-     */
-
-    private List<Cloudlet> createCloudList(int cnt) {
-        final List<Cloudlet> list = new ArrayList<>(cloudletCnt);
-
-        for (int i = 0; i < cnt; i++) {
-            Cloudlet cloudlet = createCloudlet(cloudletPes, cloudletSize);
-
-            list.add(cloudlet);
-        }
-        return list;
-    }
-
-    private Cloudlet createCloudlet(int pes, long clSize) {
-        final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(UtilizationModel.Unit.ABSOLUTE, 0.2);
-        //final UtilizationModelDynamic utilizationModel = new UtilizationModelDynamic(0.2);
-        int randomlength = CloudletMips.get(randMips.nextInt(CloudletMips.size()));
-        UtilizationModelDynamic cpuUtilizationModel =
-                createUtilizationModel(
-                        0.2, 1,
-                        true);
-        Cloudlet cloudlet =
-                new CloudletSimple(randomlength, pes)
-                        .setFileSize(1024)
-                        .setOutputSize(1024)
-                        .setUtilizationModelCpu(cpuUtilizationModel)
-                        .setUtilizationModelRam(utilizationModel)
-                        .setUtilizationModelBw(utilizationModel)
-                        .setSizes(clSize);
-        cloudlet.setId(lastCloudletindex);
-        lastCloudletindex = ++lastCloudletindex;
-        return cloudlet;
-    }
-
-    private List<GpuCloudlet> createGpuCloudletList(int cnt) {
-        final List<GpuCloudlet> list = new ArrayList<>(gpuclouletCnt);
-
-        for (int j = 0; j < cnt; j++) {
-
-            GpuCloudlet gpuCloudlet = createGpuCloudlet(1, (int) this.broker.getId());
-            list.add(gpuCloudlet);
-        }
-
-        return list;
-    }
-
-    private GpuCloudlet createGpuCloudlet(int gpuTaskId, int brokerId) {
-        // Cloudlet properties
-        long length = (long) (400 * GpuHostTags.DUAL_INTEL_XEON_E5_2620_V3_PE_MIPS);
-        long fileSize = 1024;
-        long outputSize = 1024;
-        int pesNumber = 2;
-        UtilizationModel cpuUtilizationModel = new UtilizationModelFull();
-        UtilizationModel ramUtilizationModel = new UtilizationModelFull();
-        UtilizationModel bwUtilizationModel = new UtilizationModelFull();
-        /*UtilizationModelDynamic cpuUtilizationModel =
-                createUtilizationModel(
-                        0.5,
-                        1.5,
-                        true);
-        UtilizationModel ramUtilizationModel = new UtilizationModelDynamic(UtilizationModel.Unit.ABSOLUTE, 50);
-        UtilizationModel bwUtilizationModel = new UtilizationModelDynamic(UtilizationModel.Unit.ABSOLUTE, 50);*/
-
-        // GpuTask properties
-        long taskLength = (long) (GridVideoCardTags.NVIDIA_K1_CARD_PE_MIPS * 150);
-        //GpuTaskMips.get((int) randMips.nextLong(GpuTaskMips.size()));
-        long taskInputSize = 128;
-        long taskOutputSize = 128;
-        long requestedGddramSize = 4 * 1024;
-        int numberOfBlocks = 2;
-
-        UtilizationModel gpuUtilizationModel = new UtilizationModelFull();
-        UtilizationModel gddramUtilizationModel = new UtilizationModelFull();
-        UtilizationModel gddramBwUtilizationModel = new UtilizationModelFull();
-        GpuTask gpuTask = new GpuTask(simulation, gpuTaskId, taskLength, numberOfBlocks, taskInputSize, taskOutputSize,
-                requestedGddramSize, 0, gpuUtilizationModel, gddramUtilizationModel, gddramBwUtilizationModel);
-        int randomlength = gpuCloudletMips.get(gpurandMips.nextInt(gpuCloudletMips.size()));
-        GpuCloudlet gpuCloudlet = new GpuCloudlet(randomlength, pesNumber, fileSize, outputSize, cpuUtilizationModel, ramUtilizationModel, bwUtilizationModel, gpuTask);
-        gpuCloudlet.setUserId(brokerId);
-        gpuCloudlet.setSizes(gpucloudletSize);
-        gpuCloudlet.setId(lastCloudletindex);
-        lastCloudletindex = ++lastCloudletindex;
-        return gpuCloudlet;
-
-    }
-
-    /**
-     * Creates a {@link UtilizationModel} for a Cloudlet
-     * defines if CPU usage will be static or dynamic.
-     *
-     * @param initialCpuUsagePercent     the percentage of CPU the Cloudlet will use initially
-     * @param maxCloudletCpuUsagePercent the maximum percentage of CPU the Cloudlet will use
-     * @param progressiveCpuUsage        true if the CPU usage must increment along the time, false if it's static.
-     * @return the  {@link UtilizationModel} for a Cloudlet's CPU usage
-     */
-    private UtilizationModelDynamic createUtilizationModel(
-            double initialCpuUsagePercent,
-            double maxCloudletCpuUsagePercent,
-            final boolean progressiveCpuUsage) {
-        initialCpuUsagePercent = Math.min(initialCpuUsagePercent, 1);
-        maxCloudletCpuUsagePercent = Math.min(maxCloudletCpuUsagePercent, 1);
-        final UtilizationModelDynamic um = new UtilizationModelDynamic(initialCpuUsagePercent);
-
-        if (progressiveCpuUsage) {
-            um.setUtilizationUpdateFunction(this::getCpuUtilizationIncrement);
-        }
-
-        um.setMaxResourceUtilization(maxCloudletCpuUsagePercent);
-        return um;
-    }
-
-    /**
-     * Increments the CPU resource utilization, that is defined in percentage
-     * values.
-     *
-     * @return the new resource utilization after the increment
-     */
-    private double getCpuUtilizationIncrement(final UtilizationModelDynamic um) {
-        return um.getUtilization() + um.getTimeSpan() * CLOUDLET_CPU_USAGE_INCREMENT_PER_SECOND;
-    }
 
     private Vm createAndbindCPUfirstVms(Vm Cpuvm) {
-        List<Cloudlet> CPUfirstCloudlets = new ArrayList<>();
 
-        this.broker.bindCloudletToVm(Cpuvm.getCloudletSequence().get(0), Cpuvm);
-        this.broker.bindCloudletToVm(Cpuvm.getCloudletSequence().get(1), Cpuvm);
-        CPUfirstCloudlets.add(Cpuvm.getCloudletSequence().get(0));
-        CPUfirstCloudlets.add(Cpuvm.getCloudletSequence().get(1));
+        Cloudlet cl1 = Cpuvm.getCloudletSequence().get(0);
+        cl1.setpathid(11);
+        cl1.addOnFinishListener(this::Listener5);
+        this.broker.bindCloudletToVm(cl1, Cpuvm);
+        this.broker.submitCloudlet(cl1);
 
-        var testcl = Cpuvm.getCloudletSequence().get(1);
-        testcl.addOnFinishListener(this::Listener5);
-        this.broker.submitCloudletList(CPUfirstCloudlets);
         this.broker.submitVm(Cpuvm);
 
         return Cpuvm;
     }
 
     private GpuVm createAndbindGPUfirstVms(GpuVm Gpuvm) {
-        List<GpuCloudlet> GPUfirstCloudlets = new ArrayList<>();
 
-        this.broker.bindCloudletToVm(Gpuvm.getCloudletSequence().get(0), Gpuvm);
-        this.broker.bindCloudletToVm(Gpuvm.getCloudletSequence().get(1), Gpuvm);
-        GPUfirstCloudlets.add((GpuCloudlet) Gpuvm.getCloudletSequence().get(0));
-        GPUfirstCloudlets.add((GpuCloudlet) Gpuvm.getCloudletSequence().get(1));
+        GpuCloudlet cl1 = (GpuCloudlet)Gpuvm.getCloudletSequence().get(0);
+        cl1.setpathid(13);
+        cl1.addOnFinishListener(this::Listener6);
 
-        var testcl = Gpuvm.getCloudletSequence().get(1);
-        testcl.addOnFinishListener(this::Listener6);
-        this.broker.submitCloudletList(GPUfirstCloudlets);
+        this.broker.bindCloudletToVm(cl1, Gpuvm);
+        this.broker.submitCloudlet(cl1);
         this.broker.submitVm(Gpuvm);
+
         return Gpuvm;
     }
 
@@ -712,7 +587,6 @@ public class  SimProxy3 {
     private Vm createAndbindsequentialVm(int factor, int clSequence, int vmallocationid, List<Cloudlet> CloudletList) {
 
         Vm finalVm = Vm.NULL;
-
 
         switch (clSequence) {
             case 1: {
@@ -836,17 +710,13 @@ public class  SimProxy3 {
         if (Cpathid == 2) {
             GpuCloudlet cl1 = (GpuCloudlet) vm.getCloudletSequence().get(1);
             cl1.getGpuTask().updateSimulation(this.simulation);
-            GpuCloudlet cl2 = (GpuCloudlet) vm.getCloudletSequence().get(2);
-            cl2.getGpuTask().updateSimulation(this.simulation);
-            cl2.addOnFinishListener(this::Listener2);
-            cl2.setpathid(9);
+            cl1.addOnFinishListener(this::SuccessiveListener);
+            cl1.setpathid(9);
             Vm gvm = convertToGpuVm(vm);
             this.broker.bindCloudletToVm(cl1, gvm);
-            this.broker.bindCloudletToVm(cl2, gvm);
             this.broker.submitVm(gvm);
             this.broker.submitCloudlet(cl1);
-            this.broker.submitCloudlet(cl2);
-            migrationsNumber++;
+
         } else if (Cpathid == 9) {
             Cloudlet cl = vm.getCloudletSequence().get(3);
             bindAndSubmitCtoVm(cl, vm);
@@ -898,16 +768,15 @@ public class  SimProxy3 {
         //this.broker.destroyVm(eventInfo.getVm());
         if (Cpathid == 4) {
             Cloudlet cl1 = vm.getCloudletSequence().get(1);
-            Cloudlet cl2 = vm.getCloudletSequence().get(1);
-            cl2.addOnFinishListener(this::Listener4);
-            cl2.setpathid(10);
+            cl1.addOnFinishListener(this::SuccessiveListener);
+            cl1.setpathid(10);
+
             Vm Svm = convertToSimpleVm(vm);
             this.broker.bindCloudletToVm(cl1, Svm);
-            this.broker.bindCloudletToVm(cl2, Svm);
             this.broker.submitVm(Svm);
             this.broker.submitCloudlet(cl1);
-            this.broker.submitCloudlet(cl2);
-            migrationsNumber++;
+
+
         } else if (Cpathid == 10) {
             GpuCloudlet cl = (GpuCloudlet) vm.getCloudletSequence().get(3);
             cl.getGpuTask().updateSimulation(this.simulation);
@@ -931,27 +800,32 @@ public class  SimProxy3 {
         /*System.out.printf(
                 "%n\t# last cloudlet %d finished. Submitting GpuVM %d to the broker for Migration%n",
                 eventInfo.getCloudlet().getId(), eventInfo.getVm().getId());*/
+        int Cpathid = eventInfo.getCloudlet().getpathid();
         Vm vmtemp = eventInfo.getVm();
         CheckSla(vmtemp);
-        this.broker.destroyVm(eventInfo.getVm());
 
-        List<GpuCloudlet> CloudletList = new ArrayList<>();
+        if(Cpathid==11){
+         Cloudlet cl2 = vmtemp.getCloudletSequence().get(1);
+            cl2.addOnFinishListener(this::Listener5);
+            cl2.setpathid(12);
+            this.broker.bindCloudletToVm(cl2, vmtemp);
+            this.broker.submitCloudlet(cl2);
+
+        }
+        if(Cpathid==12){
         GpuVm gpuvm = convertToGpuVm(vmtemp);
         //       setVmallocation(gpuvm.getvmallocationid(),gpuvm);
         GpuCloudlet cl3 = (GpuCloudlet) vmtemp.getCloudletSequence().get(2);
+        cl3.setpathid(12);
         cl3.getGpuTask().updateSimulation(this.simulation);
+        cl3.addOnFinishListener(this::SuccessiveListener);
         this.broker.bindCloudletToVm(cl3, gpuvm);
-        GpuCloudlet cl4 = (GpuCloudlet) vmtemp.getCloudletSequence().get(3);
-        cl4.getGpuTask().updateSimulation(this.simulation);
-        this.broker.bindCloudletToVm(cl4, gpuvm);
-        CloudletList.add(cl3);
-        CloudletList.add(cl4);
 
         this.broker.submitVm(gpuvm);
-        this.broker.submitCloudletList(CloudletList);
+        this.broker.submitCloudlet(cl3);
 //        System.out.printf("%n\t# Submit GpuVm %d and last Gpucloudlet of new cloudlet list %d to the broker %n",gpuvm.getId(),newCloudletList.get(newCloudletList.size()-1).getId());
         migrationsNumber++;
-    }
+    }}
 
     private void Listener6(CloudletVmEventInfo eventInfo) {
         //VmHostEventInfo
@@ -959,24 +833,29 @@ public class  SimProxy3 {
 /*        System.out.printf(
                 "%n\t# last cloudlet %d finished. Submitting VM %d to the broker for Migration%n",
                 eventInfo.getCloudlet().getId(), eventInfo.getVm().getId());*/
+        int Cpathid= eventInfo.getCloudlet().getpathid();
         Vm vmtemp = eventInfo.getVm();
         CheckSla(vmtemp);
-        this.broker.destroyVm(eventInfo.getVm());
-        List<Cloudlet> CloudletList = new ArrayList<>();
-
-        Vm newvm = convertToSimpleVm(vmtemp);
-        //       setVmallocation(newvm.getvmallocationid(),newvm);
-        Cloudlet cl3 = vmtemp.getCloudletSequence().get(2);
-        this.broker.bindCloudletToVm(cl3, newvm);
-        Cloudlet cl4 = vmtemp.getCloudletSequence().get(2);
-        this.broker.bindCloudletToVm(cl4, newvm);
-        CloudletList.add(cl3);
-        CloudletList.add(cl4);
-
-        this.broker.submitVm(newvm);
-        this.broker.submitCloudletList(CloudletList);
+        if(Cpathid== 13){
+            GpuCloudlet cl2 =(GpuCloudlet) vmtemp.getCloudletSequence().get(1);
+            cl2.getGpuTask().updateSimulation(this.simulation);
+            cl2.setpathid(14);
+            cl2.addOnFinishListener(this::Listener6);
+            this.broker.bindCloudletToVm(cl2, vmtemp);
+            this.broker.submitCloudlet(cl2);
+        }
+        if(Cpathid== 14){
+            Vm newvm = convertToSimpleVm(vmtemp);
+            Cloudlet cl3 = vmtemp.getCloudletSequence().get(2);
+            cl3.setpathid(14);
+            cl3.addOnFinishListener(this::SuccessiveListener);
+            this.broker.bindCloudletToVm(cl3, newvm);
+            this.broker.submitVm(newvm);
+            this.broker.submitCloudlet(cl3);
+            migrationsNumber++;
+        }
 //        System.out.printf("%n\t# Submit Vm %d and last cloudlet of new cloudlet list %d to the broker %n",newvm.getId(),newCloudletList.get(newCloudletList.size()-1).getId());
-        migrationsNumber++;
+
     }
 
     private Vm bindAndSubmitCtoVm(Cloudlet cl, Vm vm) {
@@ -988,12 +867,58 @@ public class  SimProxy3 {
             newvm = convertToGpuVm(vm);
         } else System.out.println("Illegale Cloudlet Class Type");
         //       setVmallocation(vm.getvmallocationid(),newvm);
+        cl.addOnFinishListener(this::LastListener);
         this.broker.bindCloudletToVm(cl, newvm);
         this.broker.submitVm(newvm);
         this.broker.submitCloudlet(cl);
         return newvm;
     }
+    private void SuccessiveListener(CloudletVmEventInfo eventInfo){
+        int Cpathid = eventInfo.getCloudlet().getpathid();
+        Vm vmtemp = eventInfo.getVm();
+        CheckSla(vmtemp);
+        if(Cpathid == 9){
+        GpuCloudlet cl2 = (GpuCloudlet) vmtemp.getCloudletSequence().get(2);
+        cl2.getGpuTask().updateSimulation(this.simulation);
+        cl2.addOnFinishListener(this::Listener2);
+        cl2.setpathid(9);
+        this.broker.bindCloudletToVm(cl2, vmtemp);
+        this.broker.submitCloudlet(cl2);
+        migrationsNumber++;}
+        if(Cpathid==10){
+            Cloudlet cl2 = vmtemp.getCloudletSequence().get(2);
+            cl2.addOnFinishListener(this::Listener4);
+            cl2.setpathid(10);
+            this.broker.bindCloudletToVm(cl2, vmtemp);
+            this.broker.submitCloudlet(cl2);
+            migrationsNumber++;
+        }
+        if(Cpathid==12){
+            GpuCloudlet cl4 = (GpuCloudlet) vmtemp.getCloudletSequence().get(3);
+            cl4.getGpuTask().updateSimulation(this.simulation);
+            cl4.addOnFinishListener(this::LastListener);
+            cl4.setpathid(12);
+            this.broker.bindCloudletToVm(cl4, vmtemp);
+            this.broker.submitCloudlet(cl4);
 
+        }
+        if(Cpathid==14){
+            Cloudlet cl4 = vmtemp.getCloudletSequence().get(3);
+            cl4.addOnFinishListener(this::LastListener);
+            cl4.setpathid(14);
+            this.broker.bindCloudletToVm(cl4, vmtemp);
+            this.broker.submitCloudlet(cl4);
+
+        }
+
+    }
+    private void LastListener(CloudletVmEventInfo eventInfo){
+        int Cpathid = eventInfo.getCloudlet().getpathid();
+        Vm vmtemp = eventInfo.getVm();
+        CheckSla(vmtemp);
+        System.out.println("Cloudlet "+eventInfo.getCloudlet()+" of the sequence pathid "+ eventInfo.getCloudlet().getpathid()+ " finished the execution");
+
+    }
 
     public void CheckSla(Vm vm) {
         boolean TaskCompletionTime = false;
@@ -1203,7 +1128,6 @@ public class  SimProxy3 {
             }
         }
 
-
         return Optional.empty();
     }
 
@@ -1275,5 +1199,10 @@ public class  SimProxy3 {
             Log.printLine(at.render());
             Log.printLine(String.join("", Collections.nCopies(100, "-")));
         }
+    }
+
+    public SimProxy3 getInstance()
+    {
+        return this;
     }
 }

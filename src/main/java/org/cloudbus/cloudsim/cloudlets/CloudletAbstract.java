@@ -899,8 +899,8 @@ public abstract class CloudletAbstract extends CustomerEntityAbstract implements
 
     @Override
     public void setpathid(int id) {
-        if (id<1||id>10) {
-                throw new IllegalArgumentException("pathid should be between 1 && 6.");
+        if (id<1||id>14) {
+                throw new IllegalArgumentException("pathid should be between 1 && 14.");
             }
 
              this.pathid = id;

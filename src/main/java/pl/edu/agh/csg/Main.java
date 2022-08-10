@@ -23,7 +23,7 @@ public class Main {
      */
     ListenerApp listenerApp ;
     JobsSet jobsSetcopy;
-    static JobsSet jobsSet = JobsSet.getInstance(199);
+    static JobsSet jobsSet = JobsSet.getInstance(200);
 
     public Main() {
         listenerApp = new ListenerApp();
@@ -38,7 +38,6 @@ public class Main {
     public JobsSet getJobsSet(){
         return this.jobsSetcopy;
     }
-    public SimProxy3 getsimulation() {return this.listenerApp.getSimulation();}
     public ListenerApp getListenerApp() {return  this.listenerApp;}
     public void setJobsSet(){this.listenerApp.setJobset(jobsSetcopy);}
 
